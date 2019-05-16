@@ -1,3 +1,4 @@
+#jason test
 # HSCC---Hardware/Software Cooperative Caching for Hybrid DRAM/NVM Memory Architectures
 
 &#160; &#160; &#160; &#160;HSCC is implemented with zsim and NVMain simulators.  Zsim is a fast x86-64 multi-core simulator. It exploits Intel Pin toolkit to collect traces of memory accesses for processes, and replays the traces in the zsim simulator. NVMain is a cycle-accurate memory simulator, it models components of DRAM and NVMs, and memory hierarchy in detail. The integrated "zsim + NVMain" simulators can be forked from "https://github.com/AXLEproject/axle-zsim-nvmain". 
