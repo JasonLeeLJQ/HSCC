@@ -15,6 +15,7 @@
 #include "stdlib.h"
 #include "common/global_const.h"
 
+//tips：增加一个宏定义，只要把此宏定义注释掉就可以取消相关的日志输出。
 //#define DEBUG_PRINT
 
 inline void debug_printf( std::string format_str , ...)
