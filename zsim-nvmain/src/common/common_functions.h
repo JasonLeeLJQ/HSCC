@@ -29,6 +29,31 @@ inline void debug_printf( std::string format_str , ...)
 	#endif
 }
 
+#define DEBUG_TEST
+#define DEBUG_TLB
+inline void debug_test( std::string format_str , ...)
+{
+	#ifdef DEBUG_TEST
+		format_str ="Jason Test:" + format_str+"\n";
+		va_list parg;
+		va_start(parg , format_str);
+		vfprintf(stdout , format_str.c_str() , parg);
+		va_end(parg);
+	#endif
+}
+
+inline void debug_tlb( std::string format_str , ...)
+{
+	#ifdef DEBUG_TLB
+		format_str ="TLB Test:" + format_str+"\n";
+		va_list parg;
+		va_start(parg , format_str);
+		vfprintf(stdout , format_str.c_str() , parg);
+		va_end(parg);
+	#endif
+}
+
+
 inline void warning( std::string format_str , ...)
 {
 	format_str ="ZSIM-NVMAIN Warning:" + format_str;
