@@ -228,6 +228,7 @@ static void printHeartbeat(GlobSimInfo* zinfo) {
 }
 
 
+//启动子进程
 void LaunchProcess(uint32_t procIdx) {
 	std::cout<<"launchprocess "<<procIdx<<std::endl;
     int cpid = fork();
@@ -324,10 +325,12 @@ int main(int argc, char *argv[]) {
     const char* configFile = realpath(argv[1], NULL);
     const char* outputDir = getcwd(NULL, 0); //already absolute
 
+	//zsim配置参数
     Config conf(configFile);
 
     if (atexit(exitHandler)) panic("Could not register exit handler");
 
+	//注册信号处理函数，信号处理在sigHandler函数中国
     signal(SIGSEGV, sigHandler);
     signal(SIGINT,  sigHandler);
     signal(SIGABRT, sigHandler);
@@ -365,6 +368,7 @@ int main(int argc, char *argv[]) {
     trace(Harness, "Created global segment, starting pin processes, shmid = %d", shmid);
 
     //Do we need per-process direcories?
+    //每个进程运行在不同目录下
     perProcessDir = conf.get<bool>("sim.perProcessDir", false);
 
     if (perProcessDir) {
@@ -383,6 +387,8 @@ int main(int argc, char *argv[]) {
 
     info("Deadlock detection %s", deadlockDetection? "ON" : "OFF");
 
+	//ASLR（Address space layout randomization）是一种针对缓冲区溢出的安全保护技术
+	//不开启
     aslr = conf.get<bool>("sim.aslr", false);
     if (aslr) info("Not disabling ASLR, multiprocess runs will fail");
 
@@ -391,6 +397,7 @@ int main(int argc, char *argv[]) {
     uint32_t numProcs = pinCmd->getNumCmdProcs();
 
     for (uint32_t procIdx = 0; procIdx < numProcs; procIdx++) {
+		//启动测试子进程
         LaunchProcess(procIdx);
     }
     if (numProcs == 0) panic("No process config found. Config file needs at least a process0 entry");

@@ -61,11 +61,12 @@ class Config {
         //Access interface
         //T can be uint32_t, uint64_t, bool, or const char*. Instantiations are in the cpp file
 
+		//设置参数（无默认值）
         // Mandatory values (no default, panics if setting does not exist)
         template<typename T> T get(const char* key);
         template<typename T> T get(const std::string& key) {return get<T>(key.c_str());}
 
-        // Optional values (default)
+        // Optional values (default)设置参数（有默认值）
         template<typename T> T get(const char* key, T def);
         template<typename T> T get(const std::string& key, T def) {return get<T>(key.c_str(), def);}
 
