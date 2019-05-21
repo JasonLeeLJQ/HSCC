@@ -312,6 +312,7 @@ int main(int argc, char *argv[]) {
         exit(0);
     }
 
+	debug_test("****** zsim 开始模拟 ******");
     InitLog("[H] ", NULL);
     printf("Starting zsim, built %s (rev %s)\n",ZSIM_BUILDDATE, ZSIM_BUILDVERSION);
     startTime = time(NULL);
@@ -398,6 +399,7 @@ int main(int argc, char *argv[]) {
 
     for (uint32_t procIdx = 0; procIdx < numProcs; procIdx++) {
 		//启动测试子进程
+		debug_test("启动测试子进程");
         LaunchProcess(procIdx);
     }
     if (numProcs == 0) panic("No process config found. Config file needs at least a process0 entry");
@@ -478,6 +480,7 @@ int main(int argc, char *argv[]) {
         exitCode = 1;
     }
     if (zinfo && zinfo->globalActiveProcs) warn("Unclean exit of %d children, termination stats were most likely not dumped", zinfo->globalActiveProcs);
-    exit(exitCode);
+	debug_test("****** zsim 模拟结束 ******");
+	exit(exitCode);
 }
 
