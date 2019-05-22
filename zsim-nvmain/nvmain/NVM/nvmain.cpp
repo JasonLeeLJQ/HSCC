@@ -68,6 +68,7 @@ NVMain::NVMain( )
     unsuccessfulPrefetches = 0;
 	mem_width = 0;
 	memory_size = 0;
+	debug_test("创建nvmain基类");
 	std::cout<<"************create nvmain---"<<std::endl;
 }
 
@@ -143,13 +144,14 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
         banks = static_cast<int>(p->BANKS);
         ranks = static_cast<int>(p->RANKS);
         channels = static_cast<int>(p->CHANNELS);
-		std::cout<<"cols is"<<cols<<std::endl;
-		std::cout<<"rows is"<<rows<<std::endl;
-		std::cout<<"ranks is"<<ranks<<std::endl;
-		std::cout<<"banks is"<<banks<<std::endl;
-		std::cout<<"ranks is"<<ranks<<std::endl;
-		std::cout<<"channels is"<<channels<<std::endl;
-		std::cout<<"subarrays is"<<subarrays<<std::endl;
+		debug_test("打印nvmain channel参数");
+		std::cout<<"cols is "<<cols<<std::endl;
+		std::cout<<"rows is "<<rows<<std::endl;
+		std::cout<<"ranks is "<<ranks<<std::endl;
+		std::cout<<"banks is "<<banks<<std::endl;
+		std::cout<<"ranks is "<<ranks<<std::endl;
+		std::cout<<"channels is "<<channels<<std::endl;
+		std::cout<<"subarrays is "<<subarrays<<std::endl;
 
         method = new TranslationMethod( );
 
