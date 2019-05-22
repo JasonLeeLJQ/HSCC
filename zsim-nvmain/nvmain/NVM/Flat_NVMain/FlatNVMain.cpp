@@ -4,6 +4,9 @@
 using namespace std;
 using namespace NVM;
 
+/* 
+flat平行结构的内存配置：包含DRAM配置+NVM配置
+*/
 FlatNVMain::FlatNVMain(): fastMemoryConfig(NULL),slowMemoryConfig(NULL),
 	fastMemory(NULL), slowMemory(NULL),mem_size(0),fast_mem_size(0),
 	slow_mem_size(0), fast_mem_bits(0)
@@ -33,6 +36,7 @@ void FlatNVMain::SetConfig( Config* conf, std::string memoryName,
 	if( conf->KeyExists("RANDOM"))
 		random = conf->GetValue("RANDOM");
 	//init config
+	//配置快速设备的路径（DRAM的路径）
 	if( conf->KeyExists("FAST_CONFIG"))
 	{
 		fastMemoryConfig = new Config();
@@ -41,6 +45,7 @@ void FlatNVMain::SetConfig( Config* conf, std::string memoryName,
 		cout<<"fast memory config path is:"<<fast_mem_config_file<<endl;
 		fastMemoryConfig->Read( fast_mem_config_file );
 	}
+	//配置NVM的路径
 	if( conf->KeyExists("SLOW_CONFIG"))
 	{
 		slowMemoryConfig = new Config();
@@ -50,11 +55,18 @@ void FlatNVMain::SetConfig( Config* conf, std::string memoryName,
 	}
 	cout<<"init fast memory"<<endl;
 	//init main memory
-	if( fastMemoryConfig )
+	if( fastMemoryConfig ) {
+		cout<<"设置FastMemory(DRAM)"<<endl;
 		InitMemory( fastMemory,"FastMemory(DRAM)",fastMemoryConfig);
+	}
 	cout<<"init slow memory"<<endl;
-	if( slowMemoryConfig )
+	if( slowMemoryConfig ) {
+		cout<<"SlowMemory(NVM)"<<endl;
 		InitMemory( slowMemory, "SlowMemory(NVM)" ,slowMemoryConfig);
+	}
+	else {
+		cout<<"未设置SlowMemory(NVM)"<<endl;
+	}
 	fast_mem_size = fastMemory->GetMemorySize();
 	slow_mem_size = slowMemory->GetMemorySize();
 	mem_size = fastMemory->GetMemorySize() + slowMemory->GetMemorySize();
