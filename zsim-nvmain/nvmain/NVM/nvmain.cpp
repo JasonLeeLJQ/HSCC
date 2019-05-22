@@ -48,6 +48,7 @@
 #include "Decoders/Migrator/Migrator.h"
 #include <sstream>
 #include <cassert>
+#include <src/common/common_functions.h>
 
 using namespace NVM;
 //uint64_t NVMain::memory_size = 0;
@@ -68,7 +69,8 @@ NVMain::NVMain( )
     unsuccessfulPrefetches = 0;
 	mem_width = 0;
 	memory_size = 0;
-	debug_test("创建nvmain基类");
+	
+	debug_NVMain("创建nvmain基类");
 	std::cout<<"************create nvmain---"<<std::endl;
 }
 
@@ -144,7 +146,8 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
         banks = static_cast<int>(p->BANKS);
         ranks = static_cast<int>(p->RANKS);
         channels = static_cast<int>(p->CHANNELS);
-		debug_test("打印nvmain channel参数");
+		
+		debug_NVMain("打印nvmain channel参数");
 		std::cout<<"cols is "<<cols<<std::endl;
 		std::cout<<"rows is "<<rows<<std::endl;
 		std::cout<<"ranks is "<<ranks<<std::endl;
