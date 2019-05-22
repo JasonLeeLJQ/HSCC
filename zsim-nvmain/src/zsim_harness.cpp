@@ -232,11 +232,11 @@ static void printHeartbeat(GlobSimInfo* zinfo) {
 void LaunchProcess(uint32_t procIdx) {
 	std::cout<<"launchprocess "<<procIdx<<std::endl;
     int cpid = fork();
-    if (cpid) { //parent
+    if (cpid) { //parent 父进程
         assert(cpid > 0);
         childInfo[procIdx].pid = cpid;
         childInfo[procIdx].status = PS_RUNNING;
-    } else { //child
+    } else { //child 子进程
         // Set the child's vars and get the command
         // NOTE: We set the vars first so that, when parsing the command, wordexp takes those vars into account
         pinCmd->setEnvVars(procIdx);
@@ -254,10 +254,8 @@ void LaunchProcess(uint32_t procIdx) {
         }
         aptrs[nargs-1] = NULL;
 
-		std::cout<<"1"<<std::endl;
-        //Chdir to process dir if needed
+        //Chdir to process dir if needed(跳过)
         if (perProcessDir) {
-			std::cout<<"2"<<std::endl;
             std::stringstream dir_ss;
             dir_ss << "p" << procIdx << "/";
             int res = chdir(dir_ss.str().c_str());
@@ -266,10 +264,8 @@ void LaunchProcess(uint32_t procIdx) {
                 panic("chdir to %s failed", dir_ss.str().c_str());
             }
         }
-		std::cout<<"3"<<std::endl;
-        //Input redirection if needed
+        //Input redirection if needed（跳过）
         if (inputFile) {
-			std::cout<<"4"<<std::endl;
             int fd = open(inputFile, O_RDONLY);
             if (fd == -1) {
                 perror("open() failed");
@@ -289,7 +285,6 @@ void LaunchProcess(uint32_t procIdx) {
          * changes the personalily and forks, or run the harness with setarch -R
          */
         if (!aslr) {
-			std::cout<<"5"<<std::endl;
             //Get old personality flags & update
             int pers = personality(((unsigned int)-1) /*returns current pers flags; arg is a long, hence the cast, see man*/);
             if (pers == -1 || personality(pers | ADDR_NO_RANDOMIZE) == -1) {
@@ -299,15 +294,16 @@ void LaunchProcess(uint32_t procIdx) {
             int newPers = personality(((unsigned int)-1));
             if ((newPers & ADDR_NO_RANDOMIZE) == 0) panic("personality() call was not honored! old 0x%x new 0x%x", pers, newPers);
         }
-		std::cout<<"6"<<std::endl;
+
+		/*execvp才真正执行子进程（指定的command参数）
+		 execvp: 这个函数如果正常运行是不会有返回的，有返回说明启动的程序出现异常
+		*/
         if (execvp(aptrs[0], (char* const*)aptrs) == -1) {
-			std::cout<<"7"<<std::endl;
             perror("Could not exec, killing child");
             panic("Could not exec %s", aptrs[0]);
         } else {
             panic("Something is SERIOUSLY wrong. This should never execute!");
         }
-		std::cout<<"8"<<std::endl;
     }
 }
 
@@ -408,6 +404,10 @@ int main(int argc, char *argv[]) {
 		debug_test("启动测试子进程");
         LaunchProcess(procIdx);
     }
+
+	/*
+		
+	*/
     if (numProcs == 0) panic("No process config found. Config file needs at least a process0 entry");
 
     //Wait for all processes to finish
@@ -419,7 +419,7 @@ int main(int argc, char *argv[]) {
 
     while (getNumChildren() > 0) {
         if (!gm_isready()) {
-            sched_yield(); //wait till proc idx 0 initializes everyhting
+            sched_yield(); //wait till proc idx 0 initializes everything
             continue;
         }
 
