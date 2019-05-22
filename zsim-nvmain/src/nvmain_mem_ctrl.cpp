@@ -156,6 +156,7 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
 	t_fast_read = 0;
 	t_slow_read = 0;
     nvmainConfig->Read(nvmainTechIni);
+	debug_test("NVMainControl: Reading NVMain config file: %s",nvmainTechIni.c_str());
     info("NVMainControl: Reading NVMain config file: %s", nvmainTechIni.c_str());
 	std::string mem_type = "NVMain";
 	if( nvmainConfig->KeyExists("CMemType"))

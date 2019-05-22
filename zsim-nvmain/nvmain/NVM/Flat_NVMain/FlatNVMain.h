@@ -70,10 +70,10 @@ namespace NVM
 		   inline void GetAbsolutePath( Config* conf, std::string & re_path);	
 		   inline void InitMemory( NVMain* &memory, const char* mem_name, Config* conf);
 		private:
-			Config* fastMemoryConfig;  //DRAM
-			Config* slowMemoryConfig;  //NVM
+			Config* fastMemoryConfig;  //DRAM配置参数
+			Config* slowMemoryConfig;  //NVM配置参数
 			//memory controller
-			NVMain* fastMemory;
+			NVMain* fastMemory;  
 			NVMain* slowMemory; 
 			uint64_t mem_size;
 			uint64_t fast_mem_size;

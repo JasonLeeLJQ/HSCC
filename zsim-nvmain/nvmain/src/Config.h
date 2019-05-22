@@ -44,6 +44,13 @@
 
 namespace NVM {
 
+/*
+Config类：
+从NVMain配置脚本（./config/nvmain-config/flat.cfg）中读到的参数
+如：FAST_CONFIG
+	SLOW_CONFIG
+	CMemType
+*/
 class Config 
 {
   public:
