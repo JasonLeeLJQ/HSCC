@@ -331,7 +331,7 @@ int main(int argc, char *argv[]) {
     //Canonicalize paths --- because we change dirs, we deal in absolute paths
     const char* configFile = realpath(argv[1], NULL);
     const char* outputDir = getcwd(NULL, 0); //already absolute
-	cout<<"配置文件的绝对路径"<<configFile<<endl;
+	std::cout<<"配置文件的绝对路径"<<configFile<<std::endl;
 	//zsim配置的全部参数
     Config conf(configFile);
 
