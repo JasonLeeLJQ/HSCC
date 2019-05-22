@@ -51,6 +51,7 @@ void FlatNVMain::SetConfig( Config* conf, std::string memoryName,
 		slowMemoryConfig = new Config();
 		string slow_mem_config_file = conf->GetString("SLOW_CONFIG");
 		GetAbsolutePath(conf, slow_mem_config_file);
+		cout<<"slow memory config path is:"<<slow_mem_config_file<<endl;
 		slowMemoryConfig->Read(slow_mem_config_file);
 	}
 	cout<<"init fast memory"<<endl;
