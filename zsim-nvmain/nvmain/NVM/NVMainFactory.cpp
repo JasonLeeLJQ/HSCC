@@ -15,14 +15,21 @@ NVMain* NVMainFactory::CreateNVMain( std::string nvm_type)
 		std::cout<<"create hier dram cache"<<std::endl;
 		main_mem = new HierDRAMCache();
 	}
-	if( nvm_type == "RBLANVMain" )
+	if( nvm_type == "RBLANVMain" ) {
+		std::cout<<"NVMainFactory::CreateNVMain--->正在创建RBLA_NVMain"<<std::endl;
 		main_mem = new RBLA_NVMain();
-	if( nvm_type == "FLATNVMain")
+	}
+	if( nvm_type == "FLATNVMain") {
+		std::cout<<"NVMainFactory::CreateNVMain--->正在创建FlatNVMain"<<std::endl;
 		main_mem = new FlatNVMain();
-	if( nvm_type == "FlatRBLANVMain")
+	}
+	if( nvm_type == "FlatRBLANVMain") {
+		std::cout<<"NVMainFactory::CreateNVMain--->正在创建FlatRBLANVMain"<<std::endl;
 		main_mem = new FlatRBLANVMain();
+	}
 	return main_mem;
 }
+
 
 NVMain* NVMainFactory::CreateNewNVMain( std::string nvm_type)
 {

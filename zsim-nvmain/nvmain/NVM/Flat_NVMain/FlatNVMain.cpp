@@ -57,11 +57,12 @@ void FlatNVMain::SetConfig( Config* conf, std::string memoryName,
 	//init main memory
 	if( fastMemoryConfig ) {
 		cout<<"设置FastMemory(DRAM)"<<endl;
+		cout<<"fastMemoryConfig == "<<fastMemoryConfig->GetString("CMemType")<<endl;
 		InitMemory( fastMemory,"FastMemory(DRAM)",fastMemoryConfig);
 	}
 	cout<<"init slow memory"<<endl;
 	if( slowMemoryConfig ) {
-		cout<<"SlowMemory(NVM)"<<endl;
+		cout<<"设置SlowMemory(NVM)"<<endl;
 		InitMemory( slowMemory, "SlowMemory(NVM)" ,slowMemoryConfig);
 	}
 	else {

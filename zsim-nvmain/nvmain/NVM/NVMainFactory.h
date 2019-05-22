@@ -19,6 +19,9 @@ namespace NVM
 	class NVMainFactory
 	{
 		public:
+			/* NVM工厂：根据传进来的nvmain__type创建新的NVMain 
+				默认的NVMain类型为NVMain
+			*/
 			static NVMain* CreateNewNVMain( std::string nvmain_type );
 		private:
 			static NVMain* CreateNVMain( std::string nvmain_type);
