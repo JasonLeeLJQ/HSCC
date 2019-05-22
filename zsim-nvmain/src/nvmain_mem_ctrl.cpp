@@ -170,7 +170,7 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
 	else
 		nvmainPtr = NVM::NVMainFactory::CreateNewNVMain(mem_type);
 	/* 输出内存类型 */
-	debug_test("%s",nvmainConfig->GetString("CMemType"));
+	debug_test("%s",nvmainConfig->GetString("CMemType");
 	
     nvmainStatsPtr = new NVM::Stats();
     nvmainSimInterface = new NVM::NullInterface();
