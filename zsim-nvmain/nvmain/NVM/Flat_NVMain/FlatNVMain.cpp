@@ -14,7 +14,7 @@ FlatNVMain::FlatNVMain(): fastMemoryConfig(NULL),slowMemoryConfig(NULL),
 	random = false;
 	accessed_fast_pages.clear();
 	accessed_slow_pages.clear();
-	cout<<"create flat nvmain"<<endl;
+	std::cout<<"FlatNVMain--->create flat nvmain,nvmain的子类"<<std::endl;
 }
 
 FlatNVMain::~FlatNVMain()

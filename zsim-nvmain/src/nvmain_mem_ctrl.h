@@ -75,6 +75,9 @@ struct CmpByValue
 	}
 };
 
+/*
+	一个内存控制器类
+*/
 class NVMainMemory : public MemObject, public NVM::NVMObject { //one NVMain controller
     private:
         g_string name;
@@ -82,7 +85,7 @@ class NVMainMemory : public MemObject, public NVM::NVMObject { //one NVMain cont
         uint64_t domain;
 
         NVM::NVMainRequest *nvmainRetryRequest;
-        NVM::NVMain *nvmainPtr;
+        NVM::NVMain *nvmainPtr;  //NVMain对象
         NVM::SimInterface *nvmainSimInterface;
         NVM::Config *nvmainConfig;
         NVM::EventQueue *nvmainEventQueue;

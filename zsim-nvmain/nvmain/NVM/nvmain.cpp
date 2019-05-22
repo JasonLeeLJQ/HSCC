@@ -70,7 +70,7 @@ NVMain::NVMain( )
 	mem_width = 0;
 	memory_size = 0;
 	
-	debug_NVMain("创建nvmain基类");
+	debug_NVMain("NVMain--->创建nvmain基类");
 	std::cout<<"************create nvmain---"<<std::endl;
 }
 

@@ -157,7 +157,7 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
 	t_slow_read = 0;
 	/*读NVM配置文件 如flat.cfg*/
     nvmainConfig->Read(nvmainTechIni);
-	debug_test("NVMainControl: Reading NVMain config file: %s",nvmainTechIni.c_str());
+	debug_test("NVMainMemory::NVMainMemory--->NVMainControl: Reading NVMain config file: %s",nvmainTechIni.c_str());
     info("NVMainControl: Reading NVMain config file: %s", nvmainTechIni.c_str());
 	std::string mem_type = "NVMain";
 	if( nvmainConfig->KeyExists("CMemType"))
@@ -170,8 +170,11 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
 	else
 		nvmainPtr = NVM::NVMainFactory::CreateNewNVMain(mem_type);
 	/* 输出内存类型 */
-	std::cout<<nvmainConfig->GetString("CMemType")<<std::endl;
-	
+	//std::cout<<nvmainConfig->GetString("CMemType")<<std::endl;
+
+	/*
+		设置NVMainMemory内存控制器的成员变量
+	*/
     nvmainStatsPtr = new NVM::Stats();
     nvmainSimInterface = new NVM::NullInterface();
     nvmainEventQueue = new NVM::EventQueue();
@@ -221,7 +224,10 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
     AddChild(nvmainPtr);
     nvmainPtr->SetParent(this);
     nvmainGlobalEventQueue->AddSystem(nvmainPtr, nvmainConfig);
+	/* FlatNVMain设置参数 */
+	std::cout<<"FlatNVMain设置参数 "<<std::endl;
     nvmainPtr->SetConfig(nvmainConfig);
+	std::cout<<"FlatNVMain设置参数完成 "<<std::endl;
 	if( mem_type == "FineNVMain"  )
 	{
 		mm = dynamic_cast<NVM::FineNVMain*>(nvmainPtr);
