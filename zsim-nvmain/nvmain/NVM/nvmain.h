@@ -44,6 +44,10 @@
 #include "traceWriter/GenericTraceWriter.h"
 #include "Decoders/MQMigrator/MQMigrator.h"
 #include "include/NVMainConfig.h"
+#include <stdarg.h>
+#include "string.h"
+#include "stdlib.h"
+
 namespace NVM {
 
 class Config;
