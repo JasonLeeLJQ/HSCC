@@ -228,7 +228,7 @@ static void printHeartbeat(GlobSimInfo* zinfo) {
 }
 
 
-//启动子进程
+//fork子进程并执行
 void LaunchProcess(uint32_t procIdx) {
 	std::cout<<"launchprocess "<<procIdx<<std::endl;
     int cpid = fork();
