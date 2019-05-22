@@ -155,6 +155,7 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
 	mm = NULL;
 	t_fast_read = 0;
 	t_slow_read = 0;
+	/*读NVM配置文件 如flat.cfg*/
     nvmainConfig->Read(nvmainTechIni);
 	debug_test("NVMainControl: Reading NVMain config file: %s",nvmainTechIni.c_str());
     info("NVMainControl: Reading NVMain config file: %s", nvmainTechIni.c_str());

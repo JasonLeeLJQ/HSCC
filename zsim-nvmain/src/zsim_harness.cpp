@@ -254,8 +254,10 @@ void LaunchProcess(uint32_t procIdx) {
         }
         aptrs[nargs-1] = NULL;
 
+		std::cout<<"1"<<std::endl;
         //Chdir to process dir if needed
         if (perProcessDir) {
+			std::cout<<"2"<<std::endl;
             std::stringstream dir_ss;
             dir_ss << "p" << procIdx << "/";
             int res = chdir(dir_ss.str().c_str());
@@ -264,9 +266,10 @@ void LaunchProcess(uint32_t procIdx) {
                 panic("chdir to %s failed", dir_ss.str().c_str());
             }
         }
-
+		std::cout<<"3"<<std::endl;
         //Input redirection if needed
         if (inputFile) {
+			std::cout<<"4"<<std::endl;
             int fd = open(inputFile, O_RDONLY);
             if (fd == -1) {
                 perror("open() failed");
@@ -286,6 +289,7 @@ void LaunchProcess(uint32_t procIdx) {
          * changes the personalily and forks, or run the harness with setarch -R
          */
         if (!aslr) {
+			std::cout<<"5"<<std::endl;
             //Get old personality flags & update
             int pers = personality(((unsigned int)-1) /*returns current pers flags; arg is a long, hence the cast, see man*/);
             if (pers == -1 || personality(pers | ADDR_NO_RANDOMIZE) == -1) {
@@ -295,13 +299,15 @@ void LaunchProcess(uint32_t procIdx) {
             int newPers = personality(((unsigned int)-1));
             if ((newPers & ADDR_NO_RANDOMIZE) == 0) panic("personality() call was not honored! old 0x%x new 0x%x", pers, newPers);
         }
-
+		std::cout<<"6"<<std::endl;
         if (execvp(aptrs[0], (char* const*)aptrs) == -1) {
+			std::cout<<"7"<<std::endl;
             perror("Could not exec, killing child");
             panic("Could not exec %s", aptrs[0]);
         } else {
             panic("Something is SERIOUSLY wrong. This should never execute!");
         }
+		std::cout<<"8"<<std::endl;
     }
 }
 
@@ -325,8 +331,8 @@ int main(int argc, char *argv[]) {
     //Canonicalize paths --- because we change dirs, we deal in absolute paths
     const char* configFile = realpath(argv[1], NULL);
     const char* outputDir = getcwd(NULL, 0); //already absolute
-
-	//zsim配置参数
+	cout<<"配置文件的绝对路径"<<configFile<<endl;
+	//zsim配置的全部参数
     Config conf(configFile);
 
     if (atexit(exitHandler)) panic("Could not register exit handler");
