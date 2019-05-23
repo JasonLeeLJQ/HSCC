@@ -98,6 +98,7 @@ class Config
 
   private:
     std::string fileName;
+	/* 具体的配置：保存key-value对 */
     std::map<std::string, std::string> values;
     std::set<std::string> warned;
     std::vector<std::string> hookList;

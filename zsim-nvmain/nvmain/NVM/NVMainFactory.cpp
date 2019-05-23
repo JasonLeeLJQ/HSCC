@@ -31,6 +31,7 @@ NVMain* NVMainFactory::CreateNVMain( std::string nvm_type)
 }
 
 
+/*依据nvm_type类型，创建NVMain对象*/
 NVMain* NVMainFactory::CreateNewNVMain( std::string nvm_type)
 {
 	NVMain* main_mem = CreateNVMain(nvm_type);

@@ -111,14 +111,17 @@ Config *NVMain::GetConfig( )
 
 void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildren )
 {
+	debug_NVMain("开始设置%s的参数",memoryName.c_str( ));
     TranslationMethod *method;
     int channels, ranks, banks, rows, cols, subarrays;
 
     Params *params = new Params( );
+	/* 根据Config设置Params类 */
     params->SetParams( conf );
     SetParams( params );
 
     StatName( memoryName );
+	debug_NVMain("NVMain::SetConfig--->memoryName == %s",memoryName.c_str( ));
 
     config = conf;
     if( config->GetSimInterface( ) != NULL )
