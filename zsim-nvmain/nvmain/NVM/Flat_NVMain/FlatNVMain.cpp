@@ -67,6 +67,7 @@ void FlatNVMain::SetConfig( Config* conf, std::string memoryName,
 	/* 在NVM_channel.config和DRAM_channel.config都没有指定CMemtype内存类型。
 		因此，CMemtype默认为NVMain
 	*/
+	cout<<"/////////////////////////////////////////////"<<endl;
 	cout<<"init fast memory"<<endl;
 	//init main memory
 	if( fastMemoryConfig ) {
@@ -74,6 +75,7 @@ void FlatNVMain::SetConfig( Config* conf, std::string memoryName,
 		//cout<<"fastMemoryConfig == "<<fastMemoryConfig->GetString("CMemType")<<endl;
 		InitMemory( fastMemory,"FastMemory(DRAM)",fastMemoryConfig);
 	}
+	cout<<"/////////////////////////////////////////////"<<endl;
 	cout<<"init slow memory"<<endl;
 	if( slowMemoryConfig ) {
 		cout<<"初始化SlowMemory(NVM)"<<endl;
@@ -106,6 +108,7 @@ inline void FlatNVMain::InitMemory( NVMain* &memory,
 	memory->SetParent(this);
 	memory->SetEventQueue(queue);
 	GetGlobalEventQueue()->AddSystem( memory, conf);
+	/* 设置 */
 	memory->SetConfig( conf, mem_name, true);
 	memory->RegisterStats();
 	RegisterStats();
