@@ -50,6 +50,7 @@ MemoryController *MemoryControllerFactory::CreateNewController( std::string cont
 {
     MemoryController *memoryController = NULL;
 
+	std::cout<<"MemoryControllerFactory::CreateNewController--->创建内存控制器 " << controller<<std::endl;
     if( controller == "" )
         std::cout << "NVMain: MEM_CTL is not set in configuration file!" << std::endl;
 

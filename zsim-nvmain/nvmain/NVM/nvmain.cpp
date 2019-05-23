@@ -203,6 +203,7 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
 			else
 				channelConfig[i] = config;
             /* Initialize memory controller */
+			debug_NVMain("创建内存控制器");
             memoryControllers[i] = 
                 MemoryControllerFactory::CreateNewController( channelConfig[i]->GetString( "MEM_CTL" ) );
 
