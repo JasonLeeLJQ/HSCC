@@ -95,11 +95,14 @@ class NVMain : public NVMObject
 	uint64_t memory_size;
     ncounter_t totalReadRequests;
     ncounter_t totalWriteRequests;
+	/* 每一个channel都对应一个内存控制器（MemoryController类）*/
     MemoryController **memoryControllers;
   protected:
 	double GetSyncValue( );
 	void CycleMemCtl( MemoryController** &mem_ctl , uint64_t num_channels);
-    Config *config;
+	//全部的配置，如flat.config
+	Config *config;
+	//每个channel的配置，如NVM_channel.config & DRAM_channel.config
     Config **channelConfig;
     //MemoryController **memoryControllers;
     AddressTranslator *translator;

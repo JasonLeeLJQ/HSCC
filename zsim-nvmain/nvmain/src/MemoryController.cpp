@@ -390,7 +390,7 @@ uint64_t MemoryController::GetCacheLineSize()
 
 void MemoryController::SetConfig( Config *conf, bool createChildren )
 {
-	//std::cout<<"memory controller:set memory controller config"<<std::endl;
+	std::cout<<"memory controller:set memory controller config"<<std::endl;
     this->config = conf;
     Params *params = new Params( );
     params->SetParams( conf );
@@ -514,7 +514,7 @@ void MemoryController::SetConfig( Config *conf, bool createChildren )
     commandQueues = new std::deque<NVMainRequest *> [commandQueueCount];
 	//create activateQueued
     activateQueued = new bool * [p->RANKS];
-	std::cout<<"set refreshqueued"<<p->RANKS<<" "<<p->BANKS<<std::endl;
+	std::cout<<"set refreshqueued "<<p->RANKS<<" "<<p->BANKS<<std::endl;
     refreshQueued = new bool * [p->RANKS];
     starvationCounter = new ncounter_t ** [p->RANKS];
     effectiveRow = new ncounter_t ** [p->RANKS];

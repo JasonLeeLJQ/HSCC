@@ -155,9 +155,9 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
 	mm = NULL;
 	t_fast_read = 0;
 	t_slow_read = 0;
-	/*读NVM配置文件 如flat.cfg*/
+	/*读配置文件 如flat.config*/
     nvmainConfig->Read(nvmainTechIni);
-	debug_test("NVMainMemory::NVMainMemory--->NVMainControl: Reading NVMain config file: %s",nvmainTechIni.c_str());
+	//debug_test("NVMainMemory::NVMainMemory--->NVMainControl: Reading NVMain config file: %s",nvmainTechIni.c_str());
     info("NVMainControl: Reading NVMain config file: %s", nvmainTechIni.c_str());
 	std::string mem_type = "NVMain";
 	if( nvmainConfig->KeyExists("CMemType"))
@@ -167,8 +167,10 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
 		NVM::FineNVMain *nvm_ptr = gm_memalign<NVM::FineNVMain>(CACHE_LINE_BYTES, 1);
 		nvmainPtr = new (nvm_ptr) NVM::FineNVMain();     
 	}
-	else
+	else {
+		/* 在flat.config中，指定了CMemType==FLATNVMain */
 		nvmainPtr = NVM::NVMainFactory::CreateNewNVMain(mem_type);
+	}
 	/* 输出内存类型 */
 	//std::cout<<nvmainConfig->GetString("CMemType")<<std::endl;
 
@@ -189,7 +191,7 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
     nvmainGlobalEventQueue->SetFrequency(nvmainConfig->GetEnergy("CPUFreq") * 1000000.0);
     SetGlobalEventQueue(nvmainGlobalEventQueue);
 	cout<<"GetGlobalEventQueue:"<<GetGlobalEventQueue()<<endl;
-	cout<<"nvmainConfig:"<<nvmainConfig<<endl;
+	cout<<"nvmainConfig:"<<nvmainConfig->fileName<<endl;
     //nvmainPtr->SetConfig(nvmainConfig);
     //Setup child and parent modules
 	/*

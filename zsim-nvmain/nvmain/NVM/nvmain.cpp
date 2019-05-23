@@ -188,6 +188,7 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
 
             confString << "CONFIG_CHANNEL" << i;
 
+			//读取channel配置文件
             if( config->GetString( confString.str( ) ) != "" )
             {
                 channelConfigFile  = config->GetString( confString.str( ) );
@@ -202,6 +203,7 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
             }
 			else
 				channelConfig[i] = config;
+			
             /* Initialize memory controller */
 			debug_NVMain("创建内存控制器");
             memoryControllers[i] = 
@@ -218,7 +220,7 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
 
             AddChild( memoryControllers[i] );
             memoryControllers[i]->SetParent( this );
-            /* Set Config recursively. */
+            /* Set Config recursively. 递归的设置内存控制器*/
             memoryControllers[i]->SetConfig( channelConfig[i], createChildren );
             /* Register statistics. */
             memoryControllers[i]->RegisterStats( );
