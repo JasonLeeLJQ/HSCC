@@ -1718,6 +1718,7 @@ static EXCEPT_HANDLING_RESULT InternalExceptionHandler(THREADID tid, EXCEPTION_I
 /* ===================================================================== */
 
 int main(int argc, char *argv[]) {
+	std::cout<<"执行src/zsim.cpp的main函数"<<std::endl;
 	google::InitGoogleLogging("zsim.log");
     PIN_InitSymbols();
     if (PIN_Init(argc, argv)) return Usage();
@@ -1856,6 +1857,7 @@ int main(int argc, char *argv[]) {
 	//create a new tool's internal thread in the current process
     PIN_SpawnInternalThread(FFThread, NULL, 64*1024, NULL);
 
+	std::cout<<"结束src/zsim.cpp的main函数"<<std::endl;
     //Never returns
     PIN_StartProgram();
     return 0;
