@@ -191,7 +191,7 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
     nvmainGlobalEventQueue->SetFrequency(nvmainConfig->GetEnergy("CPUFreq") * 1000000.0);
     SetGlobalEventQueue(nvmainGlobalEventQueue);
 	cout<<"GetGlobalEventQueue:"<<GetGlobalEventQueue()<<endl;
-	cout<<"nvmainConfig:"<<nvmainConfig->fileName<<endl;
+	cout<<"nvmainConfig:"<<nvmainConfig->GetFileName()<<endl;
     //nvmainPtr->SetConfig(nvmainConfig);
     //Setup child and parent modules
 	/*
