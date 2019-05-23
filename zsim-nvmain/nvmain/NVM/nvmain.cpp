@@ -121,7 +121,7 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
     SetParams( params );
 
     StatName( memoryName );
-	debug_NVMain("NVMain::SetConfig--->memoryName == %s",memoryName.c_str( ));
+	//debug_NVMain("NVMain::SetConfig--->memoryName == %s",memoryName.c_str( ));
 
     config = conf;
     if( config->GetSimInterface( ) != NULL )
@@ -150,14 +150,14 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
         ranks = static_cast<int>(p->RANKS);
         channels = static_cast<int>(p->CHANNELS);
 		
-		debug_NVMain("打印nvmain channel参数");
+		debug_NVMain("打印 %s 的参数",memoryName.c_str( ));
 		std::cout<<"cols is "<<cols<<std::endl;
 		std::cout<<"rows is "<<rows<<std::endl;
-		std::cout<<"ranks is "<<ranks<<std::endl;
+		std::cout<<"subarrays is "<<subarrays<<std::endl;
+		//std::cout<<"ranks is "<<ranks<<std::endl;
 		std::cout<<"banks is "<<banks<<std::endl;
 		std::cout<<"ranks is "<<ranks<<std::endl;
-		std::cout<<"channels is "<<channels<<std::endl;
-		std::cout<<"subarrays is "<<subarrays<<std::endl;
+		std::cout<<"channels is "<<channels<<std::endl;		
 
         method = new TranslationMethod( );
 

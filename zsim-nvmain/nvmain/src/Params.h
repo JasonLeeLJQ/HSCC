@@ -135,7 +135,7 @@ class Params
     ncounter_t RANKS;
     ncounter_t BANKS;
     ncounter_t RAW;
-    ncounter_t MATHeight;
+    ncounter_t MATHeight;  //子阵列（每个bank含有一个或多个子阵列，默认为1，不开启sub-array level parallelism (SALP)）
     ncounter_t RBSize;
 
     ncycle_t tAL;

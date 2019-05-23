@@ -124,6 +124,8 @@ class NVMain : public NVMObject
 
 };
 
+////////////////////////////////////////////////////
+//add by Jason Lee 2019,23,may
 #define DEBUG_NVMAIN
 inline void debug_NVMain( std::string format_str , ...)
 {
@@ -135,5 +137,5 @@ inline void debug_NVMain( std::string format_str , ...)
 		va_end(parg);
 	#endif
 }
-
+/////////////////////////////////////////////////////
 #endif
