@@ -430,6 +430,7 @@ CacheGroup* BuildCacheGroup(Config& config, const string& name, bool isTerminal)
 
 
 static void InitSystem(Config& config) {
+	std::cout<<"src/init.cpp--->InitSystem"<<std::endl;
 		(zinfo->reversed_pgt.clear)();	
 		futex_init(&zinfo->reversed_pgt_lock);
 		//default increment step of read/write access of PCM main memory is 1/2 
