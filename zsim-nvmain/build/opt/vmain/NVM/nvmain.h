@@ -44,6 +44,10 @@
 #include "traceWriter/GenericTraceWriter.h"
 #include "Decoders/MQMigrator/MQMigrator.h"
 #include "include/NVMainConfig.h"
+#include <stdarg.h>
+#include "string.h"
+#include "stdlib.h"
+
 namespace NVM {
 
 class Config;
@@ -119,5 +123,17 @@ class NVMain : public NVMObject
 };
 
 };
+
+#define DEBUG_NVMAIN
+inline void debug_NVMain( std::string format_str , ...)
+{
+	#ifdef DEBUG_NVMAIN
+		format_str ="NVMain Test:" + format_str+"\n";
+		va_list parg;
+		va_start(parg , format_str);
+		vfprintf(stdout , format_str.c_str() , parg);
+		va_end(parg);
+	#endif
+}
 
 #endif

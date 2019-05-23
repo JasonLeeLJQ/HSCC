@@ -228,15 +228,15 @@ static void printHeartbeat(GlobSimInfo* zinfo) {
 }
 
 
-//启动子进程
+//fork子进程并执行
 void LaunchProcess(uint32_t procIdx) {
 	std::cout<<"launchprocess "<<procIdx<<std::endl;
     int cpid = fork();
-    if (cpid) { //parent
+    if (cpid) { //parent 父进程
         assert(cpid > 0);
         childInfo[procIdx].pid = cpid;
         childInfo[procIdx].status = PS_RUNNING;
-    } else { //child
+    } else { //child 子进程
         // Set the child's vars and get the command
         // NOTE: We set the vars first so that, when parsing the command, wordexp takes those vars into account
         pinCmd->setEnvVars(procIdx);
@@ -254,7 +254,7 @@ void LaunchProcess(uint32_t procIdx) {
         }
         aptrs[nargs-1] = NULL;
 
-        //Chdir to process dir if needed
+        //Chdir to process dir if needed(跳过)
         if (perProcessDir) {
             std::stringstream dir_ss;
             dir_ss << "p" << procIdx << "/";
@@ -264,8 +264,7 @@ void LaunchProcess(uint32_t procIdx) {
                 panic("chdir to %s failed", dir_ss.str().c_str());
             }
         }
-
-        //Input redirection if needed
+        //Input redirection if needed（跳过）
         if (inputFile) {
             int fd = open(inputFile, O_RDONLY);
             if (fd == -1) {
@@ -296,6 +295,9 @@ void LaunchProcess(uint32_t procIdx) {
             if ((newPers & ADDR_NO_RANDOMIZE) == 0) panic("personality() call was not honored! old 0x%x new 0x%x", pers, newPers);
         }
 
+		/*execvp才真正执行子进程（指定的command参数）
+		 execvp: 这个函数如果正常运行是不会有返回的，有返回说明启动的程序出现异常
+		*/
         if (execvp(aptrs[0], (char* const*)aptrs) == -1) {
             perror("Could not exec, killing child");
             panic("Could not exec %s", aptrs[0]);
@@ -312,6 +314,7 @@ int main(int argc, char *argv[]) {
         exit(0);
     }
 
+	debug_test("****** zsim 开始模拟 ******");
     InitLog("[H] ", NULL);
     printf("Starting zsim, built %s (rev %s)\n",ZSIM_BUILDDATE, ZSIM_BUILDVERSION);
     startTime = time(NULL);
@@ -324,8 +327,8 @@ int main(int argc, char *argv[]) {
     //Canonicalize paths --- because we change dirs, we deal in absolute paths
     const char* configFile = realpath(argv[1], NULL);
     const char* outputDir = getcwd(NULL, 0); //already absolute
-
-	//zsim配置参数
+	std::cout<<"配置文件的绝对路径"<<configFile<<std::endl;
+	//zsim配置的全部参数
     Config conf(configFile);
 
     if (atexit(exitHandler)) panic("Could not register exit handler");
@@ -398,8 +401,13 @@ int main(int argc, char *argv[]) {
 
     for (uint32_t procIdx = 0; procIdx < numProcs; procIdx++) {
 		//启动测试子进程
+		debug_test("启动测试子进程");
         LaunchProcess(procIdx);
     }
+
+	/*
+		
+	*/
     if (numProcs == 0) panic("No process config found. Config file needs at least a process0 entry");
 
     //Wait for all processes to finish
@@ -411,7 +419,7 @@ int main(int argc, char *argv[]) {
 
     while (getNumChildren() > 0) {
         if (!gm_isready()) {
-            sched_yield(); //wait till proc idx 0 initializes everyhting
+            sched_yield(); //wait till proc idx 0 initializes everything
             continue;
         }
 
@@ -478,6 +486,7 @@ int main(int argc, char *argv[]) {
         exitCode = 1;
     }
     if (zinfo && zinfo->globalActiveProcs) warn("Unclean exit of %d children, termination stats were most likely not dumped", zinfo->globalActiveProcs);
-    exit(exitCode);
+	debug_test("****** zsim 模拟结束 ******");
+	exit(exitCode);
 }
 

@@ -48,6 +48,7 @@
 #include "Decoders/Migrator/Migrator.h"
 #include <sstream>
 #include <cassert>
+#include <src/common/common_functions.h>
 
 using namespace NVM;
 //uint64_t NVMain::memory_size = 0;
@@ -68,6 +69,8 @@ NVMain::NVMain( )
     unsuccessfulPrefetches = 0;
 	mem_width = 0;
 	memory_size = 0;
+	
+	debug_NVMain("NVMain--->创建nvmain基类");
 	std::cout<<"************create nvmain---"<<std::endl;
 }
 
@@ -108,14 +111,17 @@ Config *NVMain::GetConfig( )
 
 void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildren )
 {
+	debug_NVMain("开始设置%s的参数",memoryName.c_str( ));
     TranslationMethod *method;
     int channels, ranks, banks, rows, cols, subarrays;
 
     Params *params = new Params( );
+	/* 根据Config设置Params类 */
     params->SetParams( conf );
     SetParams( params );
 
     StatName( memoryName );
+	debug_NVMain("NVMain::SetConfig--->memoryName == %s",memoryName.c_str( ));
 
     config = conf;
     if( config->GetSimInterface( ) != NULL )
@@ -143,13 +149,15 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
         banks = static_cast<int>(p->BANKS);
         ranks = static_cast<int>(p->RANKS);
         channels = static_cast<int>(p->CHANNELS);
-		std::cout<<"cols is"<<cols<<std::endl;
-		std::cout<<"rows is"<<rows<<std::endl;
-		std::cout<<"ranks is"<<ranks<<std::endl;
-		std::cout<<"banks is"<<banks<<std::endl;
-		std::cout<<"ranks is"<<ranks<<std::endl;
-		std::cout<<"channels is"<<channels<<std::endl;
-		std::cout<<"subarrays is"<<subarrays<<std::endl;
+		
+		debug_NVMain("打印nvmain channel参数");
+		std::cout<<"cols is "<<cols<<std::endl;
+		std::cout<<"rows is "<<rows<<std::endl;
+		std::cout<<"ranks is "<<ranks<<std::endl;
+		std::cout<<"banks is "<<banks<<std::endl;
+		std::cout<<"ranks is "<<ranks<<std::endl;
+		std::cout<<"channels is "<<channels<<std::endl;
+		std::cout<<"subarrays is "<<subarrays<<std::endl;
 
         method = new TranslationMethod( );
 

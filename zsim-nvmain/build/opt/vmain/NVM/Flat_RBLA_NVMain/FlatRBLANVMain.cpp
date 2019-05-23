@@ -109,6 +109,8 @@ void FlatRBLANVMain::SetConfig( Config *conf, std::string memoryName, bool creat
 	std::cout<<"create stats table"<<std::endl;
 	//create stats table
 	statsTable =  new StatsStore(stats_table_entry);
+	
+	debug_test("创建FLAT RBLA nvmain");
 	std::cout<<"create flat nvmain"<<std::endl;
 	flat_memory = new FlatNVMain();
 	EventQueue* queue=new EventQueue();

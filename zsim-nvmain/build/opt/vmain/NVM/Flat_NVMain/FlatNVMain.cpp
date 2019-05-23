@@ -4,6 +4,9 @@
 using namespace std;
 using namespace NVM;
 
+/* 
+flat平行结构的内存配置：包含DRAM配置+NVM配置
+*/
 FlatNVMain::FlatNVMain(): fastMemoryConfig(NULL),slowMemoryConfig(NULL),
 	fastMemory(NULL), slowMemory(NULL),mem_size(0),fast_mem_size(0),
 	slow_mem_size(0), fast_mem_bits(0)
@@ -11,7 +14,7 @@ FlatNVMain::FlatNVMain(): fastMemoryConfig(NULL),slowMemoryConfig(NULL),
 	random = false;
 	accessed_fast_pages.clear();
 	accessed_slow_pages.clear();
-	cout<<"create flat nvmain"<<endl;
+	std::cout<<"FlatNVMain--->create flat nvmain,nvmain的子类"<<std::endl;
 }
 
 FlatNVMain::~FlatNVMain()
@@ -26,35 +29,59 @@ FlatNVMain::~FlatNVMain()
 		delete slowMemory;
 }
 
-
+/*
+Config类：
+从NVMain配置脚本（./config/nvmain-config/flat.cfg）中读到的参数
+如：FAST_CONFIG
+	SLOW_CONFIG
+	CMemType
+*/
 void FlatNVMain::SetConfig( Config* conf, std::string memoryName,
 		bool createChildren)
 {
 	if( conf->KeyExists("RANDOM"))
 		random = conf->GetValue("RANDOM");
+
+	
 	//init config
+	//配置快速设备的路径（DRAM的路径）
 	if( conf->KeyExists("FAST_CONFIG"))
 	{
 		fastMemoryConfig = new Config();
 		string fast_mem_config_file = conf->GetString("FAST_CONFIG");
 		GetAbsolutePath(conf, fast_mem_config_file);
-		cout<<"fast memory config path is:"<<fast_mem_config_file<<endl;
+		cout<<"FlatNVMain--->fast memory config path is:"<<fast_mem_config_file<<endl;
+		/* 读取DRAM的配置文件 */
 		fastMemoryConfig->Read( fast_mem_config_file );
 	}
+	//配置NVM的路径
 	if( conf->KeyExists("SLOW_CONFIG"))
 	{
 		slowMemoryConfig = new Config();
 		string slow_mem_config_file = conf->GetString("SLOW_CONFIG");
 		GetAbsolutePath(conf, slow_mem_config_file);
+		cout<<"FlatNVMain--->slow memory config path is:"<<slow_mem_config_file<<endl;
+		/* 读取NVM的配置文件 */
 		slowMemoryConfig->Read(slow_mem_config_file);
 	}
+	/* 在NVM_channel.config和DRAM_channel.config都没有指定CMemtype内存类型。
+		因此，CMemtype默认为NVMain
+	*/
 	cout<<"init fast memory"<<endl;
 	//init main memory
-	if( fastMemoryConfig )
+	if( fastMemoryConfig ) {
+		cout<<"初始化FastMemory(DRAM)"<<endl;
+		//cout<<"fastMemoryConfig == "<<fastMemoryConfig->GetString("CMemType")<<endl;
 		InitMemory( fastMemory,"FastMemory(DRAM)",fastMemoryConfig);
+	}
 	cout<<"init slow memory"<<endl;
-	if( slowMemoryConfig )
+	if( slowMemoryConfig ) {
+		cout<<"初始化SlowMemory(NVM)"<<endl;
 		InitMemory( slowMemory, "SlowMemory(NVM)" ,slowMemoryConfig);
+	}
+	else {
+		cout<<"未初始化SlowMemory(NVM)"<<endl;
+	}
 	fast_mem_size = fastMemory->GetMemorySize();
 	slow_mem_size = slowMemory->GetMemorySize();
 	mem_size = fastMemory->GetMemorySize() + slowMemory->GetMemorySize();
@@ -69,9 +96,11 @@ void FlatNVMain::SetConfig( Config* conf, std::string memoryName,
 	cout<<"total channels:"<<total_channels<<endl;
 }
 
+/* 初始化fastMemory & slowMemory */
 inline void FlatNVMain::InitMemory( NVMain* &memory, 
 		const char* mem_name, Config* conf )
 {
+	/* 都没有指定CMemType参数，可以手动添加 */
 	memory = NVMainFactory::CreateNewNVMain( conf->GetString("CMemType"));
 	EventQueue* queue = new EventQueue();
 	memory->SetParent(this);
