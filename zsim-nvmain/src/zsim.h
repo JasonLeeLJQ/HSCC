@@ -105,7 +105,7 @@ struct Section : public GlobAlloc
 struct GlobSimInfo {
     //System configuration values, all read-only, set at initialization
     uint32_t numCores;
-    uint32_t lineSize;
+    uint32_t lineSize;  //cache line长度 64B
     uint32_t lineNum;
 
     //Cores

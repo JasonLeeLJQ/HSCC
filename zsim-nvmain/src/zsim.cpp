@@ -1753,10 +1753,14 @@ int main(int argc, char *argv[]) {
     bool masterProcess = false;
     if (procIdx == 0 && !gm_isready()) {  // process 0 can exec() without fork()ing first, so we must check gm_isready() to ensure we don't initialize twice
         masterProcess = true;
+		
+		////////////////////////////////////////////////
 		std::cout<<"SimInit--->zsim初始化"<<std::endl;
         SimInit(KnobConfigFile.Value().c_str(), KnobOutputDir.Value().c_str(), KnobShmid.Value());
 		info("simulation init done");
 		std::cout<<"SimInit--->zsim初始化完成"<<std::endl;
+		//////////////////////////////////////////////////
+		
     } else {
         while (!gm_isready())
 		{

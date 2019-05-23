@@ -1120,6 +1120,7 @@ static void InitGlobalStats() {
     zinfo->rootStat->append(phaseStat);
 }
 
+/* zsim的初始化 */
 void SimInit(const char* configFile, const char* outputDir, uint32_t shmid) {
 	//alloc GlobalSimInfo object
     zinfo = gm_calloc<GlobSimInfo>();
@@ -1165,6 +1166,7 @@ void SimInit(const char* configFile, const char* outputDir, uint32_t shmid) {
     zinfo->eventRecorders = gm_calloc<EventRecorder*>(numCores);
 
     // Global simulation values
+    //设置zsim参数
     zinfo->numPhases = 0;
 
     zinfo->phaseLength = config.get<uint32_t>("sim.phaseLength", 10000);
@@ -1243,7 +1245,11 @@ void SimInit(const char* configFile, const char* outputDir, uint32_t shmid) {
 	//debug_printf("init memory management done");
 
     //Caches,Tlbs, cores, memory controllers
+	//////////////////////////////////////////////////////////
+	//初始化内存管理相关模块
+	std::cout<<"初始化内存管理相关模块"<<std::endl;
     InitSystem(config);
+	//////////////////////////////////////////////////////////
 	zinfo->lineNum = zinfo->page_size/zinfo->lineSize;
 	std::cout<<"line num:"<<zinfo->lineNum<<std::endl;
 	debug_printf("init hardware system done");
