@@ -226,10 +226,12 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
     AddChild(nvmainPtr);
     nvmainPtr->SetParent(this);
     nvmainGlobalEventQueue->AddSystem(nvmainPtr, nvmainConfig);
-	/* FlatNVMain设置参数 */
+	/* NVMain设置参数:NVMain 包括NVM的设置和DRAM的设置 */
+	std::cout<<"////////////////////////////////////////"<<std::endl;
 	std::cout<<"FlatNVMain设置参数 "<<std::endl;
     nvmainPtr->SetConfig(nvmainConfig);
 	std::cout<<"FlatNVMain设置参数完成 "<<std::endl;
+	std::cout<<"////////////////////////////////////////"<<std::endl;
 	if( mem_type == "FineNVMain"  )
 	{
 		mm = dynamic_cast<NVM::FineNVMain*>(nvmainPtr);
