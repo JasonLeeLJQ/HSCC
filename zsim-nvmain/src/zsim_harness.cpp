@@ -405,6 +405,7 @@ int main(int argc, char *argv[]) {
         LaunchProcess(procIdx);
     }
 
+	debug_test("zsim_harness:父进程继续执行");
 	/*
 		
 	*/
