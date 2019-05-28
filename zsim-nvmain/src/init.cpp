@@ -104,7 +104,7 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
     string arrayType = config.get<const char*>(prefix + "array.type", "SetAssoc");
     uint32_t candidates = (arrayType == "Z")? config.get<uint32_t>(prefix + "array.candidates", 16) : ways;
 
-	debug_test("bankSize = %d, numLines = %d, ways = %d, arrayType = %s, candidates = %d",bankSize,numLines,ways,arrayType.c_str(),candidates);
+	//debug_test("bankSize = %d, numLines = %d, ways = %d, arrayType = %s, candidates = %d",bankSize,numLines,ways,arrayType.c_str(),candidates);
     //Need to know number of hash functions before instantiating array
     if (arrayType == "SetAssoc") {
         numHashes = 1;
@@ -119,23 +119,23 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
     }
 
     // Power of two sets check; also compute setBits, will be useful later
-    uint32_t numSets = numLines/ways;
+    uint32_t numSets = numLines/ways;   //每一个set含有几个cache line
     uint32_t setBits = 31 - __builtin_clz(numSets);
     if ((1u << setBits) != numSets) panic("%s: Number of sets must be a power of two (you specified %d sets)", name.c_str(), numSets);
     //Hash function
     HashFamily* hf = NULL;
     string hashType = config.get<const char*>(prefix + "array.hash", (arrayType == "Z")? "H3" : "None"); //zcaches must be hashed by default
     if (numHashes) {
-        if (hashType == "None") {
+        if (hashType == "None") {  //不需要hash
             if (arrayType == "Z") panic("ZCaches must be hashed!"); //double check for stupid user
             assert(numHashes == 1);
             hf = new IdHashFamily;
-        } else if (hashType == "H3") {
+        } else if (hashType == "H3") { //H3哈希算法
             //STL hash function
             size_t seed = _Fnv_hash_bytes(prefix.c_str(), prefix.size()+1, 0xB4AC5B);
             //info("%s -> %lx", prefix.c_str(), seed);
             hf = new H3HashFamily(numHashes, setBits, 0xCAC7EAFFA1 + seed /*make randSeed depend on prefix*/);
-        } else if (hashType == "SHA1") {
+        } else if (hashType == "SHA1") { //SHA1哈希算法
             hf = new SHA1HashFamily(numHashes);
         } else {
             panic("%s: Invalid value %s on array.hash", name.c_str(), hashType.c_str());
@@ -143,8 +143,10 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
     }
 
     //Replacement policy
+    //cache替换算法
     string replType = config.get<const char*>(prefix + "repl.type", (arrayType == "IdealLRUPart")? "IdealLRUPart" : "LRU");
     ReplPolicy* rp = NULL;
+	debug_cache("%s cache 替换算法 ---> %s",name.c_str(),replType.c_str());
 
     if (replType == "LRU" || replType == "LRUNoSh") {
 		//sharesAware=true : is private cache

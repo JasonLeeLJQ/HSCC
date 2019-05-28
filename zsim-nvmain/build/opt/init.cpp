@@ -381,6 +381,7 @@ MemObject* BuildMemoryController(Config& config, uint32_t lineSize, uint32_t fre
 typedef vector<vector<BaseCache*>> CacheGroup;
 
 //build cache group or stream prefetchers
+//构造cache组，如l3,l2,l1d,l1i
 CacheGroup* BuildCacheGroup(Config& config, const string& name, bool isTerminal) {
     CacheGroup* cgp = new CacheGroup;
     CacheGroup& cg = *cgp;
@@ -399,7 +400,7 @@ CacheGroup* BuildCacheGroup(Config& config, const string& name, bool isTerminal)
         }
         return cgp;
     }
-	//default size is 1KB , banks is 1 , cache num is 1
+	//default size is 64KB , banks is 1 , cache num is 1
     uint32_t size = config.get<uint32_t>(prefix + "size", 64*1024);
     uint32_t banks = config.get<uint32_t>(prefix + "banks", 1);
     uint32_t caches = config.get<uint32_t>(prefix + "caches", 1);
