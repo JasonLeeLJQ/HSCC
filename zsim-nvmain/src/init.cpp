@@ -468,7 +468,8 @@ static void InitSystem(Config& config) {
     string prefix = "sys.caches.";
 	//init element of parentMap and childMap related to cache 
     for (const char* grp : cacheGroupNames) {
-		debug_printf("cache : %s",grp);
+		//debug_printf("cache : %s",grp);
+		
         string group(grp);
         if (group == "mem") panic("'mem' is an invalid cache group name");
         if (parentMap.count(group)) panic("Duplicate cache group %s", (prefix + group).c_str());
@@ -476,6 +477,8 @@ static void InitSystem(Config& config) {
         parentMap[group] = parent; //get parent of a child
         if (!childMap.count(parent)) childMap[parent] = vector<string>();
         childMap[parent].push_back(group); //get all child of a parent
+        debug_test("cache : child is %s",group.c_str());
+		debug_test("cache : parent is %s",parent.c_str());
     }
 
     //Check that all parents are valid: Either another cache, or "mem"
@@ -1247,7 +1250,7 @@ void SimInit(const char* configFile, const char* outputDir, uint32_t shmid) {
     //Caches,Tlbs, cores, memory controllers
 	//////////////////////////////////////////////////////////
 	//初始化内存管理相关模块
-	std::cout<<"初始化内存管理相关模块"<<std::endl;
+	//std::cout<<"src/init.cpp--->初始化内存管理相关模块"<<std::endl;
     InitSystem(config);
 	//////////////////////////////////////////////////////////
 	zinfo->lineNum = zinfo->page_size/zinfo->lineSize;
