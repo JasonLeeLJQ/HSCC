@@ -1,11 +1,19 @@
 #!/bin/sh
-#git checkout dev
+echo "[1] >>>>>>>>>> 切换到dev分支"
+git checkout dev
+if [ $? -eq 0 ]; then
+    echo "[1] done!"
+else
+    echo "[1] failed!"
+    exit
+fi
 
-echo "拉取远程分支代码"
+echo "[1] >>>>>>>>>> 拉取远程分支代码"
 git pull origin dev
 
 if [ $? -eq 0 ]; then
-    echo "[H] done!"
+    echo "[1] done!"
 else
-    echo "[H] failed!"
+    echo "[1] failed!"
+    exit
 fi
