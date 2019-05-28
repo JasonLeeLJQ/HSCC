@@ -1,2 +1,8 @@
 zsim-nvmain/nvmain/traceReader/GEMS_Samples/traces/* linguist-documentation
 zsim-nvmain/nvmain/traceReader/GEMS_Samples/traces/* linguist-vendored=true
+
+#编译产生的文件
+zsim-nvmain/build/opt/
+
+#编译产生的结果
+zsim-nvmain/*.h5
