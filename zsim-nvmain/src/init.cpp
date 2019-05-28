@@ -466,6 +466,17 @@ static void InitSystem(Config& config) {
     vector<const char*> cacheGroupNames;
     config.subgroups("sys.caches", cacheGroupNames);
     string prefix = "sys.caches.";
+
+	/*
+		child is l1d
+		parent is l2
+		child is l1i
+		parent is l2
+		child is l2
+		parent is l3
+		child is l3
+		parent is mem
+	*/
 	//init element of parentMap and childMap related to cache 
     for (const char* grp : cacheGroupNames) {
 		//debug_printf("cache : %s",grp);
@@ -477,8 +488,8 @@ static void InitSystem(Config& config) {
         parentMap[group] = parent; //get parent of a child
         if (!childMap.count(parent)) childMap[parent] = vector<string>();
         childMap[parent].push_back(group); //get all child of a parent
-        debug_test("cache : child is %s",group.c_str());
-		debug_test("cache : parent is %s",parent.c_str());
+        //debug_test("cache : child is %s",group.c_str());
+		//debug_test("cache : parent is %s",parent.c_str());
     }
 
     //Check that all parents are valid: Either another cache, or "mem"
@@ -493,6 +504,7 @@ static void InitSystem(Config& config) {
 	//only LLC cache's parent can be mem
     if (childMap["mem"].size() != 1) panic("One cache must have mem as parent, multiple found");
     string llc = childMap["mem"][0];
+	debug_test("cache : llc is %s",llc.c_str());
 
     //Build each of the groups, starting with the LLC
     //map between cache name and cache group
