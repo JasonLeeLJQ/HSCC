@@ -90,7 +90,11 @@ extern void EndOfPhaseActions(); //in zsim.cpp
  * all over the place and give a predictable global state to constructors. Ideally, this should just
  * follow the layout of zinfo, top-down.
  */
- /* cache bank包含多个set，（组相连映射中的一个set），一个set包括多个cache line */
+ /* 
+ cache bank包含多个set，（组相连映射中的一个set），一个set包括多个cache line 
+	@isTerminal:l1缓存为true（filter cache），l2和l3为false
+
+*/
 BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, uint32_t bankSize, bool isTerminal, uint32_t domain) {
     uint32_t lineSize = zinfo->lineSize;
     assert(lineSize > 0); //avoid config deps
@@ -274,8 +278,7 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
     }
     rp->setCC(cc);
 	//default type is Simple
-	debug_cache("isTerminal = %s", (isTerminal?"true":"false") );
-	debug_cache("真正构造%s cache",name.c_str());
+	debug_cache("开始真正构造%s cache",name.c_str());
     if (!isTerminal) {
         if (type == "Simple") {
             cache = new Cache(numLines, cc, array, rp, accLat, invLat, name);
@@ -292,6 +295,7 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
         if (type != "Simple") panic("Terminal cache %s can only have type == Simple", name.c_str());
         if (arrayType != "SetAssoc" || hashType != "None" || replType != "LRU") panic("Invalid FilterCache config %s", name.c_str());
 		//l1 instruction cache and data cache are filter cache
+		/* l1 cache创建FilterCache，而不是普通的Simple cache */
         cache = new FilterCache(numSets, numLines, cc, array, rp, accLat, invLat, name);
     }
 
@@ -299,6 +303,9 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
     info("Built L%d bank, %d bytes, %d lines, %d ways (%d candidates if array is Z), %s array, %s hash, %s replacement, accLat %d, invLat %d name %s",
             level, bankSize, numLines, ways, candidates, arrayType.c_str(), hashType.c_str(), replType.c_str(), accLat, invLat, name.c_str());
 #endif
+	debug_cache("Built L%d bank, %d bytes, %d lines, %d ways (%d candidates if array is Z), %s array, %s hash, %s replacement, accLat %d, invLat %d name %s", \
+				level, bankSize, numLines, ways, candidates, arrayType.c_str(), hashType.c_str(), replType.c_str(), accLat, invLat, name.c_str());
+
     return cache;
 }
 
