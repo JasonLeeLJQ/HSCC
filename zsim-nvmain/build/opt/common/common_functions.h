@@ -34,7 +34,20 @@ inline void debug_printf( std::string format_str , ...)
 inline void debug_test( std::string format_str , ...)
 {
 	#ifdef DEBUG_TEST
-		format_str ="Jason Test:" + format_str+"\n";
+		format_str ="Jason: TEST--->" + format_str+"\n";
+		va_list parg;
+		va_start(parg , format_str);
+		vfprintf(stdout , format_str.c_str() , parg);
+		va_end(parg);
+	#endif
+}
+
+#define DEBUG_CACHE
+
+inline void debug_cache( std::string format_str , ...)
+{
+	#ifdef DEBUG_CACHE
+		format_str ="Jason: CACHE--->" + format_str+"\n";
 		va_list parg;
 		va_start(parg , format_str);
 		vfprintf(stdout , format_str.c_str() , parg);
@@ -45,7 +58,7 @@ inline void debug_test( std::string format_str , ...)
 inline void debug_tlb( std::string format_str , ...)
 {
 	#ifdef DEBUG_TLB
-		format_str ="TLB Test:" + format_str+"\n";
+		format_str ="Jason: TLB--->" + format_str+"\n";
 		va_list parg;
 		va_start(parg , format_str);
 		vfprintf(stdout , format_str.c_str() , parg);

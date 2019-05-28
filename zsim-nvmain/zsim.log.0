@@ -24,20 +24,20 @@
 [S 0] simulation init done
 [S 0] process id is 0
 [S 0] number of processes is 1
-[S 0] Started process, PID 3503
+[S 0] Started process, PID 5306
 [S 0] procMask: 0x0
 [S 0] [0] Adjusting clocks, domain 0, de-ffwd 0
 [S 0] vDSO info initialized
+[S 0] FF control Thread TID 5309
 [S 0] Started contention simulation thread 0
 [S 0] Started scheduler watchdog thread
 [S 0] Thread 0 starting
-[S 0] Simulate Thread 3503 TID
-[S 0] FF control Thread TID 3506
+[S 0] Simulate Thread 5306 TID
 [S 0] Thread 4 starting
-[S 0] Simulate Thread 3507 TID
+[S 0] Simulate Thread 5310 TID
 [S 0] Detected possible stall due to fake leaves (1 current)
-[S 0]  [0/0] INVALID (202) @ 0x7fffe0c16659
-[S 0] Blacklisting from future fake leaves: [0] INVALID @ 0x7fffe0c16659 | arg0 0x7fffe06c69d0 arg1 0x0
+[S 0]  [0/0] INVALID (202) @ 0x7fffe0c17659
+[S 0] Blacklisting from future fake leaves: [0] INVALID @ 0x7fffe0c17659 | arg0 0x7fffe06c39d0 arg1 0x0
 [S 0] schedContext done, cid 0, success 0 (gid 0)
 [S 0] schedContext done, cid 1, success 0 (gid 0)
 [S 0] Thread 4 finished
@@ -50,8 +50,8 @@
 [S 0] Has nvmain 1, num memory controllers 1
 [S 0] page table number: 11
 [S 0] overhead of extended storage:0.005371 MB
-[S 0] sys.tlbs.itlb0 access time:77541 	 hit time: 77422 	 miss time: 119 	 evict time:0 	 hit rate:0.998
-[S 0] sys.tlbs.dtlb0 access time:113394 	 hit time: 113286 	 miss time: 108 	 evict time:0 	 hit rate:0.999
+[S 0] sys.tlbs.itlb0 access time:77553 	 hit time: 77434 	 miss time: 119 	 evict time:0 	 hit rate:0.998
+[S 0] sys.tlbs.dtlb0 access time:113402 	 hit time: 113294 	 miss time: 108 	 evict time:0 	 hit rate:0.999
 [S 0] sys.tlbs.itlb1 access time:36788 	 hit time: 36761 	 miss time: 27 	 evict time:0 	 hit rate:0.999
 [S 0] sys.tlbs.dtlb1 access time:76504 	 hit time: 76452 	 miss time: 52 	 evict time:0 	 hit rate:0.999
 [S 0] sys.tlbs.itlb2 access time:0 	 hit time: 0 	 miss time: 0 	 evict time:0 	 hit rate:-nan
@@ -66,7 +66,7 @@
 [S 0] sys.tlbs.dtlb6 access time:0 	 hit time: 0 	 miss time: 0 	 evict time:0 	 hit rate:-nan
 [S 0] sys.tlbs.itlb7 access time:0 	 hit time: 0 	 miss time: 0 	 evict time:0 	 hit rate:-nan
 [S 0] sys.tlbs.dtlb7 access time:0 	 hit time: 0 	 miss time: 0 	 evict time:0 	 hit rate:-nan
-[S 0] total TLB access time is: 304227
+[S 0] total TLB access time is: 304247
 [S 0] sys.pgt_walker0 evict time:0 	 dirty evict time: 0 
 
 [S 0] sys.pgt_walker0 allocated pages:220 

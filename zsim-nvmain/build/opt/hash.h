@@ -61,6 +61,7 @@ class SHA1HashFamily : public HashFamily {
 };
 
 /* Used when we don't want hashing, just return the value */
+//不需要hash
 class IdHashFamily : public HashFamily {
     public:
         inline uint64_t hash(uint32_t id, uint64_t val) {return val;}

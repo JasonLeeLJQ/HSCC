@@ -90,6 +90,11 @@ extern void EndOfPhaseActions(); //in zsim.cpp
  * all over the place and give a predictable global state to constructors. Ideally, this should just
  * follow the layout of zinfo, top-down.
  */
+ /* 
+ cache bank包含多个set，（组相连映射中的一个set），一个set包括多个cache line 
+	@isTerminal:l1缓存为true（filter cache），l2和l3为false
+
+*/
 BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, uint32_t bankSize, bool isTerminal, uint32_t domain) {
     uint32_t lineSize = zinfo->lineSize;
     assert(lineSize > 0); //avoid config deps
@@ -99,9 +104,11 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
     //Array
     uint32_t numHashes = 1;
     uint32_t ways = config.get<uint32_t>(prefix + "array.ways", 4);
+	//arrayType == SetAssoc 或者 Z
     string arrayType = config.get<const char*>(prefix + "array.type", "SetAssoc");
     uint32_t candidates = (arrayType == "Z")? config.get<uint32_t>(prefix + "array.candidates", 16) : ways;
 
+	//debug_test("bankSize = %d, numLines = %d, ways = %d, arrayType = %s, candidates = %d",bankSize,numLines,ways,arrayType.c_str(),candidates);
     //Need to know number of hash functions before instantiating array
     if (arrayType == "SetAssoc") {
         numHashes = 1;
@@ -116,23 +123,23 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
     }
 
     // Power of two sets check; also compute setBits, will be useful later
-    uint32_t numSets = numLines/ways;
+    uint32_t numSets = numLines/ways;   //每一个set含有几个cache line
     uint32_t setBits = 31 - __builtin_clz(numSets);
     if ((1u << setBits) != numSets) panic("%s: Number of sets must be a power of two (you specified %d sets)", name.c_str(), numSets);
     //Hash function
     HashFamily* hf = NULL;
     string hashType = config.get<const char*>(prefix + "array.hash", (arrayType == "Z")? "H3" : "None"); //zcaches must be hashed by default
     if (numHashes) {
-        if (hashType == "None") {
+        if (hashType == "None") {  //不需要hash
             if (arrayType == "Z") panic("ZCaches must be hashed!"); //double check for stupid user
             assert(numHashes == 1);
             hf = new IdHashFamily;
-        } else if (hashType == "H3") {
+        } else if (hashType == "H3") { //H3哈希算法
             //STL hash function
             size_t seed = _Fnv_hash_bytes(prefix.c_str(), prefix.size()+1, 0xB4AC5B);
             //info("%s -> %lx", prefix.c_str(), seed);
             hf = new H3HashFamily(numHashes, setBits, 0xCAC7EAFFA1 + seed /*make randSeed depend on prefix*/);
-        } else if (hashType == "SHA1") {
+        } else if (hashType == "SHA1") { //SHA1哈希算法
             hf = new SHA1HashFamily(numHashes);
         } else {
             panic("%s: Invalid value %s on array.hash", name.c_str(), hashType.c_str());
@@ -140,8 +147,10 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
     }
 
     //Replacement policy
+    //指定cache替换算法
     string replType = config.get<const char*>(prefix + "repl.type", (arrayType == "IdealLRUPart")? "IdealLRUPart" : "LRU");
     ReplPolicy* rp = NULL;
+	//debug_cache("%s cache替换算法 ---> %s",name.c_str(),replType.c_str());
 
     if (replType == "LRU" || replType == "LRUNoSh") {
 		//sharesAware=true : is private cache
@@ -192,7 +201,7 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
         uint32_t buckets;
         if (replType == "WayPart") {
             buckets = ways; //not an option with WayPart
-        } else { //Vantage or Ideal
+        } else { //Vantage or Ideal 优势或理想
             buckets = config.get<uint32_t>(prefix + "repl.buckets", 256);
         }
 		//monitor of all partitions of a cache
@@ -227,6 +236,7 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
     assert(rp);
 
     //Alright, build the array
+    //构造cache array
     CacheArray* array = NULL;
     if (arrayType == "SetAssoc") {
         array = new SetAssocArray(numLines, ways, rp, hf);
@@ -247,7 +257,7 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
         panic("This should not happen, we already checked for it!"); //unless someone changed arrayStr...
     }
 
-    //Latency
+    //Latency：cache的延迟
     uint32_t latency = config.get<uint32_t>(prefix + "latency", 10);
     uint32_t accLat = (isTerminal)? 0 : latency; //terminal caches has no access latency b/c it is assumed accLat is hidden by the pipeline
     uint32_t invLat = latency;
@@ -268,6 +278,7 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
     }
     rp->setCC(cc);
 	//default type is Simple
+	//debug_cache("开始真正构造%s cache",name.c_str());
     if (!isTerminal) {
         if (type == "Simple") {
             cache = new Cache(numLines, cc, array, rp, accLat, invLat, name);
@@ -284,6 +295,7 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
         if (type != "Simple") panic("Terminal cache %s can only have type == Simple", name.c_str());
         if (arrayType != "SetAssoc" || hashType != "None" || replType != "LRU") panic("Invalid FilterCache config %s", name.c_str());
 		//l1 instruction cache and data cache are filter cache
+		/* l1 cache创建FilterCache，而不是普通的Simple cache */
         cache = new FilterCache(numSets, numLines, cc, array, rp, accLat, invLat, name);
     }
 
@@ -291,6 +303,9 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
     info("Built L%d bank, %d bytes, %d lines, %d ways (%d candidates if array is Z), %s array, %s hash, %s replacement, accLat %d, invLat %d name %s",
             level, bankSize, numLines, ways, candidates, arrayType.c_str(), hashType.c_str(), replType.c_str(), accLat, invLat, name.c_str());
 #endif
+	debug_cache("Built name %s %d bytes, %d lines, %d ways (%d candidates if array is Z), %s array, %s hash, %s replacement, accLat %d, invLat %d", \
+				 name.c_str(), bankSize, numLines, ways, candidates, arrayType.c_str(), hashType.c_str(), replType.c_str(), accLat, invLat);
+
     return cache;
 }
 
@@ -381,7 +396,6 @@ MemObject* BuildMemoryController(Config& config, uint32_t lineSize, uint32_t fre
 typedef vector<vector<BaseCache*>> CacheGroup;
 
 //build cache group or stream prefetchers
-//构造cache组，如l3,l2,l1d,l1i
 CacheGroup* BuildCacheGroup(Config& config, const string& name, bool isTerminal) {
     CacheGroup* cgp = new CacheGroup;
     CacheGroup& cg = *cgp;
@@ -400,11 +414,12 @@ CacheGroup* BuildCacheGroup(Config& config, const string& name, bool isTerminal)
         }
         return cgp;
     }
-	//default size is 64KB , banks is 1 , cache num is 1
+	//default size is 1KB , banks is 1 , cache num is 1
     uint32_t size = config.get<uint32_t>(prefix + "size", 64*1024);
     uint32_t banks = config.get<uint32_t>(prefix + "banks", 1);
     uint32_t caches = config.get<uint32_t>(prefix + "caches", 1);
 
+	//单个bank的大小
     uint32_t bankSize = size/banks;
     if (size % banks != 0) {
         panic("%s: banks (%d) does not divide the size (%d bytes)", name.c_str(), banks, size);
@@ -431,6 +446,7 @@ CacheGroup* BuildCacheGroup(Config& config, const string& name, bool isTerminal)
 
 
 static void InitSystem(Config& config) {
+	std::cout<<"src/init.cpp--->InitSystem"<<std::endl;
 		(zinfo->reversed_pgt.clear)();	
 		futex_init(&zinfo->reversed_pgt_lock);
 		//default increment step of read/write access of PCM main memory is 1/2 
@@ -466,9 +482,21 @@ static void InitSystem(Config& config) {
     vector<const char*> cacheGroupNames;
     config.subgroups("sys.caches", cacheGroupNames);
     string prefix = "sys.caches.";
+
+	/*
+		child is l1d
+		parent is l2
+		child is l1i
+		parent is l2
+		child is l2
+		parent is l3
+		child is l3
+		parent is mem
+	*/
 	//init element of parentMap and childMap related to cache 
     for (const char* grp : cacheGroupNames) {
-		debug_printf("cache : %s",grp);
+		//debug_printf("cache : %s",grp);
+		
         string group(grp);
         if (group == "mem") panic("'mem' is an invalid cache group name");
         if (parentMap.count(group)) panic("Duplicate cache group %s", (prefix + group).c_str());
@@ -476,6 +504,8 @@ static void InitSystem(Config& config) {
         parentMap[group] = parent; //get parent of a child
         if (!childMap.count(parent)) childMap[parent] = vector<string>();
         childMap[parent].push_back(group); //get all child of a parent
+        //debug_test("cache : child is %s",group.c_str());
+		//debug_test("cache : parent is %s",parent.c_str());
     }
 
     //Check that all parents are valid: Either another cache, or "mem"
@@ -485,7 +515,7 @@ static void InitSystem(Config& config) {
         if (parent != "mem" && !parentMap.count(parent)) panic("%s has invalid parent %s", (prefix + group).c_str(), parent.c_str());
     }
 
-    //Get the (single) LLC
+    //Get the (single) LLC,一般是l3
     if (!childMap.count("mem")) panic("One cache must have mem as parent, none found");
 	//only LLC cache's parent can be mem
     if (childMap["mem"].size() != 1) panic("One cache must have mem as parent, multiple found");
@@ -1120,6 +1150,7 @@ static void InitGlobalStats() {
     zinfo->rootStat->append(phaseStat);
 }
 
+/* zsim的初始化 */
 void SimInit(const char* configFile, const char* outputDir, uint32_t shmid) {
 	//alloc GlobalSimInfo object
     zinfo = gm_calloc<GlobSimInfo>();
@@ -1165,6 +1196,7 @@ void SimInit(const char* configFile, const char* outputDir, uint32_t shmid) {
     zinfo->eventRecorders = gm_calloc<EventRecorder*>(numCores);
 
     // Global simulation values
+    //设置zsim参数
     zinfo->numPhases = 0;
 
     zinfo->phaseLength = config.get<uint32_t>("sim.phaseLength", 10000);
@@ -1243,7 +1275,11 @@ void SimInit(const char* configFile, const char* outputDir, uint32_t shmid) {
 	//debug_printf("init memory management done");
 
     //Caches,Tlbs, cores, memory controllers
+	//////////////////////////////////////////////////////////
+	//初始化内存管理相关模块
+	//std::cout<<"src/init.cpp--->初始化内存管理相关模块"<<std::endl;
     InitSystem(config);
+	//////////////////////////////////////////////////////////
 	zinfo->lineNum = zinfo->page_size/zinfo->lineSize;
 	std::cout<<"line num:"<<zinfo->lineNum<<std::endl;
 	debug_printf("init hardware system done");

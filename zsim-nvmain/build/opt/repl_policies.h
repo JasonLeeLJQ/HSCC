@@ -33,6 +33,11 @@
 #include "memory_hierarchy.h"
 #include "mtrand.h"
 
+/*
+	cache替换算法；
+	如果要添加新的cache替换算法，可从下列文件中修改：
+		src/init.cpp BuildCacheBank函数
+*/
 /* Generic replacement policy interface. A replacement policy is initialized by the cache (by calling setTop/BottomCC) and used by the cache array. Usage follows two models:
  * - On lookups, update() is called if the replacement policy is to be updated on a hit
  * - On each replacement, rank() is called with the req and a list of replacement candidates.
@@ -99,25 +104,29 @@ class LRUReplPolicy : public ReplPolicy {
     protected:
         uint64_t timestamp; // incremented on each access
         uint64_t* array;
-        uint32_t numLines;
+        uint32_t numLines;  //一个set中含有多少个cache line
 
     public:
         explicit LRUReplPolicy(uint32_t _numLines) : timestamp(1), numLines(_numLines) {
-            array = gm_calloc<uint64_t>(numLines);
+			//申请numlines长度的数组，默认为0
+			array = gm_calloc<uint64_t>(numLines);
         }
 
         ~LRUReplPolicy() {
             gm_free(array);
         }
 
+		//更新时间戳
         void update(uint32_t id, const MemReq* req) {
             array[id] = timestamp++;
         }
 
+		//该cache line被替换
         void replaced(uint32_t id) {
             array[id] = 0;
         }
 
+		/* 得到最佳的候选cache line */
         template <typename C> inline uint32_t rank(const MemReq* req, C cands) {
             uint32_t bestCand = -1;
             uint64_t bestScore = (uint64_t)-1L;
@@ -131,6 +140,7 @@ class LRUReplPolicy : public ReplPolicy {
         DECL_RANK_BINDINGS;
 
     private:
+		//score值越小，被替换的可能性越大
         inline uint64_t score(uint32_t id) { //higher is least evictable
             //array[id] < timestamp always, so this prioritizes by:
             // (1) valid (if not valid, it's 0)
@@ -250,6 +260,7 @@ class NRUReplPolicy : public LegacyReplPolicy {
         }
 };
 
+/* 随机替换 */
 class RandReplPolicy : public LegacyReplPolicy {
     private:
         //read-only

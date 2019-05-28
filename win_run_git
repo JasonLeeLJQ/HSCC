@@ -1,0 +1,6 @@
+#!/bin/sh
+git checkout dev
+git add .
+git commit -m "test"
+git pull origin dev
+git push origin dev

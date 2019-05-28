@@ -1718,6 +1718,7 @@ static EXCEPT_HANDLING_RESULT InternalExceptionHandler(THREADID tid, EXCEPTION_I
 /* ===================================================================== */
 
 int main(int argc, char *argv[]) {
+	std::cout<<"执行src/zsim.cpp的main函数"<<std::endl;
 	google::InitGoogleLogging("zsim.log");
     PIN_InitSymbols();
     if (PIN_Init(argc, argv)) return Usage();
@@ -1752,8 +1753,14 @@ int main(int argc, char *argv[]) {
     bool masterProcess = false;
     if (procIdx == 0 && !gm_isready()) {  // process 0 can exec() without fork()ing first, so we must check gm_isready() to ensure we don't initialize twice
         masterProcess = true;
+		
+		////////////////////////////////////////////////
+		std::cout<<"SimInit--->zsim初始化"<<std::endl;
         SimInit(KnobConfigFile.Value().c_str(), KnobOutputDir.Value().c_str(), KnobShmid.Value());
 		info("simulation init done");
+		std::cout<<"SimInit--->zsim初始化完成"<<std::endl;
+		//////////////////////////////////////////////////
+		
     } else {
         while (!gm_isready())
 		{
@@ -1856,6 +1863,7 @@ int main(int argc, char *argv[]) {
 	//create a new tool's internal thread in the current process
     PIN_SpawnInternalThread(FFThread, NULL, 64*1024, NULL);
 
+	std::cout<<"结束src/zsim.cpp的main函数"<<std::endl;
     //Never returns
     PIN_StartProgram();
     return 0;

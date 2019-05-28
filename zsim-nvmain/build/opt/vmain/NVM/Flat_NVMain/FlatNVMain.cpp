@@ -67,6 +67,7 @@ void FlatNVMain::SetConfig( Config* conf, std::string memoryName,
 	/* 在NVM_channel.config和DRAM_channel.config都没有指定CMemtype内存类型。
 		因此，CMemtype默认为NVMain
 	*/
+	cout<<"/////////////////////////////////////////////"<<endl;
 	cout<<"init fast memory"<<endl;
 	//init main memory
 	if( fastMemoryConfig ) {
@@ -74,6 +75,7 @@ void FlatNVMain::SetConfig( Config* conf, std::string memoryName,
 		//cout<<"fastMemoryConfig == "<<fastMemoryConfig->GetString("CMemType")<<endl;
 		InitMemory( fastMemory,"FastMemory(DRAM)",fastMemoryConfig);
 	}
+	cout<<"/////////////////////////////////////////////"<<endl;
 	cout<<"init slow memory"<<endl;
 	if( slowMemoryConfig ) {
 		cout<<"初始化SlowMemory(NVM)"<<endl;
@@ -89,6 +91,9 @@ void FlatNVMain::SetConfig( Config* conf, std::string memoryName,
 	fast_mem_bits = NVM::mlog2( fast_mem_size )+1;
 	total_channels = fastMemory->GetChannels() + slowMemory->GetChannels();
 	memory_slice = fast_mem_size/total_channels;
+	
+	cout<<"/////////////////////////////////////////////"<<endl;
+	cout<<"FlatNVMain::---> NVM + DRAM 统计信息"<<endl;
 	cout<<"fast memory size:"<<(fast_mem_size/(1024*1024*1024))<<" GB"<<endl;
 	cout<<"slow memory size:"<<(slow_mem_size/(1024*1024*1024))<<" GB"<<endl;
 	cout<<"total memory size:"<<(mem_size/(1024*1024*1024))<<" GB"<<endl;
@@ -106,6 +111,7 @@ inline void FlatNVMain::InitMemory( NVMain* &memory,
 	memory->SetParent(this);
 	memory->SetEventQueue(queue);
 	GetGlobalEventQueue()->AddSystem( memory, conf);
+	/* 设置 */
 	memory->SetConfig( conf, mem_name, true);
 	memory->RegisterStats();
 	RegisterStats();

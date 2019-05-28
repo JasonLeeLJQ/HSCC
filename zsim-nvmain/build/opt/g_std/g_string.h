@@ -34,6 +34,7 @@
 /* basic_string is actually an STL-mandated class, not an internal GCC thing.
  * This should work with other compilers
  */
+ //用法和string完全一样，不同之处是它的内存从heap中申请
 typedef std::basic_string<char, std::char_traits<char>, StlGlobAlloc<char> > g_string;
 
 #endif  // G_STRING_H_

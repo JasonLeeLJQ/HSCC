@@ -121,7 +121,7 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
     SetParams( params );
 
     StatName( memoryName );
-	debug_NVMain("NVMain::SetConfig--->memoryName == %s",memoryName.c_str( ));
+	//debug_NVMain("NVMain::SetConfig--->memoryName == %s",memoryName.c_str( ));
 
     config = conf;
     if( config->GetSimInterface( ) != NULL )
@@ -150,14 +150,14 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
         ranks = static_cast<int>(p->RANKS);
         channels = static_cast<int>(p->CHANNELS);
 		
-		debug_NVMain("打印nvmain channel参数");
+		debug_NVMain("打印 %s 的参数",memoryName.c_str( ));
 		std::cout<<"cols is "<<cols<<std::endl;
 		std::cout<<"rows is "<<rows<<std::endl;
-		std::cout<<"ranks is "<<ranks<<std::endl;
+		std::cout<<"subarrays is "<<subarrays<<std::endl;
+		//std::cout<<"ranks is "<<ranks<<std::endl;
 		std::cout<<"banks is "<<banks<<std::endl;
 		std::cout<<"ranks is "<<ranks<<std::endl;
-		std::cout<<"channels is "<<channels<<std::endl;
-		std::cout<<"subarrays is "<<subarrays<<std::endl;
+		std::cout<<"channels is "<<channels<<std::endl;		
 
         method = new TranslationMethod( );
 
@@ -188,6 +188,7 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
 
             confString << "CONFIG_CHANNEL" << i;
 
+			//读取channel配置文件
             if( config->GetString( confString.str( ) ) != "" )
             {
                 channelConfigFile  = config->GetString( confString.str( ) );
@@ -202,7 +203,9 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
             }
 			else
 				channelConfig[i] = config;
+			
             /* Initialize memory controller */
+			debug_NVMain("创建内存控制器");
             memoryControllers[i] = 
                 MemoryControllerFactory::CreateNewController( channelConfig[i]->GetString( "MEM_CTL" ) );
 
@@ -217,7 +220,7 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
 
             AddChild( memoryControllers[i] );
             memoryControllers[i]->SetParent( this );
-            /* Set Config recursively. */
+            /* Set Config recursively. 递归的设置内存控制器*/
             memoryControllers[i]->SetConfig( channelConfig[i], createChildren );
             /* Register statistics. */
             memoryControllers[i]->RegisterStats( );
