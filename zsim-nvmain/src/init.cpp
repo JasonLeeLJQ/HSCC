@@ -102,6 +102,7 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
     string arrayType = config.get<const char*>(prefix + "array.type", "SetAssoc");
     uint32_t candidates = (arrayType == "Z")? config.get<uint32_t>(prefix + "array.candidates", 16) : ways;
 
+	debug_test("numLines = %d, ways = %d, arrayType = %s, candidates = %d",numLines,ways,arrayType.c_str(),candidates);
     //Need to know number of hash functions before instantiating array
     if (arrayType == "SetAssoc") {
         numHashes = 1;
@@ -404,6 +405,7 @@ CacheGroup* BuildCacheGroup(Config& config, const string& name, bool isTerminal)
     uint32_t banks = config.get<uint32_t>(prefix + "banks", 1);
     uint32_t caches = config.get<uint32_t>(prefix + "caches", 1);
 
+	//单个bank的大小
     uint32_t bankSize = size/banks;
     if (size % banks != 0) {
         panic("%s: banks (%d) does not divide the size (%d bytes)", name.c_str(), banks, size);
@@ -499,12 +501,11 @@ static void InitSystem(Config& config) {
         if (parent != "mem" && !parentMap.count(parent)) panic("%s has invalid parent %s", (prefix + group).c_str(), parent.c_str());
     }
 
-    //Get the (single) LLC
+    //Get the (single) LLC,一般是l3
     if (!childMap.count("mem")) panic("One cache must have mem as parent, none found");
 	//only LLC cache's parent can be mem
     if (childMap["mem"].size() != 1) panic("One cache must have mem as parent, multiple found");
     string llc = childMap["mem"][0];
-	debug_test("cache : llc is %s",llc.c_str());
 
     //Build each of the groups, starting with the LLC
     //map between cache name and cache group
