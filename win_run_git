@@ -1,6 +1,19 @@
 #!/bin/sh
+echo "切换到dev分支"
 git checkout dev
+
+echo "commit"
 git add .
 git commit -m "test"
+
+echo "拉取远程分支"
 git pull origin dev
+
+echo "推送远程分支"
 git push origin dev
+
+if [ $? -eq 0 ]; then
+    echo "[H] done!"
+else
+    echo "[H] failed!"
+fi

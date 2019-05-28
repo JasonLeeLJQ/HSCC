@@ -1,3 +1,11 @@
 #!/bin/sh
 #git checkout dev
+
+echo "拉取远程分支代码"
 git pull origin dev
+
+if [ $? -eq 0 ]; then
+    echo "[H] done!"
+else
+    echo "[H] failed!"
+fi
