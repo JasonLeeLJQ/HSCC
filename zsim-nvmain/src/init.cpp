@@ -90,6 +90,7 @@ extern void EndOfPhaseActions(); //in zsim.cpp
  * all over the place and give a predictable global state to constructors. Ideally, this should just
  * follow the layout of zinfo, top-down.
  */
+ /* cache bank相当于组相连映射中的一个set，包括多个cache line */
 BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, uint32_t bankSize, bool isTerminal, uint32_t domain) {
     uint32_t lineSize = zinfo->lineSize;
     assert(lineSize > 0); //avoid config deps
