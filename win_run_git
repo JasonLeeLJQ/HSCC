@@ -8,9 +8,8 @@ else
     exit
 fi
 
-echo -e "\n[2] >>>>>>>>>> commit"
-git add .
-git commit -m "test"
+echo -e "\n[2] >>>>>>>>>> 拉取远程分支"
+git pull origin dev
 if [ $? -eq 0 ]; then
     echo "[2] done!"
 else
@@ -18,8 +17,9 @@ else
     exit
 fi
 
-echo -e "\n[3] >>>>>>>>>> 拉取远程分支"
-git pull origin dev
+echo -e "\n[3] >>>>>>>>>> commit"
+git add .
+git commit -m "test"
 if [ $? -eq 0 ]; then
     echo "[3] done!"
 else
