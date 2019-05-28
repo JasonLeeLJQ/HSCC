@@ -100,10 +100,11 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
     //Array
     uint32_t numHashes = 1;
     uint32_t ways = config.get<uint32_t>(prefix + "array.ways", 4);
+	//arrayType == SetAssoc 或者 Z
     string arrayType = config.get<const char*>(prefix + "array.type", "SetAssoc");
     uint32_t candidates = (arrayType == "Z")? config.get<uint32_t>(prefix + "array.candidates", 16) : ways;
 
-	debug_test("numLines = %d, ways = %d, arrayType = %s, candidates = %d",numLines,ways,arrayType.c_str(),candidates);
+	debug_test("bankSize = %d, numLines = %d, ways = %d, arrayType = %s, candidates = %d",bankSize,numLines,ways,arrayType.c_str(),candidates);
     //Need to know number of hash functions before instantiating array
     if (arrayType == "SetAssoc") {
         numHashes = 1;
