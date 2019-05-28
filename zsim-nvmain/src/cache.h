@@ -41,6 +41,8 @@ class Network;
  * too, but to avoid virtual function call overheads we work with MESI
  * controllers, since for now we only have MESI controllers
  */
+
+/* Simple cache  */
 class Cache : public BaseCache {
     public:
         CC* cc;

@@ -90,7 +90,7 @@ extern void EndOfPhaseActions(); //in zsim.cpp
  * all over the place and give a predictable global state to constructors. Ideally, this should just
  * follow the layout of zinfo, top-down.
  */
- /* cache bank相当于组相连映射中的一个set，包括多个cache line */
+ /* cache bank包含多个set，（组相连映射中的一个set），一个set包括多个cache line */
 BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, uint32_t bankSize, bool isTerminal, uint32_t domain) {
     uint32_t lineSize = zinfo->lineSize;
     assert(lineSize > 0); //avoid config deps
@@ -143,10 +143,10 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
     }
 
     //Replacement policy
-    //cache替换算法
+    //指定cache替换算法
     string replType = config.get<const char*>(prefix + "repl.type", (arrayType == "IdealLRUPart")? "IdealLRUPart" : "LRU");
     ReplPolicy* rp = NULL;
-	debug_cache("%s cache 替换算法 ---> %s",name.c_str(),replType.c_str());
+	//debug_cache("%s cache替换算法 ---> %s",name.c_str(),replType.c_str());
 
     if (replType == "LRU" || replType == "LRUNoSh") {
 		//sharesAware=true : is private cache
@@ -197,7 +197,7 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
         uint32_t buckets;
         if (replType == "WayPart") {
             buckets = ways; //not an option with WayPart
-        } else { //Vantage or Ideal
+        } else { //Vantage or Ideal 优势或理想
             buckets = config.get<uint32_t>(prefix + "repl.buckets", 256);
         }
 		//monitor of all partitions of a cache
@@ -232,6 +232,7 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
     assert(rp);
 
     //Alright, build the array
+    //构造cache array
     CacheArray* array = NULL;
     if (arrayType == "SetAssoc") {
         array = new SetAssocArray(numLines, ways, rp, hf);
@@ -252,7 +253,7 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
         panic("This should not happen, we already checked for it!"); //unless someone changed arrayStr...
     }
 
-    //Latency
+    //Latency：cache的延迟
     uint32_t latency = config.get<uint32_t>(prefix + "latency", 10);
     uint32_t accLat = (isTerminal)? 0 : latency; //terminal caches has no access latency b/c it is assumed accLat is hidden by the pipeline
     uint32_t invLat = latency;
@@ -273,6 +274,8 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
     }
     rp->setCC(cc);
 	//default type is Simple
+	debug_cache("isTerminal = %s", (isTerminal?"true":"false") );
+	debug_cache("真正构造%s cache",name.c_str());
     if (!isTerminal) {
         if (type == "Simple") {
             cache = new Cache(numLines, cc, array, rp, accLat, invLat, name);
