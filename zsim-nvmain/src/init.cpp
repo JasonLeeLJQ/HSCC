@@ -798,6 +798,8 @@ static void InitSystem(Config& config) {
 				}
 				if( reversed_pgt || zinfo->enable_shared_memory )
 					reversed_paging = gm_memalign<ReversedPaging>(CACHE_LINE_BYTES, zinfo->numProcs);
+
+				/*----------开始构造Paging mode--------------*/
 				for( unsigned i=0; i<zinfo->numProcs; i++)
 				{
 					if( !reversed_pgt && !zinfo->enable_shared_memory)
@@ -880,7 +882,7 @@ static void InitSystem(Config& config) {
 				vector<const char*> tlb_group_names;
 				config.subgroups("sys.tlbs",tlb_group_names);
 				
-				//create private instruction and data tlb for every core
+				//1、create private instruction and data tlb for every core
 				string tlb_prefix="sys.tlbs.";
 				BaseTlb* itlb = NULL;
 				BaseTlb* dtlb = NULL;
@@ -897,7 +899,8 @@ static void InitSystem(Config& config) {
 						stringstream ss;
 						ss << pgt_name << coreIdx;
                         g_string pg_table_name(ss.str().c_str());
-						
+
+						/*----------开始构造pagetableWalker--------------*/
 						if( tlb_type == "CommonTlb")
 							zinfo->pg_walkers[j] = new (&common_pgt[j])PageTableWalker<TlbEntry>(pg_table_name.c_str() ,mode);
 						if( tlb_type == "HotMonitorTlb")
@@ -916,7 +919,7 @@ static void InitSystem(Config& config) {
 						//default tlb type is CommonTlb
 						//default eviction policy is LRU
 						string evict_policy_str = config.get<const char*>(name+".evict_policy","LRU");
-						debug_tlb("%s tlb hit latency %d , response latency %d,evict_policy %s",name.c_str(),tlb_hit_lat,tlb_res_lat,evict_policy_str.c_str());
+						debug_tlb("%s%d tlb hit latency %d , response latency %d,evict_policy %s",name.c_str(),coreIdx,tlb_hit_lat,tlb_res_lat,evict_policy_str.c_str());
 
 						/*----------开始构造TLB--------------*/
 						stringstream ss;
@@ -932,6 +935,8 @@ static void InitSystem(Config& config) {
 							tlb = new (&hot_monitor_tlb[tlb_id]) HotMonitorTlb<ExtendTlbEntry>( tlb_name.c_str() , tlb_size , tlb_hit_lat , tlb_res_lat, stringToPolicy(evict_policy_str));
 						}
 						tlb_id++;
+
+						
 						/***----connect page table walker with TLB----***/
 						assert(zinfo->pg_walkers[j]);
 						tlb->set_parent(zinfo->pg_walkers[j]);
@@ -944,7 +949,10 @@ static void InitSystem(Config& config) {
 					assert(itlb);
 					assert(dtlb);
 				}
-                //Build the core
+				
+                //2、Build the core
+                /*----------开始构造core--------------*/
+                std::cout<<"Core ---> "<<type.c_str()<<std::endl;
                 if (type == "Simple") {
 					//placement new
                     core = new (&simpleCores[j]) SimpleCore(ic, dc,itlb , dtlb,name);
@@ -1021,23 +1029,22 @@ static void InitSystem(Config& config) {
     cMap.clear();
     info("Initialized system");
 	//init memory system
-	debug_printf("begin init memory management");
 	for( int i=0 ; i<MAX_NR_ZONES ; i++)
 	{
 		zinfo->max_zone_pfns[i] = 0;
 	}
 	if( config.exists("sys.tlbs"))
 	{
-		std::cout<<"begin init memory management"<<std::endl;
-		debug_printf("page size is: %lld",zinfo->page_size);
-		debug_printf("page shift is: %d",zinfo->page_shift);
+		std::cout<<"begin init memory management,including buddy-system"<<std::endl;
+		debug_memsys("page size is: %lld",zinfo->page_size);
+		debug_memsys("page shift is: %d",zinfo->page_shift);
 		if( config.exists(c_zone_normal) )
 		{
 			zinfo->max_zone_pfns[Zone_Normal] = (2<<20)*config.get<Address>(c_zone_normal)>>(zinfo->page_shift);
 		}
 		else
 			zinfo->max_zone_pfns[Zone_Normal] = (zinfo->memory_size)>>(zinfo->page_shift);	//hasn't configured zone , take all memory as zone normal
-		debug_printf("size of zone_normal: %lld",zinfo->max_zone_pfns[Zone_Normal]);
+		debug_memsys("size of zone_normal: %lld",zinfo->max_zone_pfns[Zone_Normal]);
 		//init max_zone_pfns
 		if( config.exists(c_zone_sec))
 		{
@@ -1056,17 +1063,19 @@ static void InitSystem(Config& config) {
 			else
 				zinfo->max_zone_pfns[Zone_HighMem] = 0;
 		}
-		debug_printf("init memory node and buddy allocator");	
+		debug_memsys("init memory node and buddy allocator");	
 		//create MemoryNode and BuddyAllocator object 
+		//构造memory node
 		MemoryNode* mem_node = gm_memalign<MemoryNode>(CACHE_LINE_BYTES , 1);
 		zinfo->memory_node = new (mem_node) MemoryNode(0,0);
-		//std::cout<<"number of node_zones:"<<zinfo->memory_node->node_zones.size()<<std::endl;
+		//debug_memsys("number of node_zones:",zinfo->memory_node->nr_zones);
+		//构造伙伴系统对象
 		BuddyAllocator* buddy = gm_memalign<BuddyAllocator>(CACHE_LINE_BYTES , 1);
 		zinfo->buddy_allocator = new (buddy) BuddyAllocator(zinfo->memory_node);
 		//std::cout<<"number of node_zones:"<<zinfo->memory_node->node_zones.size()<<std::endl;
-		info("memory size is %ld",zinfo->memory_size);
-		//debug_printf("number of pages is %ld",zinfo->memory_node->node_page_num);
-		debug_printf("init memory node and memory done");
+		debug_memsys("memory size is %ld",zinfo->memory_size);
+		debug_memsys("number of pages is %ld",zinfo->memory_node->node_page_num);
+		debug_memsys("init memory node and memory done");
 	}
 	else
 	{
@@ -1074,7 +1083,7 @@ static void InitSystem(Config& config) {
 		zinfo->buddy_allocator = NULL;
 	}
 	zinfo->max_mem_page_no = (zinfo->memory_size)>>(zinfo->page_shift);
-	debug_printf("max page no: %lld",zinfo->max_mem_page_no);
+	debug_memsys("max page no: %lld",zinfo->max_mem_page_no);
 	/***********init DRAM buffer management**********/
 	//if( config.exists("sys.DRAMBuffer"))
 	if( zinfo->counter_tlb == true)

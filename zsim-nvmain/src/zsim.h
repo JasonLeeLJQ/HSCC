@@ -219,7 +219,7 @@ struct GlobSimInfo {
 	/**-----added by YuJieChen , TLB and memory management related-----**/
 	uint64_t memory_size;
 	uint64_t max_mem_page_no;
-	MemoryNode* memory_node;
+	MemoryNode* memory_node; //内存节点，UMA只有一个，NUMA有多个
 	uint64_t page_size;  //4KB
 	uint64_t page_shift;
 	BuddyAllocator* buddy_allocator;

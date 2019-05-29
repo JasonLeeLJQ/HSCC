@@ -17,6 +17,11 @@
 
 //tips：增加一个宏定义，只要把此宏定义注释掉就可以取消相关的日志输出。
 //#define DEBUG_PRINT
+#define DEBUG_TEST
+#define DEBUG_CACHE
+#define DEBUG_MEMCTL
+#define DEBUG_TLB
+#define DEBUG_MEMSYS
 
 inline void debug_printf( std::string format_str , ...)
 {
@@ -29,12 +34,12 @@ inline void debug_printf( std::string format_str , ...)
 	#endif
 }
 
-#define DEBUG_TEST
+
 
 inline void debug_test( std::string format_str , ...)
 {
 	#ifdef DEBUG_TEST
-		format_str ="Jason: TEST--->" + format_str+"\n";
+		format_str ="TEST--->" + format_str+"\n";
 		va_list parg;
 		va_start(parg , format_str);
 		vfprintf(stdout , format_str.c_str() , parg);
@@ -42,12 +47,12 @@ inline void debug_test( std::string format_str , ...)
 	#endif
 }
 
-#define DEBUG_CACHE
+
 
 inline void debug_cache( std::string format_str , ...)
 {
 	#ifdef DEBUG_CACHE
-		format_str ="Jason: CACHE--->" + format_str+"\n";
+		format_str ="CACHE--->" + format_str+"\n";
 		va_list parg;
 		va_start(parg , format_str);
 		vfprintf(stdout , format_str.c_str() , parg);
@@ -55,12 +60,12 @@ inline void debug_cache( std::string format_str , ...)
 	#endif
 }
 
-#define DEBUG_MEMCTL
+
 
 inline void debug_memctl( std::string format_str , ...)
 {
 	#ifdef DEBUG_MEMCTL
-		format_str ="Jason: MEMCTL--->" + format_str+"\n";
+		format_str ="MEMCTL--->" + format_str+"\n";
 		va_list parg;
 		va_start(parg , format_str);
 		vfprintf(stdout , format_str.c_str() , parg);
@@ -68,12 +73,25 @@ inline void debug_memctl( std::string format_str , ...)
 	#endif
 }
 
-#define DEBUG_TLB
+
 
 inline void debug_tlb( std::string format_str , ...)
 {
 	#ifdef DEBUG_TLB
-		format_str ="Jason: TLB--->" + format_str+"\n";
+		format_str ="TLB--->" + format_str+"\n";
+		va_list parg;
+		va_start(parg , format_str);
+		vfprintf(stdout , format_str.c_str() , parg);
+		va_end(parg);
+	#endif
+}
+
+
+/* memory system:buddy system */
+inline void debug_memsys( std::string format_str , ...)
+{
+	#ifdef DEBUG_MEMSYS
+		format_str ="MEMSYS--->" + format_str+"\n";
 		va_list parg;
 		va_start(parg , format_str);
 		vfprintf(stdout , format_str.c_str() , parg);
