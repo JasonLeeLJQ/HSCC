@@ -396,6 +396,23 @@ MemObject* BuildMemoryController(Config& config, uint32_t lineSize, uint32_t fre
 typedef vector<vector<BaseCache*>> CacheGroup;
 
 //build cache group or stream prefetchers
+/*
+       cache结构如下：
+                          cache group
+                              |
+                      |-------|------|------|
+                    caches caches  caches caches [cache_id]
+                               |
+                 		 |-----|------|
+                       bank   bank   bank [bank_id, default = 1]
+		                 |
+		           |-----|------|
+		          set   set    set [set_id]
+		           |
+		     |-----|------|
+		       cache line  [fixed size]
+*/
+
 CacheGroup* BuildCacheGroup(Config& config, const string& name, bool isTerminal) {
     CacheGroup* cgp = new CacheGroup;
     CacheGroup& cg = *cgp;
@@ -548,10 +565,11 @@ static void InitSystem(Config& config) {
     //Check single LLC
     if (cMap[llc]->size() != 1) panic("Last-level cache %s must have caches = 1, but %ld were specified", llc.c_str(), cMap[llc]->size());
 
+
+
     /* Since we have checked for no loops, parent is mandatory, and all parents are checked valid,
      * it follows that we have a fully connected tree finishing at the LLC.
      */
-	//debug_printf("build memory controllers");
     /*-------Build the memory controllers-------*/
     uint32_t memControllers = config.get<uint32_t>("sys.mem.controllers", 1);
     assert(memControllers > 0);
