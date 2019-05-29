@@ -823,8 +823,9 @@ bool PAEPaging::remove_page_table( unsigned pdpt_num , unsigned pd_num )
 lock_t LongModePaging::table_lock;
 LongModePaging::LongModePaging(PagingStyle select): mode(select),cur_pdp_num(0),cur_pd_num(0),cur_pt_num(0)
 {
+	//申请PageTable大小的内存空间
   PageTable* table = gm_memalign<PageTable>(CACHE_LINE_BYTES,1);
-  pml4=new (table) PageTable(512);
+  pml4=new (table) PageTable(512);  //构造PageTable对象
   assert(zinfo);
   if(select == LongMode_Normal)			//4KB
   {
@@ -843,6 +844,7 @@ LongModePaging::LongModePaging(PagingStyle select): mode(select),cur_pdp_num(0),
   }
   buffer_table_entry_num = zinfo->page_size/zinfo->block_size;
   buffer_table_shift = zinfo->page_shift - zinfo->block_shift;
+  std::cout<<zinfo->block_size<<std::endl;
   futex_init(&table_lock);
 }
 

@@ -46,7 +46,7 @@ template <typename T> T* gm_malloc(size_t objs) {return static_cast<T*>(gm_mallo
 template <typename T> T* gm_calloc() {return static_cast<T*>(__gm_calloc(1, sizeof(T)));}
 template <typename T> T* gm_calloc(size_t objs) {return static_cast<T*>(__gm_calloc(objs, sizeof(T)));}
 
-/*memalign 申请objs大小的内存，并保证对齐，返回的内存地址是blocksize的整数倍*/
+/*memalign 申请一个sizeof(T)的内存空间，并保证对齐，返回的内存地址是blocksize的整数倍*/
 template <typename T> T* gm_memalign(size_t blocksize) {return static_cast<T*>(__gm_memalign(blocksize, sizeof(T)));}
 template <typename T> T* gm_memalign(size_t blocksize, size_t objs) {return static_cast<T*>(__gm_memalign(blocksize, sizeof(T)*objs));}
 template <typename T> T* gm_dup(T* src, size_t objs) {

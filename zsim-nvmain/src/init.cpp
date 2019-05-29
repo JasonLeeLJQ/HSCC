@@ -767,8 +767,8 @@ static void InitSystem(Config& config) {
 			else
 				zinfo->pg_walkers = NULL;
 			string mode_str = config.get<const char*>("sys.pgt_walker.mode" , "Legacy-Normal");
-			//std::cout<<"mode_str:"<<mode_str<<std::endl;
-			debug_tlb("mode_str: %s",mode_str.c_str());
+			//LongMode_Normal
+			debug_tlb("mode_str->pgt_walker: %s",mode_str.c_str());
 			bool reversed_pgt = config.get<bool>("sys.pgt_walker.reversed_pgt", false);
 			//std::cout<<"reversed page table:"<<reversed_pgt<<std::endl;
 			debug_tlb("reversed page table: %s",reversed_pgt?"true":"false");
@@ -778,7 +778,7 @@ static void InitSystem(Config& config) {
 			zinfo->paging_array = NULL;
 			if( config.exists("sys.tlbs"))
 			{
-				union
+				union  //在下面申请不同形式的对象。为了不占据过多空间，使用union
 				{
 				   NormalPaging* normal_paging;
 				   PAEPaging* pae_paging;
@@ -788,25 +788,32 @@ static void InitSystem(Config& config) {
 				//zinfo->paging_array = new BasePaging*[zinfo->numProcs]; 
 				zinfo->paging_array = gm_memalign<BasePaging*>(CACHE_LINE_BYTES , zinfo->numProcs);
 			    string mode_str = pagingmode_to_string(zinfo->paging_mode);
-				if( mode_str == "Legacy")
+				if( mode_str == "Legacy") //Legacy_Huge & Legacy_Normal
 					normal_paging = gm_memalign<NormalPaging>(CACHE_LINE_BYTES, zinfo->numProcs);
-				if( mode_str == "PAE")
+				if( mode_str == "PAE")  //PAE_Huge & PAE_Normal
 					pae_paging = gm_memalign<PAEPaging>(CACHE_LINE_BYTES, zinfo->numProcs);
-				if( mode_str == "LongMode")
+				if( mode_str == "LongMode") {//LongMode_Huge & LongMode_Middle & LongMode_Normal
+					//申请numProcs个LongModePaging大小的内存空间（只是保证字节对齐而已）
 					longmode_paging = gm_memalign<LongModePaging>(CACHE_LINE_BYTES, zinfo->numProcs);
+				}
 				if( reversed_pgt || zinfo->enable_shared_memory )
 					reversed_paging = gm_memalign<ReversedPaging>(CACHE_LINE_BYTES, zinfo->numProcs);
 				for( unsigned i=0; i<zinfo->numProcs; i++)
 				{
 					if( !reversed_pgt && !zinfo->enable_shared_memory)
 					{
-						if( mode_str == "Legacy")
+						//之前gm_memalign申请了内存空间，在这里执行构造函数真正创建对象
+						if( mode_str == "Legacy"){
+							debug_tlb("create Legacy-mode-paging");
 							zinfo->paging_array[i] = new (&normal_paging[i])NormalPaging(zinfo->paging_mode);
-						if( mode_str == "PAE")
+						}
+						if( mode_str == "PAE"){
+							debug_tlb("create PAE-mode-paging");
 							zinfo->paging_array[i] = new (&pae_paging[i])PAEPaging(zinfo->paging_mode);
+						}
 						if( mode_str == "LongMode")
 						{
-							std::cout<<"create long mode"<<std::endl;
+							debug_tlb("create long-mode-paging");
 							zinfo->paging_array[i] = new (&longmode_paging[i])LongModePaging(zinfo->paging_mode);
 						}
 					}

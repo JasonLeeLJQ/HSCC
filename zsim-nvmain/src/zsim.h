@@ -247,7 +247,7 @@ struct GlobSimInfo {
 	bool counter_tlb;
 	bool prefetch_set;
 	BasePageTableWalker* page_table_walker;  //查询页表
-	PagingStyle paging_mode;  //分页的大小（4KB或者2MB,1GB）
+	PagingStyle paging_mode;  //分页的模式（4KB或者2MB,1GB），Legacy/PAE/LongMode
 	EVICTSTYLE ins_evict_policy;
 	EVICTSTYLE data_evict_policy;
 	DRAMEVICTSTYLE dram_evict_policy;
