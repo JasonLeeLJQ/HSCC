@@ -220,7 +220,7 @@ struct GlobSimInfo {
 	uint64_t memory_size;
 	uint64_t max_mem_page_no;
 	MemoryNode* memory_node;
-	uint64_t page_size;
+	uint64_t page_size;  //4KB
 	uint64_t page_shift;
 	BuddyAllocator* buddy_allocator;
 	int percpu_pagelist_fraction;
@@ -234,7 +234,7 @@ struct GlobSimInfo {
 	//unsigned access_threshold;	 //threshold to cache pcm block into dram buffer
 	uint64_t adjust_interval;
 	unsigned block_shift;
-	unsigned block_size;
+	unsigned block_size;  //4KB
 	BaseDRAMBufferManager* dram_manager;
 	unsigned read_incre_step;
 	unsigned write_incre_step;

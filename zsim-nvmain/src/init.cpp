@@ -746,7 +746,7 @@ static void InitSystem(Config& config) {
 			zinfo->tlb_type = COMMONTLB;
 			if(tlb_type == "HotMonitorTlb")
 				zinfo->tlb_type = HOTTLB;
-			debug_tlb("tlb type is:%s", tlb_type.c_str());
+			//debug_tlb("tlb type is:%s", tlb_type.c_str());
 			union
 			{
 				PageTableWalker<TlbEntry>* common_pgt;
@@ -835,10 +835,12 @@ static void InitSystem(Config& config) {
 			zinfo->counter_tlb = false;  //default is false
 			if (tlb_type == CounterTlb )
 					zinfo->counter_tlb = true;
-			debug_printf("tlb type: "+ tlb_type);
-			std::cout<<"counter tlb:"<<zinfo->counter_tlb<<std::endl;
-			if( tlb_type == "CommonTlb")
+			debug_tlb("tlb type: %s", tlb_type.c_str());
+			debug_tlb("counter tlb: %s", zinfo->counter_tlb? "true":"false");
+			if( tlb_type == "CommonTlb"){
+				//每一个core有两个TLB，一个是itlb，另一个是dtlb
 				common_tlb = gm_memalign<CommonTlb<TlbEntry> >(CACHE_LINE_BYTES, 2*cores);
+			}
 			if( tlb_type == "HotMonitorTlb")
 			{
 				//default life_time is 5
@@ -877,6 +879,7 @@ static void InitSystem(Config& config) {
 				
 				vector<const char*> tlb_group_names;
 				config.subgroups("sys.tlbs",tlb_group_names);
+				
 				//create private instruction and data tlb for every core
 				string tlb_prefix="sys.tlbs.";
 				BaseTlb* itlb = NULL;
@@ -911,9 +914,11 @@ static void InitSystem(Config& config) {
 						zinfo->tlb_hit_lat = tlb_hit_lat;
 						unsigned tlb_res_lat = config.get<unsigned>(name+".response_latency",1);
 						//default tlb type is CommonTlb
-						debug_printf("tlb hit latency %d , response latency %d",tlb_hit_lat,tlb_res_lat);
 						//default eviction policy is LRU
 						string evict_policy_str = config.get<const char*>(name+".evict_policy","LRU");
+						debug_tlb("%s tlb hit latency %d , response latency %d,evict_policy %s",name.c_str(),tlb_hit_lat,tlb_res_lat,evict_policy_str.c_str());
+
+						/*----------开始构造TLB--------------*/
 						stringstream ss;
 						ss << name << coreIdx;
                         g_string tlb_name(ss.str().c_str());

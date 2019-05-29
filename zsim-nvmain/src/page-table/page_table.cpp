@@ -844,8 +844,6 @@ LongModePaging::LongModePaging(PagingStyle select): mode(select),cur_pdp_num(0),
   }
   buffer_table_entry_num = zinfo->page_size/zinfo->block_size;
   buffer_table_shift = zinfo->page_shift - zinfo->block_shift;
-  std::cout<<zinfo->block_size<<std::endl;
-  std::cout<<zinfo->page_size<<std::endl;
   futex_init(&table_lock);
 }
 
