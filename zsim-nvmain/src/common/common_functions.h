@@ -30,7 +30,7 @@ inline void debug_printf( std::string format_str , ...)
 }
 
 #define DEBUG_TEST
-#define DEBUG_TLB
+
 inline void debug_test( std::string format_str , ...)
 {
 	#ifdef DEBUG_TEST
@@ -54,6 +54,21 @@ inline void debug_cache( std::string format_str , ...)
 		va_end(parg);
 	#endif
 }
+
+#define DEBUG_MEMCTL
+
+inline void debug_memctl( std::string format_str , ...)
+{
+	#ifdef DEBUG_MEMCTL
+		format_str ="Jason: MEMCTL--->" + format_str+"\n";
+		va_list parg;
+		va_start(parg , format_str);
+		vfprintf(stdout , format_str.c_str() , parg);
+		va_end(parg);
+	#endif
+}
+
+#define DEBUG_TLB
 
 inline void debug_tlb( std::string format_str , ...)
 {

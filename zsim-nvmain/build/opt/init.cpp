@@ -377,12 +377,15 @@ MemObject* BuildMemoryController(Config& config, uint32_t lineSize, uint32_t fre
         mem = new DRAMSimMemory(dramTechIni, dramSystemIni, outputDir, traceName, capacity, cpuFreqHz, latency, domain, name);
     } else if (type == "NVMain") {
         uint32_t capacity = config.get<uint32_t>("sys.mem.capacityMB", 16384);
-        string nvmainTechIni = config.get<const char*>("sys.mem.techIni");
+		//nvmain配置文件的位置
+		string nvmainTechIni = config.get<const char*>("sys.mem.techIni");
         string envVar = config.get<const char*>("sys.mem.envVar");
         nvmainTechIni = replace(nvmainTechIni, envVar, getenv(envVar.c_str())? getenv(envVar.c_str()): "");
         string outputFile = config.get<const char*>("sys.mem.outputFile");
         string traceName = config.get<const char*>("sys.mem.traceName");
-        mem = new NVMainMemory(nvmainTechIni, outputFile, traceName, capacity, latency, domain, name);
+
+		//构造NVMain类型的内存控制器
+		mem = new NVMainMemory(nvmainTechIni, outputFile, traceName, capacity, latency, domain, name);
     } else if (type == "Detailed") {
         // FIXME(dsm): Don't use a separate config file... see DDRMemory
         g_string mcfg = config.get<const char*>("sys.mem.paramFile", "");

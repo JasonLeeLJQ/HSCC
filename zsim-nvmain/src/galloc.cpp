@@ -144,6 +144,7 @@ void* __gm_calloc(size_t num, size_t size) {
     return ptr;
 }
 
+/*memalign 申请bytes大小的内存，并保证对齐，返回的内存地址是blocksize的整数倍*/
 void* __gm_memalign(size_t blocksize, size_t bytes) {
     assert(GM);
     assert(GM->mspace_ptr);

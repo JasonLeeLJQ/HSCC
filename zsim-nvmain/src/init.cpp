@@ -377,12 +377,15 @@ MemObject* BuildMemoryController(Config& config, uint32_t lineSize, uint32_t fre
         mem = new DRAMSimMemory(dramTechIni, dramSystemIni, outputDir, traceName, capacity, cpuFreqHz, latency, domain, name);
     } else if (type == "NVMain") {
         uint32_t capacity = config.get<uint32_t>("sys.mem.capacityMB", 16384);
-        string nvmainTechIni = config.get<const char*>("sys.mem.techIni");
+		//nvmain配置文件的位置
+		string nvmainTechIni = config.get<const char*>("sys.mem.techIni");
         string envVar = config.get<const char*>("sys.mem.envVar");
         nvmainTechIni = replace(nvmainTechIni, envVar, getenv(envVar.c_str())? getenv(envVar.c_str()): "");
         string outputFile = config.get<const char*>("sys.mem.outputFile");
         string traceName = config.get<const char*>("sys.mem.traceName");
-        mem = new NVMainMemory(nvmainTechIni, outputFile, traceName, capacity, latency, domain, name);
+
+		//构造NVMain类型的内存控制器
+		mem = new NVMainMemory(nvmainTechIni, outputFile, traceName, capacity, latency, domain, name);
     } else if (type == "Detailed") {
         // FIXME(dsm): Don't use a separate config file... see DDRMemory
         g_string mcfg = config.get<const char*>("sys.mem.paramFile", "");
@@ -402,15 +405,15 @@ typedef vector<vector<BaseCache*>> CacheGroup;
                               |
                       |-------|------|------|
                     caches caches  caches caches [cache_id]
-                               |
-                 		 |-----|------|
-                       bank   bank   bank [bank_id, default = 1]
-		                 |
-		           |-----|------|
-		          set   set    set [set_id]
-		           |
-		     |-----|------|
-		       cache line  [fixed size]
+                              |
+             		    |-----|------|
+                      bank   bank   bank [bank_id, default = 1]
+		                |
+		          |-----|------|
+		         set   set    set [set_id]
+		          |
+		    |-----|------|
+		      cache line  [fixed size]
 */
 
 CacheGroup* BuildCacheGroup(Config& config, const string& name, bool isTerminal) {
@@ -494,8 +497,8 @@ static void InitSystem(Config& config) {
     Network* network = (networkFile != "")? new Network(networkFile.c_str()) : NULL;
 	zinfo->page_table_walker = NULL;
 
+	/*----------Build the caches-----------*/
 	debug_printf("build caches");
-    /*----------Build the caches-----------*/
     vector<const char*> cacheGroupNames;
     config.subgroups("sys.caches", cacheGroupNames);
     string prefix = "sys.caches.";
@@ -573,7 +576,8 @@ static void InitSystem(Config& config) {
     /*-------Build the memory controllers-------*/
     uint32_t memControllers = config.get<uint32_t>("sys.mem.controllers", 1);
     assert(memControllers > 0);
-
+	debug_memctl("num of memControllers == %d",memControllers);
+	
     g_vector<MemObject*> mems;
     mems.resize(memControllers);
     zinfo->numMemoryControllers = memControllers;
@@ -589,6 +593,7 @@ static void InitSystem(Config& config) {
         g_string name(ss.str().c_str());
         //uint32_t domain = nextDomain(); //i*zinfo->numDomains/memControllers;
         uint32_t domain = i*zinfo->numDomains/memControllers;
+		/* 构造单个内存控制器对象 */
         mems[i] = BuildMemoryController(config, zinfo->lineSize, zinfo->freqMHz, domain, name);
 	}
 
@@ -602,7 +607,8 @@ static void InitSystem(Config& config) {
             mems[0] = splitter;
         }
     }
-	//debug_printf("connect everything");	
+
+	
     /*----------Connect everything----------*/
     // mem to llc is a bit special, only one llc
     uint32_t childId = 0;
@@ -740,7 +746,7 @@ static void InitSystem(Config& config) {
 			zinfo->tlb_type = COMMONTLB;
 			if(tlb_type == "HotMonitorTlb")
 				zinfo->tlb_type = HOTTLB;
-			debug_printf("tlb type is:%s", tlb_type.c_str());
+			debug_tlb("tlb type is:%s", tlb_type.c_str());
 			union
 			{
 				PageTableWalker<TlbEntry>* common_pgt;
@@ -749,17 +755,24 @@ static void InitSystem(Config& config) {
 			if( config.exists( "sys.tlbs") )
 			{
 				zinfo->pg_walkers = gm_memalign<BasePageTableWalker*>(CACHE_LINE_BYTES, cores);
-				if( tlb_type == "CommonTlb")
+				if( tlb_type == "CommonTlb"){
+					debug_tlb("CommonTlb--->PageTableWalker<TlbEntry>");
 					common_pgt = gm_memalign<PageTableWalker<TlbEntry> >(CACHE_LINE_BYTES,cores );
-				else if( tlb_type == "HotMonitorTlb")
+				}
+				else if( tlb_type == "HotMonitorTlb"){
+					debug_tlb("HotMonitorTlb--->PageTableWalker<ExtendTlbEntry>");
 					hot_pgt = gm_memalign<PageTableWalker<ExtendTlbEntry> >(CACHE_LINE_BYTES,cores );
+				}
 			}
 			else
 				zinfo->pg_walkers = NULL;
 			string mode_str = config.get<const char*>("sys.pgt_walker.mode" , "Legacy-Normal");
-			std::cout<<"mode_str:"<<mode_str<<std::endl;
+			//std::cout<<"mode_str:"<<mode_str<<std::endl;
+			debug_tlb("mode_str: %s",mode_str.c_str());
 			bool reversed_pgt = config.get<bool>("sys.pgt_walker.reversed_pgt", false);
-			std::cout<<"reversed page table:"<<reversed_pgt<<std::endl;
+			//std::cout<<"reversed page table:"<<reversed_pgt<<std::endl;
+			debug_tlb("reversed page table: %s",reversed_pgt?"true":"false");
+
 			PagingStyle mode = string_to_pagingmode(mode_str.c_str());
 			zinfo->paging_mode = mode;
 			zinfo->paging_array = NULL;
