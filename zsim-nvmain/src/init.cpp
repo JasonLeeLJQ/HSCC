@@ -1084,9 +1084,11 @@ static void InitSystem(Config& config) {
 	}
 	zinfo->max_mem_page_no = (zinfo->memory_size)>>(zinfo->page_shift);
 	debug_memsys("max page no: %lld",zinfo->max_mem_page_no);
+
+	
 	/***********init DRAM buffer management**********/
 	//if( config.exists("sys.DRAMBuffer"))
-	if( zinfo->counter_tlb == true)
+	if( zinfo->counter_tlb == true)  //如果DRAM作为NVM的buffer，才会执行下面代码
 	{
 		std::cout<<"begin init dram buffer"<<std::endl;
 		std::string prefix = "sys.DRAMBuffer.";
@@ -1329,12 +1331,12 @@ void SimInit(const char* configFile, const char* outputDir, uint32_t shmid) {
     //Caches,Tlbs, cores, memory controllers
 	//////////////////////////////////////////////////////////
 	//初始化内存管理相关模块
-	//std::cout<<"src/init.cpp--->初始化内存管理相关模块"<<std::endl;
     InitSystem(config);
 	//////////////////////////////////////////////////////////
+	
 	zinfo->lineNum = zinfo->page_size/zinfo->lineSize;
 	std::cout<<"line num:"<<zinfo->lineNum<<std::endl;
-	debug_printf("init hardware system done");
+	debug_test("init hardware system done");
 		
     //Sched stats (deferred because of circular deps)
     zinfo->sched->initStats(zinfo->rootStat);
@@ -1373,8 +1375,9 @@ void SimInit(const char* configFile, const char* outputDir, uint32_t shmid) {
     zinfo->contentionSim->postInit();
 
     info("Initialization complete");
-    debug_printf("Initialization complete");
+    debug_test("Initialization complete");
     //Causes every other process to wake up
+    //唤醒所有其他进程
     gm_set_glob_ptr(zinfo);
 
 }
