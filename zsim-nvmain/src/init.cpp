@@ -384,7 +384,7 @@ MemObject* BuildMemoryController(Config& config, uint32_t lineSize, uint32_t fre
         string outputFile = config.get<const char*>("sys.mem.outputFile");
         string traceName = config.get<const char*>("sys.mem.traceName");
 
-		debug_memctl("traceName = %s",traceName.c_str());
+		debug_memctl("traceName = %s",traceName.empty()?"未指定":traceName.c_str());
 		//构造NVMain类型的内存控制器
 		mem = new NVMainMemory(nvmainTechIni, outputFile, traceName, capacity, latency, domain, name);
     } else if (type == "Detailed") {
