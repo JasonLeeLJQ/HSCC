@@ -34,6 +34,7 @@
 #include "mtrand.h"
 
 /*
+	[抽象类]
 	cache替换算法；
 	如果要添加新的cache替换算法，可从下列文件中修改：
 		src/init.cpp BuildCacheBank函数
@@ -65,6 +66,12 @@ class ReplPolicy : public GlobAlloc {
  * then implement a single, templated rank() function (see below for examples)
  * This way, we achieve a simple, single interface that is specialized transparently to each type of array
  * (this code is performance-critical)
+
+ 	将DECL_RANK_BINDINGS添加到实现新接口的每个类，
+ 	然后实现一个模板化的rank（）函数（参见下面的示例）这样，
+ 	我们实现了一个简单的单一接口，它对每种类型的数组都是透明的
+ 	（这个 代码对性能至关重要）！
+ 	也就是说，在子类中只需要实现rank()函数即可，不需要实现rankCands
  */
 #define DECL_RANK_BINDING(T) uint32_t rankCands(const MemReq* req, T cands) { return rank(req, cands); }
 #define DECL_RANK_BINDINGS DECL_RANK_BINDING(SetAssocCands); DECL_RANK_BINDING(ZCands);
@@ -126,7 +133,7 @@ class LRUReplPolicy : public ReplPolicy {
             array[id] = 0;
         }
 
-		/* 得到最佳的候选cache line */
+		/* 得到最佳的 a victim cache line */
         template <typename C> inline uint32_t rank(const MemReq* req, C cands) {
             uint32_t bestCand = -1;
             uint64_t bestScore = (uint64_t)-1L;

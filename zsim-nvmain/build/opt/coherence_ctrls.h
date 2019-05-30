@@ -36,7 +36,10 @@
 #include "stats.h"
 //TODO: Now that we have a pure CC interface, the MESI controllers should go on different files.
 
-/* Generic, integrated controller interface */
+/* Generic, integrated controller interface 
+	Coherence controller
+	Implements coherence across cache levels：维持不同cache间的一致性
+*/
 class CC : public GlobAlloc {
     public:
         //Initialization
@@ -284,10 +287,14 @@ static inline bool CheckForMESIRace(AccessType& type, MESIState* state, MESIStat
 }
 
 // Non-terminal CC; accepts GETS/X and PUTS/X accesses
+/*
+	MESI:
+	Implements coherence across cache levels：维持不同cache间的一致性
+*/
 class MESICC : public CC {
 	private:
-        MESITopCC* tcc;
-        MESIBottomCC* bcc;
+        MESITopCC* tcc;  //parent
+        MESIBottomCC* bcc; //child
         uint32_t numLines;
         bool nonInclusiveHack;
         g_string name;

@@ -104,7 +104,7 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
     //Array
     uint32_t numHashes = 1;
     uint32_t ways = config.get<uint32_t>(prefix + "array.ways", 4);
-	//arrayType == SetAssoc 或者 Z
+	//cache arrayType == SetAssoc 或者 Z
     string arrayType = config.get<const char*>(prefix + "array.type", "SetAssoc");
     uint32_t candidates = (arrayType == "Z")? config.get<uint32_t>(prefix + "array.candidates", 16) : ways;
 
@@ -201,7 +201,7 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
         uint32_t buckets;
         if (replType == "WayPart") {
             buckets = ways; //not an option with WayPart
-        } else { //Vantage or Ideal 优势或理想
+        } else { //Vantage or Ideal
             buckets = config.get<uint32_t>(prefix + "repl.buckets", 256);
         }
 		//monitor of all partitions of a cache
@@ -262,7 +262,7 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
     uint32_t accLat = (isTerminal)? 0 : latency; //terminal caches has no access latency b/c it is assumed accLat is hidden by the pipeline
     uint32_t invLat = latency;
 	//std::cout<<"init latency:"<<latency<<std::endl;
-    //tYPE and inclusion
+    //cache 的type，默认是Simple
     string type = config.get<const char*>(prefix + "type", "Simple");
     bool nonInclusiveHack = config.get<bool>(prefix + "nonInclusiveHack", false);
     if (nonInclusiveHack) assert(type == "Simple" && !isTerminal);
@@ -712,6 +712,7 @@ static void InitSystem(Config& config) {
         string prefix = string("sys.cores.") + group + ".";
 		//default cores is 1 , default core type is Simple
         uint32_t cores = config.get<uint32_t>(prefix + "cores", 1);
+		//Core type
         string type = config.get<const char*>(prefix + "type", "Simple");
 
         //Build the core group
@@ -743,6 +744,7 @@ static void InitSystem(Config& config) {
 			/***-----------init cores---------****/
 			//zinfo->tlb_type = config.get<const char*>("sys.tlbs.tlb_type" , "CommonTlb");
 			debug_printf("init cores");
+			//tlb type 
 			string tlb_type = config.get<const char*>("sys.tlbs.tlb_type" , "CommonTlb");
 			zinfo->tlb_type = COMMONTLB;
 			if(tlb_type == "HotMonitorTlb")
@@ -767,8 +769,9 @@ static void InitSystem(Config& config) {
 			}
 			else
 				zinfo->pg_walkers = NULL;
+			
+			//page table walker的mode，例如LongMode_Normal，Legacy-Normal
 			string mode_str = config.get<const char*>("sys.pgt_walker.mode" , "Legacy-Normal");
-			//LongMode_Normal
 			debug_tlb("mode_str->pgt_walker: %s",mode_str.c_str());
 			bool reversed_pgt = config.get<bool>("sys.pgt_walker.reversed_pgt", false);
 			//std::cout<<"reversed page table:"<<reversed_pgt<<std::endl;
@@ -788,7 +791,8 @@ static void InitSystem(Config& config) {
 				};
 				//zinfo->paging_array = new BasePaging*[zinfo->numProcs]; 
 				zinfo->paging_array = gm_memalign<BasePaging*>(CACHE_LINE_BYTES , zinfo->numProcs);
-			    string mode_str = pagingmode_to_string(zinfo->paging_mode);
+				//Paging mode,例如Legacy、PAE、LongMode
+				string mode_str = pagingmode_to_string(zinfo->paging_mode);
 				if( mode_str == "Legacy") //Legacy_Huge & Legacy_Normal
 					normal_paging = gm_memalign<NormalPaging>(CACHE_LINE_BYTES, zinfo->numProcs);
 				if( mode_str == "PAE")  //PAE_Huge & PAE_Normal
@@ -800,7 +804,7 @@ static void InitSystem(Config& config) {
 				if( reversed_pgt || zinfo->enable_shared_memory )
 					reversed_paging = gm_memalign<ReversedPaging>(CACHE_LINE_BYTES, zinfo->numProcs);
 
-				/*----------开始构造Paging mode--------------*/
+				/*----------开始构造Paging--------------*/
 				for( unsigned i=0; i<zinfo->numProcs; i++)
 				{
 					if( !reversed_pgt && !zinfo->enable_shared_memory)
@@ -834,7 +838,7 @@ static void InitSystem(Config& config) {
 				CommonTlb<TlbEntry> * common_tlb;
 				HotMonitorTlb<ExtendTlbEntry>* hot_monitor_tlb;
 			};
-			//string tlb_type = config.get<const char*>("sys.tlbs.tlb_type" , "CommonTlb");
+			
 			zinfo->counter_tlb = false;  //default is false
 			if (tlb_type == CounterTlb )
 					zinfo->counter_tlb = true;

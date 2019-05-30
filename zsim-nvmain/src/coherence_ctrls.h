@@ -284,6 +284,10 @@ static inline bool CheckForMESIRace(AccessType& type, MESIState* state, MESIStat
 }
 
 // Non-terminal CC; accepts GETS/X and PUTS/X accesses
+/*
+	MESI:
+	Implements coherence across cache levels：维持不同cache间的一致性
+*/
 class MESICC : public CC {
 	private:
         MESITopCC* tcc;

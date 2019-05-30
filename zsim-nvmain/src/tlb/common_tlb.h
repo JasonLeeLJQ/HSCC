@@ -19,6 +19,10 @@
 #include "locks.h"
 #include "zsim.h"
 
+/* 
+	模板类：
+	class T：可以是TlbEntry 或者ExtendTlbEntry
+*/
 template <class T>
 class CommonTlb: public BaseTlb
 {
@@ -49,11 +53,13 @@ class CommonTlb: public BaseTlb
 		/*-------------drive simulation related---------*/
 		uint64_t access( MemReq& req )
 		{
-			debug_tlb("CommonTLB: 一次TLB access");
+			//debug_tlb("CommonTLB: 一次TLB access");
 			tlb_access_time++;
 			Address virt_addr = req.lineAddr; 
 			Address offset = virt_addr &(zinfo->page_size-1);
 			Address vpn = virt_addr >> (zinfo->page_shift);
+
+			/* 查找TLB */
 			T* entry = look_up(vpn);
 			Address ppn;
 			//TLB miss
@@ -99,7 +105,7 @@ class CommonTlb: public BaseTlb
 		}
 
 		/*-------------TLB operation related------------*/
-		//TLB look up
+		//TLB look up TLB查找
 		/*
 		 *@function: look up TLB entry from tlb according to virtual page NO. and update lru_sequence then
 		 *@param vpage_no: vpage_no of entry searched;
@@ -124,6 +130,7 @@ class CommonTlb: public BaseTlb
 			return result_node;
 		}
 
+		/* TlbEntry 放到入TLB中（也就是tlb_trie） */
 	    T* insert( Address vpage_no , T& entry)
 		{
 			futex_lock(&tlb_lock);
@@ -177,7 +184,7 @@ class CommonTlb: public BaseTlb
 			return true;
 		}
 
-		//default is LRU
+		//default is LRU，TLB置换算法默认是LRU，可以自己设置
 		virtual T* evict()
 		{
 			T* tlb_entry = NULL;
@@ -298,19 +305,21 @@ class CommonTlb: public BaseTlb
 		uint64_t tlb_evict_time;
 
 		T** tlb;
+		/* 空闲的TLB    entry，也就是TLB中还空闲多少entry；如果不空闲，只能调用置换算法*/
 		g_list<T*> free_entry_list;
 		std::set<unsigned> dram_index_list;
 		std::set<unsigned> pcm_index_list;
 
 		int lru_seq;
 		//tlb trie tree
-		g_unordered_map<Address, T*> tlb_trie;
-		g_unordered_map<Address , T*> tlb_trie_pa;
+		//tlb字典树(模拟tlb，存放所有的tlb entry)
+		g_unordered_map<Address, T*> tlb_trie;  //虚拟地址---> TlbEntry
+		g_unordered_map<Address , T*> tlb_trie_pa; //物理地址---> TlbEntry
 
 		g_string tlb_name_;
 		//page table walker
 		BasePageTableWalker* page_table_walker;
-		//eviction policy
+		//eviction policy、TLB置换算法
 		EVICTSTYLE evict_policy;
 		lock_t tlb_lock;
 };
