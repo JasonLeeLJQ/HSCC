@@ -4,7 +4,6 @@
 [S 0] NVMain: with 3200.000000 cpuFreq, 666.000000 busFreq
 [S 0] l2's children are all terminal OR PREFETCHERS, interleaving them
 [S 0] Initialized system
-[S 0] memory size is 3221225472
 [S 0] HDF5 backend: Opening /home/jason/HSCC/zsim-nvmain/zsim.h5
 [S 0] HDF5 backend: Created table, 6384 bytes/record, 165 records/write
 [S 0] HDF5 backend: Opening /home/jason/HSCC/zsim-nvmain/zsim-ev.h5
@@ -24,20 +23,20 @@
 [S 0] simulation init done
 [S 0] process id is 0
 [S 0] number of processes is 1
-[S 0] Started process, PID 6507
+[S 0] Started process, PID 2789
 [S 0] procMask: 0x0
 [S 0] [0] Adjusting clocks, domain 0, de-ffwd 0
 [S 0] vDSO info initialized
 [S 0] Started contention simulation thread 0
 [S 0] Started scheduler watchdog thread
-[S 0] FF control Thread TID 6510
 [S 0] Thread 0 starting
-[S 0] Simulate Thread 6507 TID
+[S 0] Simulate Thread 2789 TID
+[S 0] FF control Thread TID 2792
 [S 0] Thread 4 starting
-[S 0] Simulate Thread 6511 TID
+[S 0] Simulate Thread 2793 TID
 [S 0] Detected possible stall due to fake leaves (1 current)
-[S 0]  [0/0] INVALID (202) @ 0x7fffe0c18659
-[S 0] Blacklisting from future fake leaves: [0] INVALID @ 0x7fffe0c18659 | arg0 0x7fffe06c49d0 arg1 0x0
+[S 0]  [0/0] INVALID (202) @ 0x7fffe0c17659
+[S 0] Blacklisting from future fake leaves: [0] INVALID @ 0x7fffe0c17659 | arg0 0x7fffe06c39d0 arg1 0x0
 [S 0] schedContext done, cid 0, success 0 (gid 0)
 [S 0] schedContext done, cid 1, success 0 (gid 0)
 [S 0] Thread 4 finished
@@ -196,4 +195,3 @@
 [S 0] sys.pgt_walker7 clflush overhead caused by caching:0
 [S 0] sys.pgt_walker7 clflush overhead caused extra write:0
 [S 0] access of nvmain controller 0 : 4475, read access count:4475 , write access count: 0
-[S 0] Finished scheduler watchdog thread

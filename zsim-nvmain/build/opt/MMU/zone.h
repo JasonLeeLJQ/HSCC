@@ -151,14 +151,14 @@ class MemoryNode
 
 		unsigned node_id;
 		//start page number of node
-		uint64_t node_start_pfn;
-		uint64_t node_page_num;
+		uint64_t node_start_pfn; //起始页框号
+		uint64_t node_page_num;  //该node中page的总数
 
 		uint64_t lowmem_kbytes;
 		//get size of page reserved pool 
 		uint64_t min_free_kbytes;
 		//map between zone name and zone struct
 		//NodeZone node_zones;
-		Zone** node_zones;
+		Zone** node_zones;  //node中含有多个zone（最多三个）
 };
 #endif

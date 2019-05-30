@@ -214,13 +214,13 @@ struct GlobSimInfo {
     bool hasNVMain;
     bool hasDRAMCache;
     uint32_t numMemoryControllers;
-    g_vector<MemObject*> memoryControllers;
+    g_vector<MemObject*> memoryControllers;  //所有的内存控制器对象
 	//NVM::NVMObject* fetcher;
 	/**-----added by YuJieChen , TLB and memory management related-----**/
 	uint64_t memory_size;
 	uint64_t max_mem_page_no;
-	MemoryNode* memory_node;
-	uint64_t page_size;
+	MemoryNode* memory_node; //内存节点，UMA只有一个，NUMA有多个
+	uint64_t page_size;  //4KB
 	uint64_t page_shift;
 	BuddyAllocator* buddy_allocator;
 	int percpu_pagelist_fraction;
@@ -234,7 +234,7 @@ struct GlobSimInfo {
 	//unsigned access_threshold;	 //threshold to cache pcm block into dram buffer
 	uint64_t adjust_interval;
 	unsigned block_shift;
-	unsigned block_size;
+	unsigned block_size;  //4KB
 	BaseDRAMBufferManager* dram_manager;
 	unsigned read_incre_step;
 	unsigned write_incre_step;
@@ -246,8 +246,8 @@ struct GlobSimInfo {
 	int tlb_hit_lat;
 	bool counter_tlb;
 	bool prefetch_set;
-	BasePageTableWalker* page_table_walker;
-	PagingStyle paging_mode;
+	BasePageTableWalker* page_table_walker;  //查询页表
+	PagingStyle paging_mode;  //分页的模式（4KB或者2MB,1GB），Legacy/PAE/LongMode
 	EVICTSTYLE ins_evict_policy;
 	EVICTSTYLE data_evict_policy;
 	DRAMEVICTSTYLE dram_evict_policy;

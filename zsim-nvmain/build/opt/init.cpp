@@ -399,6 +399,23 @@ MemObject* BuildMemoryController(Config& config, uint32_t lineSize, uint32_t fre
 typedef vector<vector<BaseCache*>> CacheGroup;
 
 //build cache group or stream prefetchers
+/*
+       cache结构如下：
+                          cache group
+                              |
+                      |-------|------|------|
+                    caches caches  caches caches [cache_id]
+                              |
+             		    |-----|------|
+                      bank   bank   bank [bank_id, default = 1]
+		                |
+		          |-----|------|
+		         set   set    set [set_id]
+		          |
+		    |-----|------|
+		      cache line  [fixed size]
+*/
+
 CacheGroup* BuildCacheGroup(Config& config, const string& name, bool isTerminal) {
     CacheGroup* cgp = new CacheGroup;
     CacheGroup& cg = *cgp;
@@ -480,8 +497,8 @@ static void InitSystem(Config& config) {
     Network* network = (networkFile != "")? new Network(networkFile.c_str()) : NULL;
 	zinfo->page_table_walker = NULL;
 
+	/*----------Build the caches-----------*/
 	debug_printf("build caches");
-    /*----------Build the caches-----------*/
     vector<const char*> cacheGroupNames;
     config.subgroups("sys.caches", cacheGroupNames);
     string prefix = "sys.caches.";
@@ -551,14 +568,16 @@ static void InitSystem(Config& config) {
     //Check single LLC
     if (cMap[llc]->size() != 1) panic("Last-level cache %s must have caches = 1, but %ld were specified", llc.c_str(), cMap[llc]->size());
 
+
+
     /* Since we have checked for no loops, parent is mandatory, and all parents are checked valid,
      * it follows that we have a fully connected tree finishing at the LLC.
      */
-	//debug_printf("build memory controllers");
     /*-------Build the memory controllers-------*/
     uint32_t memControllers = config.get<uint32_t>("sys.mem.controllers", 1);
     assert(memControllers > 0);
-
+	debug_memctl("num of memControllers == %d",memControllers);
+	
     g_vector<MemObject*> mems;
     mems.resize(memControllers);
     zinfo->numMemoryControllers = memControllers;
@@ -574,6 +593,7 @@ static void InitSystem(Config& config) {
         g_string name(ss.str().c_str());
         //uint32_t domain = nextDomain(); //i*zinfo->numDomains/memControllers;
         uint32_t domain = i*zinfo->numDomains/memControllers;
+		/* 构造单个内存控制器对象 */
         mems[i] = BuildMemoryController(config, zinfo->lineSize, zinfo->freqMHz, domain, name);
 	}
 
@@ -587,7 +607,8 @@ static void InitSystem(Config& config) {
             mems[0] = splitter;
         }
     }
-	//debug_printf("connect everything");	
+
+	
     /*----------Connect everything----------*/
     // mem to llc is a bit special, only one llc
     uint32_t childId = 0;
@@ -725,7 +746,7 @@ static void InitSystem(Config& config) {
 			zinfo->tlb_type = COMMONTLB;
 			if(tlb_type == "HotMonitorTlb")
 				zinfo->tlb_type = HOTTLB;
-			debug_printf("tlb type is:%s", tlb_type.c_str());
+			//debug_tlb("tlb type is:%s", tlb_type.c_str());
 			union
 			{
 				PageTableWalker<TlbEntry>* common_pgt;
@@ -734,23 +755,30 @@ static void InitSystem(Config& config) {
 			if( config.exists( "sys.tlbs") )
 			{
 				zinfo->pg_walkers = gm_memalign<BasePageTableWalker*>(CACHE_LINE_BYTES, cores);
-				if( tlb_type == "CommonTlb")
+				if( tlb_type == "CommonTlb"){
+					debug_tlb("CommonTlb--->PageTableWalker<TlbEntry>");
 					common_pgt = gm_memalign<PageTableWalker<TlbEntry> >(CACHE_LINE_BYTES,cores );
-				else if( tlb_type == "HotMonitorTlb")
+				}
+				else if( tlb_type == "HotMonitorTlb"){
+					debug_tlb("HotMonitorTlb--->PageTableWalker<ExtendTlbEntry>");
 					hot_pgt = gm_memalign<PageTableWalker<ExtendTlbEntry> >(CACHE_LINE_BYTES,cores );
+				}
 			}
 			else
 				zinfo->pg_walkers = NULL;
 			string mode_str = config.get<const char*>("sys.pgt_walker.mode" , "Legacy-Normal");
-			std::cout<<"mode_str:"<<mode_str<<std::endl;
+			//LongMode_Normal
+			debug_tlb("mode_str->pgt_walker: %s",mode_str.c_str());
 			bool reversed_pgt = config.get<bool>("sys.pgt_walker.reversed_pgt", false);
-			std::cout<<"reversed page table:"<<reversed_pgt<<std::endl;
+			//std::cout<<"reversed page table:"<<reversed_pgt<<std::endl;
+			debug_tlb("reversed page table: %s",reversed_pgt?"true":"false");
+
 			PagingStyle mode = string_to_pagingmode(mode_str.c_str());
 			zinfo->paging_mode = mode;
 			zinfo->paging_array = NULL;
 			if( config.exists("sys.tlbs"))
 			{
-				union
+				union  //在下面申请不同形式的对象。为了不占据过多空间，使用union
 				{
 				   NormalPaging* normal_paging;
 				   PAEPaging* pae_paging;
@@ -760,25 +788,34 @@ static void InitSystem(Config& config) {
 				//zinfo->paging_array = new BasePaging*[zinfo->numProcs]; 
 				zinfo->paging_array = gm_memalign<BasePaging*>(CACHE_LINE_BYTES , zinfo->numProcs);
 			    string mode_str = pagingmode_to_string(zinfo->paging_mode);
-				if( mode_str == "Legacy")
+				if( mode_str == "Legacy") //Legacy_Huge & Legacy_Normal
 					normal_paging = gm_memalign<NormalPaging>(CACHE_LINE_BYTES, zinfo->numProcs);
-				if( mode_str == "PAE")
+				if( mode_str == "PAE")  //PAE_Huge & PAE_Normal
 					pae_paging = gm_memalign<PAEPaging>(CACHE_LINE_BYTES, zinfo->numProcs);
-				if( mode_str == "LongMode")
+				if( mode_str == "LongMode") {//LongMode_Huge & LongMode_Middle & LongMode_Normal
+					//申请numProcs个LongModePaging大小的内存空间（只是保证字节对齐而已）
 					longmode_paging = gm_memalign<LongModePaging>(CACHE_LINE_BYTES, zinfo->numProcs);
+				}
 				if( reversed_pgt || zinfo->enable_shared_memory )
 					reversed_paging = gm_memalign<ReversedPaging>(CACHE_LINE_BYTES, zinfo->numProcs);
+
+				/*----------开始构造Paging mode--------------*/
 				for( unsigned i=0; i<zinfo->numProcs; i++)
 				{
 					if( !reversed_pgt && !zinfo->enable_shared_memory)
 					{
-						if( mode_str == "Legacy")
+						//之前gm_memalign申请了内存空间，在这里执行构造函数真正创建对象
+						if( mode_str == "Legacy"){
+							debug_tlb("create Legacy-mode-paging");
 							zinfo->paging_array[i] = new (&normal_paging[i])NormalPaging(zinfo->paging_mode);
-						if( mode_str == "PAE")
+						}
+						if( mode_str == "PAE"){
+							debug_tlb("create PAE-mode-paging");
 							zinfo->paging_array[i] = new (&pae_paging[i])PAEPaging(zinfo->paging_mode);
+						}
 						if( mode_str == "LongMode")
 						{
-							std::cout<<"create long mode"<<std::endl;
+							debug_tlb("create long-mode-paging");
 							zinfo->paging_array[i] = new (&longmode_paging[i])LongModePaging(zinfo->paging_mode);
 						}
 					}
@@ -800,10 +837,12 @@ static void InitSystem(Config& config) {
 			zinfo->counter_tlb = false;  //default is false
 			if (tlb_type == CounterTlb )
 					zinfo->counter_tlb = true;
-			debug_printf("tlb type: "+ tlb_type);
-			std::cout<<"counter tlb:"<<zinfo->counter_tlb<<std::endl;
-			if( tlb_type == "CommonTlb")
+			debug_tlb("tlb type: %s", tlb_type.c_str());
+			debug_tlb("counter tlb: %s", zinfo->counter_tlb? "true":"false");
+			if( tlb_type == "CommonTlb"){
+				//每一个core有两个TLB，一个是itlb，另一个是dtlb
 				common_tlb = gm_memalign<CommonTlb<TlbEntry> >(CACHE_LINE_BYTES, 2*cores);
+			}
 			if( tlb_type == "HotMonitorTlb")
 			{
 				//default life_time is 5
@@ -842,7 +881,8 @@ static void InitSystem(Config& config) {
 				
 				vector<const char*> tlb_group_names;
 				config.subgroups("sys.tlbs",tlb_group_names);
-				//create private instruction and data tlb for every core
+				
+				//1、create private instruction and data tlb for every core
 				string tlb_prefix="sys.tlbs.";
 				BaseTlb* itlb = NULL;
 				BaseTlb* dtlb = NULL;
@@ -859,7 +899,8 @@ static void InitSystem(Config& config) {
 						stringstream ss;
 						ss << pgt_name << coreIdx;
                         g_string pg_table_name(ss.str().c_str());
-						
+
+						/*----------开始构造pagetableWalker--------------*/
 						if( tlb_type == "CommonTlb")
 							zinfo->pg_walkers[j] = new (&common_pgt[j])PageTableWalker<TlbEntry>(pg_table_name.c_str() ,mode);
 						if( tlb_type == "HotMonitorTlb")
@@ -876,9 +917,11 @@ static void InitSystem(Config& config) {
 						zinfo->tlb_hit_lat = tlb_hit_lat;
 						unsigned tlb_res_lat = config.get<unsigned>(name+".response_latency",1);
 						//default tlb type is CommonTlb
-						debug_printf("tlb hit latency %d , response latency %d",tlb_hit_lat,tlb_res_lat);
 						//default eviction policy is LRU
 						string evict_policy_str = config.get<const char*>(name+".evict_policy","LRU");
+						debug_tlb("%s%d tlb hit latency %d , response latency %d,evict_policy %s",name.c_str(),coreIdx,tlb_hit_lat,tlb_res_lat,evict_policy_str.c_str());
+
+						/*----------开始构造TLB--------------*/
 						stringstream ss;
 						ss << name << coreIdx;
                         g_string tlb_name(ss.str().c_str());
@@ -892,6 +935,8 @@ static void InitSystem(Config& config) {
 							tlb = new (&hot_monitor_tlb[tlb_id]) HotMonitorTlb<ExtendTlbEntry>( tlb_name.c_str() , tlb_size , tlb_hit_lat , tlb_res_lat, stringToPolicy(evict_policy_str));
 						}
 						tlb_id++;
+
+						
 						/***----connect page table walker with TLB----***/
 						assert(zinfo->pg_walkers[j]);
 						tlb->set_parent(zinfo->pg_walkers[j]);
@@ -904,7 +949,10 @@ static void InitSystem(Config& config) {
 					assert(itlb);
 					assert(dtlb);
 				}
-                //Build the core
+				
+                //2、Build the core
+                /*----------开始构造core--------------*/
+                std::cout<<"Core ---> "<<type.c_str()<<std::endl;
                 if (type == "Simple") {
 					//placement new
                     core = new (&simpleCores[j]) SimpleCore(ic, dc,itlb , dtlb,name);
@@ -981,23 +1029,22 @@ static void InitSystem(Config& config) {
     cMap.clear();
     info("Initialized system");
 	//init memory system
-	debug_printf("begin init memory management");
 	for( int i=0 ; i<MAX_NR_ZONES ; i++)
 	{
 		zinfo->max_zone_pfns[i] = 0;
 	}
 	if( config.exists("sys.tlbs"))
 	{
-		std::cout<<"begin init memory management"<<std::endl;
-		debug_printf("page size is: %lld",zinfo->page_size);
-		debug_printf("page shift is: %d",zinfo->page_shift);
+		std::cout<<"begin init memory management,including buddy-system"<<std::endl;
+		debug_memsys("page size is: %lld",zinfo->page_size);
+		debug_memsys("page shift is: %d",zinfo->page_shift);
 		if( config.exists(c_zone_normal) )
 		{
 			zinfo->max_zone_pfns[Zone_Normal] = (2<<20)*config.get<Address>(c_zone_normal)>>(zinfo->page_shift);
 		}
 		else
 			zinfo->max_zone_pfns[Zone_Normal] = (zinfo->memory_size)>>(zinfo->page_shift);	//hasn't configured zone , take all memory as zone normal
-		debug_printf("size of zone_normal: %lld",zinfo->max_zone_pfns[Zone_Normal]);
+		debug_memsys("size of zone_normal: %lld",zinfo->max_zone_pfns[Zone_Normal]);
 		//init max_zone_pfns
 		if( config.exists(c_zone_sec))
 		{
@@ -1016,17 +1063,19 @@ static void InitSystem(Config& config) {
 			else
 				zinfo->max_zone_pfns[Zone_HighMem] = 0;
 		}
-		debug_printf("init memory node and buddy allocator");	
+		debug_memsys("init memory node and buddy allocator");	
 		//create MemoryNode and BuddyAllocator object 
+		//构造memory node
 		MemoryNode* mem_node = gm_memalign<MemoryNode>(CACHE_LINE_BYTES , 1);
 		zinfo->memory_node = new (mem_node) MemoryNode(0,0);
-		//std::cout<<"number of node_zones:"<<zinfo->memory_node->node_zones.size()<<std::endl;
+		//debug_memsys("number of node_zones:",zinfo->memory_node->nr_zones);
+		//构造伙伴系统对象
 		BuddyAllocator* buddy = gm_memalign<BuddyAllocator>(CACHE_LINE_BYTES , 1);
 		zinfo->buddy_allocator = new (buddy) BuddyAllocator(zinfo->memory_node);
 		//std::cout<<"number of node_zones:"<<zinfo->memory_node->node_zones.size()<<std::endl;
-		info("memory size is %ld",zinfo->memory_size);
-		//debug_printf("number of pages is %ld",zinfo->memory_node->node_page_num);
-		debug_printf("init memory node and memory done");
+		debug_memsys("memory size is %ld",zinfo->memory_size);
+		debug_memsys("number of pages is %ld",zinfo->memory_node->node_page_num);
+		debug_memsys("init memory node and memory done");
 	}
 	else
 	{
@@ -1034,7 +1083,7 @@ static void InitSystem(Config& config) {
 		zinfo->buddy_allocator = NULL;
 	}
 	zinfo->max_mem_page_no = (zinfo->memory_size)>>(zinfo->page_shift);
-	debug_printf("max page no: %lld",zinfo->max_mem_page_no);
+	debug_memsys("max page no: %lld",zinfo->max_mem_page_no);
 	/***********init DRAM buffer management**********/
 	//if( config.exists("sys.DRAMBuffer"))
 	if( zinfo->counter_tlb == true)

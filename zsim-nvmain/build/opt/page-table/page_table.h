@@ -201,8 +201,8 @@ class LongModePaging: public BasePaging
 		uint32_t cur_pd_num;
 		uint32_t cur_pt_num;
 		
-		unsigned buffer_table_entry_num;
-		unsigned buffer_table_shift;
+		unsigned buffer_table_entry_num; //1
+		unsigned buffer_table_shift;    //0
 		static lock_t table_lock;
 };
 

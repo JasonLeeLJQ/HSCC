@@ -67,6 +67,8 @@ class Config {
         template<typename T> T get(const std::string& key) {return get<T>(key.c_str());}
 
         // Optional values (default)设置参数（有默认值）
+        //首先查找config中是否存在该参数，如果存在，则使用已经存在的值
+        //如果不存在该参数，则使用默认值
         template<typename T> T get(const char* key, T def);
         template<typename T> T get(const std::string& key, T def) {return get<T>(key.c_str(), def);}
 

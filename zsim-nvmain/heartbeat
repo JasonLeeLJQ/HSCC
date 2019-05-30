@@ -1,9 +1,9 @@
 Running on: zsim
-Start time: Tue May 28 21:07:17 2019
-Heartbeat time: Tue May 28 21:07:25 2019
+Start time: Thu May 30 09:38:31 2019
+Heartbeat time: Thu May 30 09:38:44 2019
 Stats since start:
  326 phases
  3260000 cycles
- 407500 cycles/s
-Stats since last heartbeat (1559048845s):
+ 250769 cycles/s
+Stats since last heartbeat (3s):
  0 cycles/s
