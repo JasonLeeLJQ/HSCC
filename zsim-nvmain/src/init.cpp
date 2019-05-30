@@ -385,7 +385,7 @@ MemObject* BuildMemoryController(Config& config, uint32_t lineSize, uint32_t fre
         string traceName = config.get<const char*>("sys.mem.traceName");
 
 		debug_memctl("traceName = %s",traceName.empty()?"未指定":traceName.c_str());
-		//构造NVMain类型的内存控制器
+		//构造内存控制器
 		mem = new NVMainMemory(nvmainTechIni, outputFile, traceName, capacity, latency, domain, name);
     } else if (type == "Detailed") {
         // FIXME(dsm): Don't use a separate config file... see DDRMemory

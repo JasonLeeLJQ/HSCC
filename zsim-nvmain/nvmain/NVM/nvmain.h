@@ -119,7 +119,7 @@ class NVMain : public NVMObject
     std::list<NVMainRequest *> prefetchBuffer;
 
     std::ofstream pretraceOutput;
-    GenericTraceWriter *preTracer;
+    GenericTraceWriter *preTracer;  //write trace
 
     void PrintPreTrace( NVMainRequest *request );
     void GeneratePrefetches( NVMainRequest *request, std::vector<NVMAddress>& prefetchList );
