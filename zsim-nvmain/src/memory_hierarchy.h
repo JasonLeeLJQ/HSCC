@@ -46,11 +46,15 @@
 
 /* Types of Access. An Access is a request that proceeds from lower to upper
  * levels of the hierarchy (core->l1->l2, etc.)
+ 	访问类型。 Access是从层次结构的较低级别（core）到较高级别（l1）的内存请求
  */
 typedef enum {
+	/* GET 读操作（每次读一行cache line） */
     GETS, // get line, exclusive permission not needed (triggered by a processor load)
-    GETX, // get line, exclusive permission needed (triggered by a processor store o atomic access)
-    PUTS, // clean writeback (lower cache is evicting this line, line was not modified)
+	GETX, // get line, exclusive permission needed (triggered by a processor store o atomic access)
+
+	/* PUT 写操作（每次写一行cache line） */
+	PUTS, // clean writeback (lower cache is evicting this line, line was not modified)
     PUTX,  // dirty writeback (lower cache is evicting this line, line was modified)
 	EVICTION,
 	SETDIRTY,
@@ -59,6 +63,7 @@ typedef enum {
 
 /* Types of Invalidation. An Invalidation is a request issued from upper to lower
  * levels of the hierarchy.
+  使上一级cache的cache line无效
  */
 typedef enum {
     INV,  // fully invalidate this line
@@ -79,20 +84,22 @@ const char* AccessTypeName(AccessType t);
 const char* InvTypeName(InvType t);
 const char* MESIStateName(MESIState s);
 
-/* Memory request */
+/* Memory request 
+	表示一个正在进行的内存请求
+*/
 struct MemReq {
     Address lineAddr;	//line address , virtual address
-    AccessType type;	
+    AccessType type;	//GETS, GETX, PUTS, PUTX
     uint32_t childId;
-    MESIState* state;
-    uint64_t cycle; //cycle where request arrives at component
+    MESIState* state;  //M/E/S/I四种状态，缓存一致性
+    uint64_t cycle; //cycle where request arrives at component，所需的执行周期
 
     //Used for race detection/sync
     lock_t* childLock;
     MESIState initialState;
 
     //Requester id --- used for contention simulation
-    uint32_t srcId;
+    uint32_t srcId;  //id
 
     //Flags propagate across levels, though not to evictions
     //Some other things that can be indicated here: Demand vs prefetch accesses, TLB accesses, etc.
@@ -114,10 +121,13 @@ struct MemReq {
 class AggregateStat;
 class Network;
 
-/* Base class for all memory objects (caches and memories) */
+/* Base class for all memory objects (caches and memories)
+	[抽象类]
+	处理MemReq的内存对象（包括cache和memory）
+*/
 class MemObject : public GlobAlloc {
     public:
-        //Returns response cycle
+        //Returns response cycle，performs an access and returns completion time
         virtual uint64_t access(MemReq& req) = 0;
         virtual void initStats(AggregateStat* parentStat) {}
         virtual const char* getName(){ return NULL; }
