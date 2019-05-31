@@ -51,12 +51,14 @@ const int COMMONTLB=0;
 #ifndef GLOBAL_MEMBER_H
 #define GLOBAL_MEMBER_H
 
-static unsigned  flag_tlb=0;
-static unsigned  flag_pagetable=0;
-static unsigned  flag_pagetablewalker=0;
-static unsigned  times_tlb=0;
-static unsigned  times_pagetable=0;
-static unsigned  times_pagetablewalker=0;
+struct Statistics{
+	Statistics():times_tlb(0),times_pagetable(0),times_pagetablewalker(0)
+	{}
+
+	unsigned  times_tlb;
+	unsigned  times_pagetable;
+	unsigned  times_pagetablewalker;
+}
 
 
 #endif

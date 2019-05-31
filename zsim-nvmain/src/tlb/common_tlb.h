@@ -53,7 +53,7 @@ class CommonTlb: public BaseTlb
 		/*-------------drive simulation related---------*/
 		uint64_t access( MemReq& req )
 		{
-			times_tlb++;
+			stat_info.times_tlb++;
 			//debug_test("CommonTlb::access");
 			tlb_access_time++;
 			Address virt_addr = req.lineAddr; 

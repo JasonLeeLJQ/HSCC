@@ -1036,7 +1036,7 @@ bool LongModePaging::unmap_page_table( Address addr)
 /* 页表的查询过程 */
 Address LongModePaging::access(MemReq &req)
 {
-	times_pagetable++;
+	stat_info.times_pagetable++;
 	//debug_test("LongModePaging::access");
 	Address addr = req.lineAddr;
 	unsigned pml4_id,pdp_id,pd_id,pt_id;  //PML4、PDP、PD、PT四级页表的id

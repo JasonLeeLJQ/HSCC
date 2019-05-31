@@ -103,6 +103,12 @@ INT32 Usage() {
 
 GlobSimInfo* zinfo;
 
+//////////////////////////////
+//add by jason at 2019
+Statistics stat_info();  //统计信息
+
+//////////////////////////////
+
 /* Per-process variables */
 
 uint32_t procIdx;

@@ -56,7 +56,7 @@ class PageTableWalker: public BasePageTableWalker
 		/*------simulation timing and state related----*/
 		uint64_t access( MemReq& req)
 		{
-			times_pagetablewalker++;
+			stat_info.times_pagetablewalker++;
 			//debug_test("PageTableWalker::access");
 			assert(paging);
 			period++;
