@@ -1038,7 +1038,7 @@ Address LongModePaging::access(MemReq &req)
 {
 	if(flag_pagetable == 0){
 		flag_pagetable = 1;
-		std::cout<<"LongModePaging::access"<<endl;
+		debug_test("LongModePaging::access");
 	}
 	Address addr = req.lineAddr;
 	unsigned pml4_id,pdp_id,pd_id,pt_id;  //PML4、PDP、PD、PT四级页表的id

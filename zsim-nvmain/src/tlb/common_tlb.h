@@ -56,7 +56,7 @@ class CommonTlb: public BaseTlb
 			
 			if(flag_tlb == 0){
 				flag_tlb = 1;
-				std::cout<<"CommonTlb::access"<<endl;
+				debug_test("CommonTlb::access");
 			}
 			//debug_tlb("CommonTLB: 一次TLB access");
 			tlb_access_time++;

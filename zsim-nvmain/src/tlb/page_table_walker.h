@@ -58,7 +58,7 @@ class PageTableWalker: public BasePageTableWalker
 		{
 			if(flag_pagetablewalker == 0){
 				flag_pagetablewalker = 1;
-				std::cout<<"PageTableWalker::access"<<endl;
+				debug_test("PageTableWalker::access");
 			}
 			assert(paging);
 			period++;
