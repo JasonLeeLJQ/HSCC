@@ -26,6 +26,7 @@
 #include "src/nvmain_mem_ctrl.h"
 #include "include/NVMainRequest.h"
 #include "core.h"
+#include "zsim.h"
 
 template <class T>
 class PageTableWalker: public BasePageTableWalker
@@ -56,7 +57,7 @@ class PageTableWalker: public BasePageTableWalker
 		/*------simulation timing and state related----*/
 		uint64_t access( MemReq& req)
 		{
-			stat_info.times_pagetablewalker++;
+			stat_info->times_pagetablewalker++;
 			//debug_test("PageTableWalker::access");
 			assert(paging);
 			period++;
