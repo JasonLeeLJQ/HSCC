@@ -69,6 +69,7 @@
 #include "memory_hierarchy.h"
 #include "ooo_core.h"
 #include "glog/logging.h"
+#include "common/global_const.h"
 
 /* Command-line switches (used to pass info from harness that cannot be passed through the config file, most config is file-based) */
 //proces id
