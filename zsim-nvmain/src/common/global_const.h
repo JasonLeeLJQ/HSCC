@@ -58,7 +58,7 @@ struct Statistics{
 	unsigned  times_tlb;
 	unsigned  times_pagetable;
 	unsigned  times_pagetablewalker;
-}
+};
 
 
 #endif
