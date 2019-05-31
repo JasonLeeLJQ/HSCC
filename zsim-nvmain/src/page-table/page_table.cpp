@@ -11,6 +11,7 @@
 #include "DRAM-buffer/DRAM_buffer_block.h"
 #include "page-table/page_table.h"
 #include "common/common_functions.h"
+#include "common/global_const.h"
 #include "zsim.h"
 #include "galloc.h"
 #include "pad.h"

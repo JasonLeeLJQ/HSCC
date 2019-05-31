@@ -105,7 +105,7 @@ GlobSimInfo* zinfo;
 
 //////////////////////////////
 //add by jason at 2019
-Statistics stat_info();  //统计信息
+Statistics stat_info= new Statistics();  //统计信息
 
 //////////////////////////////
 
