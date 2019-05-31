@@ -51,12 +51,12 @@ const int COMMONTLB=0;
 #ifndef GLOBAL_MEMBER_H
 #define GLOBAL_MEMBER_H
 
-unsigned  flag_tlb=0;
-unsigned  flag_pagetable=0;
-unsigned  flag_pagetablewalker=0;
-unsigned  times_tlb=0;
-unsigned  times_pagetable=0;
-unsigned  times_pagetablewalker=0;
+static unsigned  flag_tlb=0;
+static unsigned  flag_pagetable=0;
+static unsigned  flag_pagetablewalker=0;
+static unsigned  times_tlb=0;
+static unsigned  times_pagetable=0;
+static unsigned  times_pagetablewalker=0;
 
 
 #endif
