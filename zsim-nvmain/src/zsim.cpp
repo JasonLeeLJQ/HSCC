@@ -1876,7 +1876,7 @@ int main(int argc, char *argv[]) {
     PIN_SpawnInternalThread(FFThread, NULL, 64*1024, NULL);
 
 	std::cout<<"结束src/zsim.cpp的main函数"<<std::endl;
-	debug_test("times_tlb = %d, times_pagetable = %d, times_pagetablewalker = %d",stat_info->times_tlb,stat_info->times_pagetable,stat_info->times_pagetablewalker);
+	
     //Never returns
     PIN_StartProgram();
     return 0;
