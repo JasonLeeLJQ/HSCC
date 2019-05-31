@@ -48,9 +48,6 @@ const int COMMONTLB=0;
 //global member
 ///////////////////////////////////
 /*  add by jason 2019 */
-#ifndef GLOBAL_MEMBER_H
-#define GLOBAL_MEMBER_H
-
 struct Statistics{
 	Statistics():times_tlb(0),times_pagetable(0),times_pagetablewalker(0)
 	{}
@@ -59,9 +56,6 @@ struct Statistics{
 	unsigned  times_pagetable;
 	unsigned  times_pagetablewalker;
 };
-
-
-#endif
 
 //////////////////////////////////
 
