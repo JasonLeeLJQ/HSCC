@@ -46,16 +46,6 @@
 #include "src/NVMObject.h"
 
 
-///////////////////////////////////
-/*  add by jason 2019 */
-unsigned int flag_tlb=0;
-unsigned int flag_pagetable=0;
-unsigned int flag_pagetablewalker=0;
-unsigned int flag_4=0;
-
-
-//////////////////////////////////
-
 
 //forward declaration
 class Core;
