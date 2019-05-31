@@ -56,6 +56,10 @@ class PageTableWalker: public BasePageTableWalker
 		/*------simulation timing and state related----*/
 		uint64_t access( MemReq& req)
 		{
+			if(flag_pagetablewalker == 0){
+				flag_pagetablewalker = 1;
+				std::cout<<"PageTableWalker::access"<<endl;
+			}
 			assert(paging);
 			period++;
 			Address addr = PAGE_FAULT_SIG;
@@ -114,7 +118,7 @@ class PageTableWalker: public BasePageTableWalker
 			info("%s clflush overhead caused extra write:%llu",getName(), extra_write);
 		}
 
-		/* 返回新申请page的地址 */
+		/* 返回新page no */
 		Address do_page_fault(MemReq& req, PAGE_FAULT fault_type)
 		{
 		    //allocate one page from Zone_Normal area
@@ -129,7 +133,7 @@ class PageTableWalker: public BasePageTableWalker
 					Address vpn = req.lineAddr>>(zinfo->page_shift);
 					/* 使虚拟地址vpn对应的tlb entry失效（所有Core有效） */
 					tlb_shootdown(req, vpn, tlb_shootdown_overhead );
-					debug_tlb("tlb shootdown,enable_shared_memory = %s",zinfo->enable_shared_memory?"true":"false");
+					//debug_tlb("tlb shootdown,enable_shared_memory = %s",zinfo->enable_shared_memory?"true":"false");
 					if( zinfo->enable_shared_memory)
 					{
 						if( !map_shared_region(req, page) )
@@ -491,7 +495,7 @@ public:
 	private:
 		uint32_t procIdx;
 		int mmap_cached;
-		Address allocated_page;
+		Address allocated_page;  //一共申请page的数量
 		Address total_evict;
 		Address dirty_evict;
 		lock_t walker_lock;

@@ -53,6 +53,11 @@ class CommonTlb: public BaseTlb
 		/*-------------drive simulation related---------*/
 		uint64_t access( MemReq& req )
 		{
+			
+			if(flag_tlb == 0){
+				flag_tlb = 1;
+				std::cout<<"CommonTlb::access"<<endl;
+			}
 			//debug_tlb("CommonTLB: 一次TLB access");
 			tlb_access_time++;
 			Address virt_addr = req.lineAddr; 

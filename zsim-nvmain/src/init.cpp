@@ -86,6 +86,17 @@
 #include "zsim.h"
 extern void EndOfPhaseActions(); //in zsim.cpp
 
+
+///////////////////////////////////
+/*  add by jason 2019 */
+unsigned int flag_tlb=0;
+unsigned int flag_pagetable=0;
+unsigned int flag_pagetablewalker=0;
+unsigned int flag_4=0;
+
+
+//////////////////////////////////
+
 /* zsim should be initialized in a deterministic and logical order, to avoid re-reading config vars
  * all over the place and give a predictable global state to constructors. Ideally, this should just
  * follow the layout of zinfo, top-down.

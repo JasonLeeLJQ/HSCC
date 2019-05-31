@@ -868,6 +868,13 @@ LongModePaging::~LongModePaging()
 }
 
 /*****-----functional interface of LongMode-Paging----*****/
+/*
+	@pbuffer : default value == false
+	@addr : 虚拟地址
+	@pg_ptr : 新申请的page
+
+	function ：
+*/
 int LongModePaging::map_page_table(Address addr, void* pg_ptr, bool pbuffer)
 {
 	BasePDTEntry* entry;
@@ -875,6 +882,7 @@ int LongModePaging::map_page_table(Address addr, void* pg_ptr, bool pbuffer)
 }
 
 
+/* 将addr和page组成的页表项放入页表中 */
 int LongModePaging::map_page_table( Address addr, void* pg_ptr , bool pbuffer, BasePDTEntry*& mapped_entry)
 {
 	mapped_entry = NULL;
@@ -889,14 +897,16 @@ int LongModePaging::map_page_table( Address addr, void* pg_ptr , bool pbuffer, B
 	if( mode == LongMode_Normal)
 	{
 		assert( (pd!=(unsigned)(-1)) &&(pt!=(unsigned)(-1)));
+		/* 找到最后一级页表 */
 		table = allocate_page_table(pml4,pdp,pd, alloc_time);
 		if( !table )
 		{
 			debug_printf("allocate page table for LongMode_Normal failed!");
 			return false;
 		}
-		if( !is_valid(table, pt) )	
-			mapped_entry = (*table)[pt];
+		if( !is_valid(table, pt) ) //addr对应的页表项无效	
+			mapped_entry = (*table)[pt]; //获得对应的页表项
+		/* 使页表项有效 */
 		validate_entry(table , pt , pg_ptr, pbuffer);
 		/*
 		if( pbuffer)
@@ -1026,6 +1036,10 @@ bool LongModePaging::unmap_page_table( Address addr)
 /* 页表的查询过程 */
 Address LongModePaging::access(MemReq &req)
 {
+	if(flag_pagetable == 0){
+		flag_pagetable = 1;
+		std::cout<<"LongModePaging::access"<<endl;
+	}
 	Address addr = req.lineAddr;
 	unsigned pml4_id,pdp_id,pd_id,pt_id;  //PML4、PDP、PD、PT四级页表的id
 	bool pbuffer = false;
@@ -1205,7 +1219,7 @@ bool LongModePaging::allocate_page_table(triple_list high_level_entry)
 	return succeed;
 }
 
-
+/* 找到最后一级页表，不存在则创建 */
 PageTable* LongModePaging::allocate_page_table(unsigned pml4_entry_id , 
 		unsigned pdpt_entry_id , unsigned pdt_entry_id , int& alloc_time)
 {
