@@ -276,7 +276,10 @@ extern uint32_t lineBits; //process-local for performance, but logically global
 extern uint64_t procMask;
 
 extern GlobSimInfo* zinfo;
-//GlobSimInfo* zinfo=NULL;
+////////////////////////////////
+//add by jason
+extern Statistics* stat_info;
+////////////////////////////////
 
 //Process-wide functions, defined in zsim.cpp
 uint32_t getCid(uint32_t tid);
