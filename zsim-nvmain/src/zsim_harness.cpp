@@ -479,8 +479,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-	debug_test("times_tlb = %d, times_pagetable = %d, times_pagetablewalker = %d",stat_info->times_tlb,stat_info->times_pagetable,stat_info->times_pagetablewalker);
-
+	
 	uint32_t exitCode = 0;
     if (termStatus == OK) {
         info("All children done, exiting");

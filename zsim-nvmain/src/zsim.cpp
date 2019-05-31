@@ -1412,6 +1412,8 @@ VOID SimEnd() {
     }
     //Uncomment when debugging termination races, which can be rare because they are triggered by threads of a dying process
     //sleep(5);
+    
+	debug_test("times_tlb = %d, times_pagetable = %d, times_pagetablewalker = %d",stat_info->times_tlb,stat_info->times_pagetable,stat_info->times_pagetablewalker);
     exit(0);
 }
 
