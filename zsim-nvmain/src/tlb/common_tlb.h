@@ -54,8 +54,8 @@ class CommonTlb: public BaseTlb
 		uint64_t access( MemReq& req )
 		{
 			
-			if(flag_tlb == 0){
-				flag_tlb = 1;
+			if(flag_tlb == 5){
+				flag_tlb++;
 				debug_test("CommonTlb::access");
 			}
 			//debug_tlb("CommonTLB: 一次TLB access");

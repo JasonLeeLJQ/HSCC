@@ -1036,8 +1036,8 @@ bool LongModePaging::unmap_page_table( Address addr)
 /* 页表的查询过程 */
 Address LongModePaging::access(MemReq &req)
 {
-	if(flag_pagetable == 0){
-		flag_pagetable = 1;
+	if(flag_pagetable == 5){
+		flag_pagetable++;
 		debug_test("LongModePaging::access");
 	}
 	Address addr = req.lineAddr;

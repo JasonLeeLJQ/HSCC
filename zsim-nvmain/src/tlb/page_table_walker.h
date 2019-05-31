@@ -56,8 +56,8 @@ class PageTableWalker: public BasePageTableWalker
 		/*------simulation timing and state related----*/
 		uint64_t access( MemReq& req)
 		{
-			if(flag_pagetablewalker == 0){
-				flag_pagetablewalker = 1;
+			if(flag_pagetablewalker == 5){
+				flag_pagetablewalker++;
 				debug_test("PageTableWalker::access");
 			}
 			assert(paging);
