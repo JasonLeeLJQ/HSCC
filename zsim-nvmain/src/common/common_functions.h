@@ -16,21 +16,6 @@
 #include "common/global_const.h"
 
 
-//global member
-///////////////////////////////////
-/*  add by jason 2019 */
-#ifndef GLOBAL_MEMBER_H
-#define GLOBAL_MEMBER_H
-
-static unsigned int flag_tlb=0;
-static unsigned int flag_pagetable=0;
-static unsigned int flag_pagetablewalker=0;
-
-#endif
-
-//////////////////////////////////
-
-
 
 //tips：增加一个宏定义，只要把此宏定义注释掉就可以取消相关的日志输出。
 //#define DEBUG_PRINT

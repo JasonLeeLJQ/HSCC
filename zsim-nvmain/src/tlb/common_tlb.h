@@ -53,8 +53,8 @@ class CommonTlb: public BaseTlb
 		/*-------------drive simulation related---------*/
 		uint64_t access( MemReq& req )
 		{
-			debug_test("CommonTlb::access");
-			//debug_tlb("CommonTLB: 一次TLB access");
+			times_tlb++;
+			//debug_test("CommonTlb::access");
 			tlb_access_time++;
 			Address virt_addr = req.lineAddr; 
 			Address offset = virt_addr &(zinfo->page_size-1);

@@ -488,6 +488,7 @@ int main(int argc, char *argv[]) {
     }
     if (zinfo && zinfo->globalActiveProcs) warn("Unclean exit of %d children, termination stats were most likely not dumped", zinfo->globalActiveProcs);
 	debug_test("****** zsim 模拟结束 ******");
+	debug_test("times_tlb = %d, times_pagetable = %d, times_pagetablewalker = %d",times_tlb,times_pagetable,times_pagetablewalker);
 	exit(exitCode);
 }
 
