@@ -19,12 +19,12 @@
 //global member
 ///////////////////////////////////
 /*  add by jason 2019 */
-#ifndef GLOBAL_MEMBER
-#define GLOBAL_MEMBER
+#ifndef GLOBAL_MEMBER_H
+#define GLOBAL_MEMBER_H
 
-unsigned int flag_tlb=0;
-unsigned int flag_pagetable=0;
-unsigned int flag_pagetablewalker=0;
+static unsigned int flag_tlb=0;
+static unsigned int flag_pagetable=0;
+static unsigned int flag_pagetablewalker=0;
 
 #endif
 
