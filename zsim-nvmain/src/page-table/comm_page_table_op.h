@@ -16,7 +16,7 @@ inline bool point_to_buffer_table( PageTable* table , unsigned entry_id)
 	return ((*table)[entry_id])->point_buffer_page();
 }
 
-
+/* 获得下一级页表的地址 */
 template<class T>
 T* get_next_level_address(PageTable* table , unsigned entry_id)
 {
@@ -105,6 +105,9 @@ inline unsigned get_pml4_off( Address addr , PagingStyle mode)
 		return (unsigned)(-1);
 }
 
+/*
+	获得pml4/pdp/pd/pt的id号
+*/
 inline void get_domains( Address addr , unsigned &pml4 , unsigned &pdp , unsigned &pd , unsigned &pt, PagingStyle mode)
 {
 	pml4=(unsigned)(-1);

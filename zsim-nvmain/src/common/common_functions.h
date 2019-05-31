@@ -123,6 +123,7 @@ inline uint64_t mask( int bit_len)
 	return (bit_len==64)?(uint64_t)-1LL:( (1<<bit_len)-1);
 }
 
+/* 给定一个64位的value，得到start_bit-end_bit范围内的值 */
 template <class S , class T>
 inline S get_bit_value(T value, unsigned start_bit , unsigned end_bit)
 {

@@ -820,12 +820,27 @@ bool PAEPaging::remove_page_table( unsigned pdpt_num , unsigned pd_num )
 
 /*-----------LongMode Paging--------------*/
 //PageTable* LongModePaging::pml4;
+/*
+	CR3
+	 |
+	  -----> pml4(512 entry)
+			 |
+	 	      -----> pdp
+					  |
+	 				   -----> pd
+								|
+	 							 -----> pt
+
+	Notice:
+		创建页表的时候，不需要创建全部的四级页表；
+		只需要创建PML4顶层页表即可，其他页表只需要在需要的时候创建。
+*/
 lock_t LongModePaging::table_lock;
 LongModePaging::LongModePaging(PagingStyle select): mode(select),cur_pdp_num(0),cur_pd_num(0),cur_pt_num(0)
 {
 	//申请PageTable大小的内存空间
   PageTable* table = gm_memalign<PageTable>(CACHE_LINE_BYTES,1);
-  pml4=new (table) PageTable(512);  //构造PageTable对象
+  pml4=new (table) PageTable(512);  //构造pml4对象，有512个pdp表项
   assert(zinfo);
   if(select == LongMode_Normal)			//4KB
   {
@@ -1008,10 +1023,11 @@ bool LongModePaging::unmap_page_table( Address addr)
 	return false;
 }
 
+/* 页表的查询过程 */
 Address LongModePaging::access(MemReq &req)
 {
 	Address addr = req.lineAddr;
-	unsigned pml4_id,pdp_id,pd_id,pt_id;
+	unsigned pml4_id,pdp_id,pd_id,pt_id;  //PML4、PDP、PD、PT四级页表的id
 	bool pbuffer = false;
 	get_domains(addr,pml4_id,pdp_id,pd_id,pt_id,mode);
 	//point to page table pointer table 
@@ -1085,6 +1101,7 @@ Address LongModePaging::access(MemReq &req)
 		access_counter = req.childId;
 		write_back = true;
 	}
+	//返回page no
 	return get_block_id(req ,pgt,ptr, pt_id,mode,pbuffer ,
 				set_dirty, write_back ,access_counter);
 }
