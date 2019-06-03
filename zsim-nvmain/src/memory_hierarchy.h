@@ -88,6 +88,7 @@ const char* MESIStateName(MESIState s);
 	表示一个正在进行的内存请求
 */
 struct MemReq {
+	// Address PhyAddr = req.lineAddr << lineBits;  virtual address ---> physical address
     Address lineAddr;	//line address , virtual address
     AccessType type;	//GETS, GETX, PUTS, PUTX
     uint32_t childId;
