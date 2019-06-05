@@ -115,7 +115,7 @@ Statistics* stat_info;  //统计信息
 uint32_t procIdx;
 bool trace_using = false;
 uint64_t last_total_instr=0;
-uint32_t lineBits; //process-local for performance, but logically global
+uint32_t lineBits; //==6,process-local for performance, but logically global
 Address procMask;
 
 static ProcessTreeNode* procTreeNode;

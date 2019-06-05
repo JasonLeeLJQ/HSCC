@@ -10,14 +10,14 @@ Based on the "zsim + NVMain" hybrid simulator, HSCC has added the following func
 
  * **TLB simulation:** The original "zsim + NVMain" simulator does not simulate the TLB. TLB simulation is implemented in zsim to accelerate address translations from virtual address to physical address.
 
- 
+
  * **Implementation of HSCC, a hierarchical hybrid DRAM/NVM memory system that pushes DRAM caching management issues into the software level:** DRAM cache is managed by hardware in tranditional DRAM/NVM hierarchical hybrid systems. HSCC is a novel software-managed cache mechanism that organizes NVM and DRAM in a flat physical address space while logically supporting a hierarchical memory architecture. This design simplifies the hardware design by pushing the burden of DRAM cache management to the software layers. Besides, HSCC only caches hot NVM pages into the DRAM cache to mitigate potential cache thrashing and bandwidth waste between DRAM cache and NVM main memory.
- 
- 
+
+
  * **Multiple DRMA/NVM hybrid architecture supports:** HSCC supports both DRAM/NVM flat-addressable hybrid memory architecuture and DRAM/NVM hierarchical hybrid architecture. As shown in following figure, both DRAM and NVM are used as main memory and managed by OS in a single flat address space. In DRAM/NVM hierarchical hybrid memory architecture, DRAM is exploited as a cache to the NVM, and hardware-assisted hit-judgement mechanism is implemented to determine whether data is hit in DRAM cache. Besides, to reduce hardware overhead, DRAM cache is organized set-associative and usually uses demand-based caching policies.
 ![Image of Yaktocat](https://github.com/cyjseagull/SHMA/blob/master/images/DRAM-NVM_architectures.png)
- 
- 
+
+
  *  **Multiple DRAM/NVM hybrid system optimization policies:** We have implemented Row Buffer Locality Aware (RBLA) page caching policy and MultiQueue-based (MultiQueue) page migration policy in DRAM/NVM flat addressable hybrid memory system. RBLA caching policy is a simple implementation of hybrid memory system proposed in the paper "**Row Buffer Locality Aware Caching Policies for Hybrid Memories**", MultiQueue migration policy is a simple implementation of system proposed in the paper "**Page Placement in Hybrid Memory Systems**". RBLA caching policy is aimed at migrating NVM pages with poor row buffer locality to DRAM since row buffer miss of NVM pages incur higher overhead than that of DRAM pages. The MultiQueue migration policy places hot NVM pages into DRAM, and MQ algorithm is used to update the hotness of pages based on time locality and access frequency.
 
 
@@ -145,7 +145,7 @@ simPoints=directory of simpoints
 create .bb files with valgrind: cmd is execution command of the executable programs   
 ```javascript
  valgrind --tool=exp-bbv --interval-size=<instructions of a simpoint,example:1000000000> <cmd> 
-```  
+```
 get simpoints with .bb files with SimPoint(get from https://github.com/southerngs/simpoint)  
 ```javascript
 simpoint -k <simpoints num> -loadFVFile <path of .bb files> -saveSimpoints <file store generated simpoints> -saveSimpointWeights <file store weights of generated simpoints> -sampleSize <instructions of a simpoint, eg:1000000000>
@@ -187,7 +187,7 @@ example( simpoint file of msf with 31 simpoints):
 7 28
 8 29
 9 30
-```   
+```
 
 * **HSCC Related Configuration**(example in zsim-nvmain/config/shma.cfg)  
 **(1) sys.tlbs.tlb_type**: must be set to be "HotMonitorTlb";  
@@ -254,6 +254,25 @@ Implementations of RBLA and MultiQueue Policies
 * **Architecture of flat memory supporting different channel configurations of DRAM and NVM**  
 &#160; &#160; &#160; &#160;Considering that DRAM and NVM with different channel configurations have the overlapping address space in the low end, we divide the continuous overlapped address space into {channel_nums} and mapping them to different address space interleavingly to make full use of channel parallization.
 
+## Run and Test
+
+为了方便执行，提供了两个自动脚本：
+
+linux_run_git 和 ./zsim-nvmain/test.sh
+
+步骤如下：
+
+#### 1、拉取代码库最新代码
+
+	`./linux_run_git` 
+
+#### 2、执行自动脚本，自动编译zsim，并且运行zsim
+
+	 `./zsim-nvmain/test.sh` 
+
 ## Support or Contact
+
 HSCC is developed at SCTS&CGCL Lab (http://grid.hust.edu.cn/) by Yujie Chen, Haikun Liu and Xiaofei Liao. For any questions, please contact Yujie Chen(yujiechen_hust@163.com), Haikun Liu (hkliu@hust.edu.cn) and Xiaofei Liao (xfliao@hust.edu.cn). 
- 
+
+
+

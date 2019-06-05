@@ -21,7 +21,7 @@
 //#define DEBUG_PRINT
 #define DEBUG_TEST
 //#define DEBUG_CACHE
-#define DEBUG_MEMCTL
+//#define DEBUG_MEMCTL
 //#define DEBUG_TLB
 //#define DEBUG_MEMSYS
 #define DEBUG_NVMAIN
