@@ -272,6 +272,7 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
         if( p->PrintPreTrace )
             preTracer->SetTraceFile( pretraceFile );
         if( p->EchoPreTrace )
+			//关闭回显
             preTracer->SetEcho( true );
     }
     RegisterStats( );
