@@ -247,6 +247,8 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
     
     std::string pretraceFile;
 
+	debug_NVMain("PrintPreTrace = %s",p->PrintPreTrace?"true":"false");
+	debug_NVMain("EchoPreTrace = %s",p->EchoPreTrace?"true":"false");
     if( p->PrintPreTrace || p->EchoPreTrace )
 	{
 		debug_NVMain("生成or读取trace");
