@@ -248,7 +248,8 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
     std::string pretraceFile;
 
     if( p->PrintPreTrace || p->EchoPreTrace )
-    {
+	{
+		debug_NVMain("生成or读取trace");
         if( config->GetString( "PreTraceFile" ) == "" )
             pretraceFile = "trace.nvt";
         else
@@ -259,7 +260,7 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
             pretraceFile  = NVM::GetFilePath( config->GetFileName( ) );
             pretraceFile += config->GetString( "PreTraceFile" );
         }
-
+		debug_NVMain("trace :%s",pretraceFile.c_str());
 
         if( config->GetString( "PreTraceWriter" ) == "" )
             preTracer = TraceWriterFactory::CreateNewTraceWriter( "NVMainTrace" );
