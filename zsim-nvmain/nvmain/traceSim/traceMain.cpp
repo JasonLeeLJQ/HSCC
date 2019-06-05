@@ -55,6 +55,7 @@
 #include "NVM/NVMainFactory.h"
 using namespace NVM;
 
+//nvmain运行trace；一般是nvmain独立运行时调用；和zsim一起时不会调用
 int trace_main( int argc, char *argv[] )
 {
     TraceMain *traceRunner = new TraceMain( );
@@ -74,6 +75,7 @@ TraceMain::~TraceMain( )
 
 int TraceMain::RunTrace( int argc, char *argv[] )
 {
+	std::cout<<"TraceMain::RunTrace"<<std::endl;
     Stats *stats = new Stats( );
     Config *config = new Config( );
     GenericTraceReader *trace = NULL;
@@ -187,6 +189,7 @@ int TraceMain::RunTrace( int argc, char *argv[] )
     else
         trace = TraceReaderFactory::CreateNewTraceReader( "NVMainTrace" );
 
+	/* 第三个参数是 trace文件 */
     trace->SetTraceFile( argv[2] );
 
     if( argc == 3 )
