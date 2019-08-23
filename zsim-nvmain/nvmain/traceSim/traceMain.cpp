@@ -75,7 +75,6 @@ TraceMain::~TraceMain( )
 
 int TraceMain::RunTrace( int argc, char *argv[] )
 {
-	std::cout<<"TraceMain::RunTrace"<<std::endl;
     Stats *stats = new Stats( );
     Config *config = new Config( );
     GenericTraceReader *trace = NULL;
