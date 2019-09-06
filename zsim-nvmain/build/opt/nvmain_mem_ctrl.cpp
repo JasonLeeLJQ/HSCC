@@ -434,6 +434,7 @@ inline NVMainAccEvent* NVMainMemory::push_to_main_memory( MemReq& req, uint64_t 
 }
 
 uint64_t NVMainMemory::access(MemReq& req) {
+	debug_memctl("ACCESS");
 	futex_lock(&access_lock);
     switch (req.type) {
         case PUTS:
@@ -460,6 +461,8 @@ uint64_t NVMainMemory::access(MemReq& req) {
 	{
 		//Address addr = req.lineAddr << lineBits;  //physical address
         bool isWrite = ((req.type == PUTX) || (req.type == PUTS));
+		debug_memctl("virt_addr = %d,phy_addr = %d",req.lineAddr,req.lineAddr<<lineBits);
+		debug_memctl("isWrite = %s",isWrite?"true":"false");
 		//if( isWrite )
 			//std::cout<<"access:"<<std::hex<<(addr)<<" ppn:"<<(addr>>12)<<" write:"<<isWrite<<std::endl;
 		nvmain_access_count++;
@@ -467,7 +470,9 @@ uint64_t NVMainMemory::access(MemReq& req) {
 			nvmain_write_access_count++;
 		else
 			nvmain_read_access_count++;
+		
 		//push request to access main memory
+		// 把req从内存控制器分发到相应的内存（NVMain & DRAM）
 		NVMainAccEvent* memEv= push_to_main_memory( req, respCycle );
 		futex_unlock(&access_lock);
 		if( zinfo->counter_tlb)

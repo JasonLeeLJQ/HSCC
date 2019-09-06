@@ -44,15 +44,22 @@ struct PartInfo {
     Counter profExtEvictions; // from other partitions (if too large, we're probably doing something wrong, e.g., too small an adjustment period)
 };
 
+/*
+	cache分区是众所周知的技术，用于减少共享最后一级缓存（SLLC）
+	中的共同运行应用程序之间的破坏性干扰。
+*/
 class PartReplPolicy : public virtual ReplPolicy {
     protected:
+		//measure stats about different partitions, e.g. miss curves
         PartitionMonitor* monitor;
+		//maps MemReqs to a partition
         PartMapper* mapper;
 
     public:
         PartReplPolicy(PartitionMonitor* _monitor, PartMapper* _mapper) : monitor(_monitor), mapper(_mapper) {}
         ~PartReplPolicy() { delete monitor; }
 
+		//reset partition sizes
         virtual void setPartitionSizes(const uint32_t* sizes) = 0;
 
         PartitionMonitor* getMonitor() { return monitor; }

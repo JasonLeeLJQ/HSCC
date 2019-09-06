@@ -26,6 +26,7 @@
 #include "src/nvmain_mem_ctrl.h"
 #include "include/NVMainRequest.h"
 #include "core.h"
+#include "zsim.h"
 
 template <class T>
 class PageTableWalker: public BasePageTableWalker
@@ -56,10 +57,13 @@ class PageTableWalker: public BasePageTableWalker
 		/*------simulation timing and state related----*/
 		uint64_t access( MemReq& req)
 		{
+			stat_info->times_pagetablewalker++;
+			//debug_test("PageTableWalker::access");
 			assert(paging);
 			period++;
 			Address addr = PAGE_FAULT_SIG;
 			Address init_cycle = req.cycle;
+			/* 首先查询页表，hit则返回地址；否则触发page fault */
 			addr = paging->access(req);
 
 			tlb_miss_exclude_shootdown += (req.cycle - init_cycle);
@@ -112,7 +116,8 @@ class PageTableWalker: public BasePageTableWalker
 			info("%s clflush overhead caused by caching:%llu",getName(), clflush_overhead);
 			info("%s clflush overhead caused extra write:%llu",getName(), extra_write);
 		}
-		
+
+		/* 返回新page no */
 		Address do_page_fault(MemReq& req, PAGE_FAULT fault_type)
 		{
 		    //allocate one page from Zone_Normal area
@@ -125,7 +130,9 @@ class PageTableWalker: public BasePageTableWalker
 				{
 					//TLB shootdown
 					Address vpn = req.lineAddr>>(zinfo->page_shift);
+					/* 使虚拟地址vpn对应的tlb entry失效（所有Core有效） */
 					tlb_shootdown(req, vpn, tlb_shootdown_overhead );
+					//debug_tlb("tlb shootdown,enable_shared_memory = %s",zinfo->enable_shared_memory?"true":"false");
 					if( zinfo->enable_shared_memory)
 					{
 						if( !map_shared_region(req, page) )
@@ -376,15 +383,21 @@ class PageTableWalker: public BasePageTableWalker
 			//instruction TLB IPI
 			if( entry )
 			{
+				/* 使tlb entry失效 */
 				entry->set_invalid();
 				shootdown_counter += zinfo-> tlb_hit_lat; 
 				req.cycle += zinfo->tlb_hit_lat;
 			}
 		}
 
+		/*
+			每当任何Core修改页表条目时，该特定TLB条目在所有Core中都应该变成无效状态。
+			这个过程称为TLB击落。
+		*/
 		inline void tlb_shootdown( MemReq& req, Address vpn, unsigned long long shootdown_counter)
 		{
 			BaseTlb* tmp_tlb = NULL;
+			/* 遍历所有的core，使得vpn对应的tlb entry变成无效状态 */
 			for( uint64_t i = 0; i<zinfo->numCores; i++)
 			{
 				//instruction TLB shootdown
@@ -481,7 +494,7 @@ public:
 	private:
 		uint32_t procIdx;
 		int mmap_cached;
-		Address allocated_page;
+		Address allocated_page;  //一共申请page的数量
 		Address total_evict;
 		Address dirty_evict;
 		lock_t walker_lock;

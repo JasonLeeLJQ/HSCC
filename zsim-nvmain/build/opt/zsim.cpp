@@ -69,6 +69,7 @@
 #include "memory_hierarchy.h"
 #include "ooo_core.h"
 #include "glog/logging.h"
+#include "common/global_const.h"
 
 /* Command-line switches (used to pass info from harness that cannot be passed through the config file, most config is file-based) */
 //proces id
@@ -103,12 +104,18 @@ INT32 Usage() {
 
 GlobSimInfo* zinfo;
 
+//////////////////////////////
+//add by jason at 2019
+Statistics* stat_info;  //统计信息
+
+//////////////////////////////
+
 /* Per-process variables */
 
 uint32_t procIdx;
 bool trace_using = false;
 uint64_t last_total_instr=0;
-uint32_t lineBits; //process-local for performance, but logically global
+uint32_t lineBits; //==6,process-local for performance, but logically global
 Address procMask;
 
 static ProcessTreeNode* procTreeNode;
@@ -1405,6 +1412,8 @@ VOID SimEnd() {
     }
     //Uncomment when debugging termination races, which can be rare because they are triggered by threads of a dying process
     //sleep(5);
+    //打印统计信息
+	debug_test("times_tlb = %d, times_pagetable = %d, times_pagetablewalker = %d",stat_info->times_tlb,stat_info->times_pagetable,stat_info->times_pagetablewalker);
     exit(0);
 }
 
@@ -1769,6 +1778,11 @@ int main(int argc, char *argv[]) {
         zinfo = static_cast<GlobSimInfo*>(gm_get_glob_ptr());
     }
 
+	////////////////////////////////////
+	//add by jason
+	stat_info= new Statistics();
+	////////////////////////////////////
+
     //If assertion below fails, use this to print maps
 #if 0
     futex_lock(&zinfo->ffLock); //whatever lock, just don't interleave
@@ -1864,6 +1878,7 @@ int main(int argc, char *argv[]) {
     PIN_SpawnInternalThread(FFThread, NULL, 64*1024, NULL);
 
 	std::cout<<"结束src/zsim.cpp的main函数"<<std::endl;
+	
     //Never returns
     PIN_StartProgram();
     return 0;

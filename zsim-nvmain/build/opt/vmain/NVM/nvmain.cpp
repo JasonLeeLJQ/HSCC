@@ -154,7 +154,6 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
 		std::cout<<"cols is "<<cols<<std::endl;
 		std::cout<<"rows is "<<rows<<std::endl;
 		std::cout<<"subarrays is "<<subarrays<<std::endl;
-		//std::cout<<"ranks is "<<ranks<<std::endl;
 		std::cout<<"banks is "<<banks<<std::endl;
 		std::cout<<"ranks is "<<ranks<<std::endl;
 		std::cout<<"channels is "<<channels<<std::endl;		
@@ -177,6 +176,8 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
         SetDecoder( translator );
         memoryControllers = new MemoryController* [channels];
         channelConfig = new Config* [channels];
+
+		/* 多个channel，配置每一个channel */
         for( int i = 0; i < channels; i++ )
         {
             std::stringstream confString;
@@ -205,7 +206,8 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
 				channelConfig[i] = config;
 			
             /* Initialize memory controller */
-			debug_NVMain("创建内存控制器");
+			debug_NVMain("初始化内存控制器");
+			//one channel <---> one memory controller
             memoryControllers[i] = 
                 MemoryControllerFactory::CreateNewController( channelConfig[i]->GetString( "MEM_CTL" ) );
 
@@ -245,8 +247,11 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
     
     std::string pretraceFile;
 
+	debug_NVMain("PrintPreTrace = %s",p->PrintPreTrace?"true":"false");
+	debug_NVMain("EchoPreTrace = %s",p->EchoPreTrace?"true":"false");
     if( p->PrintPreTrace || p->EchoPreTrace )
-    {
+	{
+		debug_NVMain("生成or读取trace");
         if( config->GetString( "PreTraceFile" ) == "" )
             pretraceFile = "trace.nvt";
         else
@@ -257,7 +262,7 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
             pretraceFile  = NVM::GetFilePath( config->GetFileName( ) );
             pretraceFile += config->GetString( "PreTraceFile" );
         }
-
+		debug_NVMain("trace :%s",pretraceFile.c_str());
 
         if( config->GetString( "PreTraceWriter" ) == "" )
             preTracer = TraceWriterFactory::CreateNewTraceWriter( "NVMainTrace" );
@@ -267,6 +272,7 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
         if( p->PrintPreTrace )
             preTracer->SetTraceFile( pretraceFile );
         if( p->EchoPreTrace )
+			//关闭回显
             preTracer->SetEcho( true );
     }
     RegisterStats( );

@@ -479,7 +479,8 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    uint32_t exitCode = 0;
+	
+	uint32_t exitCode = 0;
     if (termStatus == OK) {
         info("All children done, exiting");
     } else {

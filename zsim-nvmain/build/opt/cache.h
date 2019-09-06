@@ -45,14 +45,14 @@ class Network;
 /* Simple cache  */
 class Cache : public BaseCache {
     public:
-        CC* cc;
-        CacheArray* array;
-        ReplPolicy* rp;
+        CC* cc;  //Coherence controller
+        CacheArray* array;  //cache array
+        ReplPolicy* rp;   //替换策略
 		uint32_t numLines;
 	protected:
         //Latencies
         uint32_t accLat; //latency of a normal access (could split in get/put, probably not needed)
-        uint32_t invLat; //latency of an invalidation
+        uint32_t invLat; //latency of an invalidation(缓存行无效的延时)
 
         g_string name;
 

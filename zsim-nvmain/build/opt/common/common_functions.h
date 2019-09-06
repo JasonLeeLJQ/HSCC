@@ -15,13 +15,16 @@
 #include "stdlib.h"
 #include "common/global_const.h"
 
+
+
 //tips：增加一个宏定义，只要把此宏定义注释掉就可以取消相关的日志输出。
 //#define DEBUG_PRINT
 #define DEBUG_TEST
-#define DEBUG_CACHE
-#define DEBUG_MEMCTL
-#define DEBUG_TLB
-#define DEBUG_MEMSYS
+//#define DEBUG_CACHE
+//#define DEBUG_MEMCTL
+//#define DEBUG_TLB
+//#define DEBUG_MEMSYS
+#define DEBUG_NVMAIN
 
 inline void debug_printf( std::string format_str , ...)
 {
@@ -99,6 +102,18 @@ inline void debug_memsys( std::string format_str , ...)
 	#endif
 }
 
+inline void debug_nvmain( std::string format_str , ...)
+{
+	#ifdef DEBUG_NVMAIN
+		format_str ="MEMSYS--->" + format_str+"\n";
+		va_list parg;
+		va_start(parg , format_str);
+		vfprintf(stdout , format_str.c_str() , parg);
+		va_end(parg);
+	#endif
+}
+
+
 
 inline void warning( std::string format_str , ...)
 {
@@ -123,6 +138,7 @@ inline uint64_t mask( int bit_len)
 	return (bit_len==64)?(uint64_t)-1LL:( (1<<bit_len)-1);
 }
 
+/* 给定一个64位的value，得到start_bit-end_bit范围内的值 */
 template <class S , class T>
 inline S get_bit_value(T value, unsigned start_bit , unsigned end_bit)
 {

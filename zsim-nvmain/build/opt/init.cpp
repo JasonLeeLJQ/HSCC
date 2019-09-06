@@ -86,6 +86,8 @@
 #include "zsim.h"
 extern void EndOfPhaseActions(); //in zsim.cpp
 
+
+
 /* zsim should be initialized in a deterministic and logical order, to avoid re-reading config vars
  * all over the place and give a predictable global state to constructors. Ideally, this should just
  * follow the layout of zinfo, top-down.
@@ -104,7 +106,7 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
     //Array
     uint32_t numHashes = 1;
     uint32_t ways = config.get<uint32_t>(prefix + "array.ways", 4);
-	//arrayType == SetAssoc 或者 Z
+	//cache arrayType == SetAssoc 或者 Z
     string arrayType = config.get<const char*>(prefix + "array.type", "SetAssoc");
     uint32_t candidates = (arrayType == "Z")? config.get<uint32_t>(prefix + "array.candidates", 16) : ways;
 
@@ -201,7 +203,7 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
         uint32_t buckets;
         if (replType == "WayPart") {
             buckets = ways; //not an option with WayPart
-        } else { //Vantage or Ideal 优势或理想
+        } else { //Vantage or Ideal
             buckets = config.get<uint32_t>(prefix + "repl.buckets", 256);
         }
 		//monitor of all partitions of a cache
@@ -262,7 +264,7 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
     uint32_t accLat = (isTerminal)? 0 : latency; //terminal caches has no access latency b/c it is assumed accLat is hidden by the pipeline
     uint32_t invLat = latency;
 	//std::cout<<"init latency:"<<latency<<std::endl;
-    //tYPE and inclusion
+    //cache 的type，默认是Simple
     string type = config.get<const char*>(prefix + "type", "Simple");
     bool nonInclusiveHack = config.get<bool>(prefix + "nonInclusiveHack", false);
     if (nonInclusiveHack) assert(type == "Simple" && !isTerminal);
@@ -384,7 +386,8 @@ MemObject* BuildMemoryController(Config& config, uint32_t lineSize, uint32_t fre
         string outputFile = config.get<const char*>("sys.mem.outputFile");
         string traceName = config.get<const char*>("sys.mem.traceName");
 
-		//构造NVMain类型的内存控制器
+		debug_memctl("traceName = %s",traceName.empty()?"未指定":traceName.c_str());
+		//构造内存控制器
 		mem = new NVMainMemory(nvmainTechIni, outputFile, traceName, capacity, latency, domain, name);
     } else if (type == "Detailed") {
         // FIXME(dsm): Don't use a separate config file... see DDRMemory
@@ -466,7 +469,7 @@ CacheGroup* BuildCacheGroup(Config& config, const string& name, bool isTerminal)
 
 
 static void InitSystem(Config& config) {
-	std::cout<<"src/init.cpp--->InitSystem (including Caches,Tlbs, cores, memory controllers)"<<std::endl;
+	std::cout<<"src/init.cpp--->InitSystem"<<std::endl;
 		(zinfo->reversed_pgt.clear)();	
 		futex_init(&zinfo->reversed_pgt_lock);
 		//default increment step of read/write access of PCM main memory is 1/2 
@@ -711,6 +714,7 @@ static void InitSystem(Config& config) {
         string prefix = string("sys.cores.") + group + ".";
 		//default cores is 1 , default core type is Simple
         uint32_t cores = config.get<uint32_t>(prefix + "cores", 1);
+		//Core type
         string type = config.get<const char*>(prefix + "type", "Simple");
 
         //Build the core group
@@ -742,6 +746,7 @@ static void InitSystem(Config& config) {
 			/***-----------init cores---------****/
 			//zinfo->tlb_type = config.get<const char*>("sys.tlbs.tlb_type" , "CommonTlb");
 			debug_printf("init cores");
+			//tlb type 
 			string tlb_type = config.get<const char*>("sys.tlbs.tlb_type" , "CommonTlb");
 			zinfo->tlb_type = COMMONTLB;
 			if(tlb_type == "HotMonitorTlb")
@@ -766,8 +771,9 @@ static void InitSystem(Config& config) {
 			}
 			else
 				zinfo->pg_walkers = NULL;
+			
+			//page table walker的mode，例如LongMode_Normal，Legacy-Normal
 			string mode_str = config.get<const char*>("sys.pgt_walker.mode" , "Legacy-Normal");
-			//LongMode_Normal
 			debug_tlb("mode_str->pgt_walker: %s",mode_str.c_str());
 			bool reversed_pgt = config.get<bool>("sys.pgt_walker.reversed_pgt", false);
 			//std::cout<<"reversed page table:"<<reversed_pgt<<std::endl;
@@ -787,7 +793,8 @@ static void InitSystem(Config& config) {
 				};
 				//zinfo->paging_array = new BasePaging*[zinfo->numProcs]; 
 				zinfo->paging_array = gm_memalign<BasePaging*>(CACHE_LINE_BYTES , zinfo->numProcs);
-			    string mode_str = pagingmode_to_string(zinfo->paging_mode);
+				//Paging mode,例如Legacy、PAE、LongMode
+				string mode_str = pagingmode_to_string(zinfo->paging_mode);
 				if( mode_str == "Legacy") //Legacy_Huge & Legacy_Normal
 					normal_paging = gm_memalign<NormalPaging>(CACHE_LINE_BYTES, zinfo->numProcs);
 				if( mode_str == "PAE")  //PAE_Huge & PAE_Normal
@@ -799,7 +806,7 @@ static void InitSystem(Config& config) {
 				if( reversed_pgt || zinfo->enable_shared_memory )
 					reversed_paging = gm_memalign<ReversedPaging>(CACHE_LINE_BYTES, zinfo->numProcs);
 
-				/*----------开始构造Paging mode--------------*/
+				/*----------开始构造Paging--------------*/
 				for( unsigned i=0; i<zinfo->numProcs; i++)
 				{
 					if( !reversed_pgt && !zinfo->enable_shared_memory)
@@ -833,7 +840,7 @@ static void InitSystem(Config& config) {
 				CommonTlb<TlbEntry> * common_tlb;
 				HotMonitorTlb<ExtendTlbEntry>* hot_monitor_tlb;
 			};
-			//string tlb_type = config.get<const char*>("sys.tlbs.tlb_type" , "CommonTlb");
+			
 			zinfo->counter_tlb = false;  //default is false
 			if (tlb_type == CounterTlb )
 					zinfo->counter_tlb = true;
@@ -1084,9 +1091,11 @@ static void InitSystem(Config& config) {
 	}
 	zinfo->max_mem_page_no = (zinfo->memory_size)>>(zinfo->page_shift);
 	debug_memsys("max page no: %lld",zinfo->max_mem_page_no);
+
+	
 	/***********init DRAM buffer management**********/
 	//if( config.exists("sys.DRAMBuffer"))
-	if( zinfo->counter_tlb == true)
+	if( zinfo->counter_tlb == true)  //如果DRAM作为NVM的buffer，才会执行下面代码
 	{
 		std::cout<<"begin init dram buffer"<<std::endl;
 		std::string prefix = "sys.DRAMBuffer.";
@@ -1329,12 +1338,12 @@ void SimInit(const char* configFile, const char* outputDir, uint32_t shmid) {
     //Caches,Tlbs, cores, memory controllers
 	//////////////////////////////////////////////////////////
 	//初始化内存管理相关模块
-	//std::cout<<"src/init.cpp--->初始化内存管理相关模块"<<std::endl;
     InitSystem(config);
 	//////////////////////////////////////////////////////////
+	
 	zinfo->lineNum = zinfo->page_size/zinfo->lineSize;
 	std::cout<<"line num:"<<zinfo->lineNum<<std::endl;
-	debug_printf("init hardware system done");
+	debug_test("init hardware system done");
 		
     //Sched stats (deferred because of circular deps)
     zinfo->sched->initStats(zinfo->rootStat);
@@ -1373,8 +1382,9 @@ void SimInit(const char* configFile, const char* outputDir, uint32_t shmid) {
     zinfo->contentionSim->postInit();
 
     info("Initialization complete");
-    debug_printf("Initialization complete");
+    debug_test("Initialization complete");
     //Causes every other process to wake up
+    //唤醒所有其他进程
     gm_set_glob_ptr(zinfo);
 
 }

@@ -33,7 +33,8 @@ class BasePDTEntry: public GlobAlloc
 		BasePDTEntry(void* ppt):next_level_ptr(ppt)
 		{ entry_bits = 0;}
 		virtual ~BasePDTEntry(){};
-	
+
+		/* 使得页表项有效 */
 		void validate( void* next_level_addr , bool is_buffer = false )
 		{
 			entry_bits |= P;
@@ -199,7 +200,12 @@ class BasePDTEntry: public GlobAlloc
 	{	entry_bits &= (~G);	}
 	
 	public:
+		/* 指向下一级页表；
+			例如：如果该entry位于PML4，则该变量指向下一级页表PDP
+				  如果该entry位于PT（最后一级页表），则变量指向一个page
+		*/
 		void* next_level_ptr;
+		/* PageTableEntry的bit位（0bit-9bit），可以添加 */
 		unsigned entry_bits;
 };
 
@@ -216,6 +222,7 @@ public:
 		BasePDTEntry* pg_table = gm_memalign<BasePDTEntry>(CACHE_LINE_BYTES, size);
 		for( uint64_t i=0 ; i<size; i++)
 		{
+			/* 初始化每一个entry */
 			entry_array[i] = new (&pg_table[i]) BasePDTEntry();
 		}
 	}
@@ -255,6 +262,7 @@ public:
 	}
 
 	public:
+		/* 全部的页表项 */
 		g_vector<BasePDTEntry*> entry_array;
 		unsigned map_count;
 };

@@ -43,6 +43,22 @@ const char* const CounterTlb="HotMonitorTlb";
 
 const int HOTTLB=1;
 const int COMMONTLB=0;
+
+
+//global member
+///////////////////////////////////
+/*  add by jason 2019 */
+struct Statistics{
+	Statistics():times_tlb(0),times_pagetable(0),times_pagetablewalker(0)
+	{}
+
+	unsigned  times_tlb;
+	unsigned  times_pagetable;
+	unsigned  times_pagetablewalker;
+};
+
+//////////////////////////////////
+
 struct Pair
 {
 	Pair( unsigned one , unsigned two) : first(one),second(two)

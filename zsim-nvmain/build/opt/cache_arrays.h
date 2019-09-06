@@ -33,21 +33,38 @@
  * translates addresses to line IDs. A line ID represents the position of the tag. The other
  * cache components store tag data in non-associative arrays indexed by line ID.
  */
+ /*
+	多个cache line组成一个array；
+	通过物理地址可以查询到对应的行号
+*/
 class CacheArray : public GlobAlloc {
     public:
         /* Returns tag's ID if present, -1 otherwise. If updateReplacement is set, call the replacement policy's update() on the line accessed*/
-        virtual int32_t lookup(const Address lineAddr, const MemReq* req, bool updateReplacement) = 0;
+		//does the array hold this address? If so, which line is it?
+		virtual int32_t lookup(const Address lineAddr, const MemReq* req, bool updateReplacement) = 0;
 
         /* Runs replacement scheme, returns tag ID of new pos and address of line to write back*/
-        virtual uint32_t preinsert(const Address lineAddr, const MemReq* req, Address* wbLineAddr) = 0;
+		// 插入之前的准备工作：运行cache替换算法，腾出足够空间
+		//make space (i.e., find a victim to evict)
+		virtual uint32_t preinsert(const Address lineAddr, const MemReq* req, Address* wbLineAddr) = 0;
 
         /* Actually do the replacement, writing the new address in lineId.
          * NOTE: This method is guaranteed to be called after preinsert, although
          * there may be some intervening calls to lookup. The implementation is
          * allowed to keep internal state in preinsert() and use it in postinsert()
          */
+         //插入操作的最后收尾工作
+         //allocate space (i.e., finalize eviction)
         virtual void postinsert(const Address lineAddr, const MemReq* req, uint32_t lineId) = 0;
 
+		/*
+			Notice:
+			执行插入cache line的顺序：
+			1、preinsert
+			2、postinsert
+		*/
+
+		
         virtual void initStats(AggregateStat* parent) {}
 };
 
