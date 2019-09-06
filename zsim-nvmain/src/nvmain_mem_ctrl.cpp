@@ -149,7 +149,9 @@ class SchedEventNVMain : public TimingEvent, public GlobAlloc {
         using GlobAlloc::operator delete;
 };
 
-
+/*
+	nvmainTechIni:nvmain的配置文件
+*/
 NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, std::string& traceName, uint32_t capacityMB, uint64_t _minLatency, uint32_t _domain, const g_string& _name , std::string fetcher_name) {
     nvmainConfig = new NVM::Config();
 	mm = NULL;
@@ -175,7 +177,7 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
 	//std::cout<<nvmainConfig->GetString("CMemType")<<std::endl;
 
 	/*
-		设置NVMainMemory内存控制器的成员变量
+		设置NVMainMemory的成员变量
 	*/
     nvmainStatsPtr = new NVM::Stats();
     nvmainSimInterface = new NVM::NullInterface();
@@ -235,7 +237,7 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
 	if( mem_type == "FineNVMain"  )
 	{
 		mm = dynamic_cast<NVM::FineNVMain*>(nvmainPtr);
-		//DRAM buffer fetcher related
+		//DRAM buffer fetcher related 、DRAM作buffer的缓存结构
 		if( (mm->reserved_channels) > 0 )
 		{
 			fetcher = NVM::FetcherFactory::CreateFetcher(fetcher_name);
@@ -314,11 +316,11 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
         ignoreData = false;
     }
 
-    // NVMain stats output file
+    // NVMain stats output file ----> zsim.out
     std::string path = zinfo->outputDir;
     path += "/";
     nvmainStatsFile = gm_strdup((path + name.c_str() + "-" + outputFile).c_str());
-    out.open(nvmainStatsFile, std::ios_base::app);
+    out.open(nvmainStatsFile, std::ios_base::app);  //append写
 
     //std::ofstream out(nvmainStatsFile, std::ios_base::out);
     out << "# nvmain stats for " << name << std::endl;
@@ -358,6 +360,7 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
 		period_touch_vec[i] = tmp;
 		period_nvm_touch[i] = tmp2;
 	}
+	/* dram & nvm 的输出*/
 	fdrc.open("dram.log");
 	fnvm.open("nvm.log");
 	adjust_time = 0;
