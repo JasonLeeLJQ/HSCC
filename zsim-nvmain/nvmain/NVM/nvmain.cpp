@@ -133,7 +133,7 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
         if( conf->KeyExists( "MATHeight" ) )
         {
             rows = static_cast<int>(p->MATHeight);
-            subarrays = static_cast<int>( p->ROWS / p->MATHeight );
+            subarrays = static_cast<int>( p->ROWS / p->MATHeight ); //1
         }
         else
         {

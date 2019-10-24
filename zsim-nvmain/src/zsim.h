@@ -219,11 +219,11 @@ struct GlobSimInfo {
     g_vector<MemObject*> memoryControllers;  //所有的内存控制器对象
 	//NVM::NVMObject* fetcher;
 	/**-----added by YuJieChen , TLB and memory management related-----**/
-	uint64_t memory_size;
+	uint64_t memory_size;  //总内存大小
 	uint64_t max_mem_page_no;
 	MemoryNode* memory_node; //内存节点，UMA只有一个，NUMA有多个
 	uint64_t page_size;  //4KB
-	uint64_t page_shift;
+	uint64_t page_shift; //12
 	BuddyAllocator* buddy_allocator;
 	int percpu_pagelist_fraction;
 	//record max page number of zone
@@ -244,8 +244,8 @@ struct GlobSimInfo {
 	BasePaging** paging_array;
 	BasePageTableWalker** pg_walkers;
 	/*####tlb related #####*/
-	int tlb_type;
-	int tlb_hit_lat;
+	int tlb_type;    //tlb类型
+	int tlb_hit_lat;  // tlb hit latency
 	bool counter_tlb;
 	bool prefetch_set;
 	BasePageTableWalker* page_table_walker;  //查询页表
