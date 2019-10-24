@@ -94,9 +94,9 @@ void FlatNVMain::SetConfig( Config* conf, std::string memoryName,
 	
 	cout<<"/////////////////////////////////////////////"<<endl;
 	cout<<"FlatNVMain::---> NVM + DRAM 统计信息"<<endl;
-	cout<<"fast memory size:"<<(fast_mem_size/(1024*1024*1024))<<" GB"<<endl;
-	cout<<"slow memory size:"<<(slow_mem_size/(1024*1024*1024))<<" GB"<<endl;
-	cout<<"total memory size:"<<(mem_size/(1024*1024*1024))<<" GB"<<endl;
+	cout<<"fast memory size:"<<(fast_mem_size/(1024*1024*1024)/8)<<" GB"<<endl;
+	cout<<"slow memory size:"<<(slow_mem_size/(1024*1024*1024)/8)<<" GB"<<endl;
+	cout<<"total memory size:"<<(mem_size/(1024*1024*1024)/8)<<" GB"<<endl;
 	cout<<"fast memory bits:"<<fast_mem_bits<<endl;
 	cout<<"total channels:"<<total_channels<<endl;
 }

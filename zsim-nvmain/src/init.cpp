@@ -320,7 +320,7 @@ string replace(string s, const string& a, const string& b) {
   return s;
 }
 
-
+/* 内存控制器，NVM和DRAM各自有不同的内存控制器 */
 MemObject* BuildMemoryController(Config& config, uint32_t lineSize, uint32_t frequency, uint32_t domain, g_string& name) {
     //Type
     string type = config.get<const char*>("sys.mem.type", "Simple");
@@ -387,7 +387,7 @@ MemObject* BuildMemoryController(Config& config, uint32_t lineSize, uint32_t fre
         string traceName = config.get<const char*>("sys.mem.traceName");
 
 		debug_memctl("traceName = %s",traceName.empty()?"未指定":traceName.c_str());
-		//构造内存控制器
+		//创建内存控制器
 		mem = new NVMainMemory(nvmainTechIni, outputFile, traceName, capacity, latency, domain, name);
     } else if (type == "Detailed") {
         // FIXME(dsm): Don't use a separate config file... see DDRMemory

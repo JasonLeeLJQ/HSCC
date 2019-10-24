@@ -133,6 +133,7 @@ class DDRMemoryAccEvent;
 class SchedEvent;
 
 // Single-channel controller. For multiple channels, use multiple controllers.
+// DDR内存控制器
 class DDRMemory : public MemObject {
     private:
         
