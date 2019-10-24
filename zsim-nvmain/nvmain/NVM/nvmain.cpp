@@ -238,6 +238,7 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
 	{
         //bits
 		memory_size = ((uint64_t)word_size *(uint64_t)cols *(uint64_t)rows *(uint64_t)banks * (uint64_t)ranks * (uint64_t)channels *(uint64_t)subarrays);
+                std::cout<<"memory size is "<<memory_size<<std::endl;
 	}
 
     if( p->MemoryPrefetcher != "none" )

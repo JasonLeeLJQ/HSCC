@@ -110,7 +110,7 @@ class NVMainMemory : public MemObject, public NVM::NVMObject { //one NVMain cont
         bool ignoreData;
 		bool evict;
 
-        // R/W stats
+        // R/W stats   读写counter
         PAD();
         Counter profIssued;
         Counter profReads;
@@ -126,7 +126,7 @@ class NVMainMemory : public MemObject, public NVM::NVMObject { //one NVMain cont
         static const uint64_t BINSIZE = 10, NUMBINS = 100;
         PAD();
 
-        // Stats file name
+        // Stats file name、最后生成的统计文件名
         const char* nvmainStatsFile;
 
         // Wave phase information
@@ -181,8 +181,8 @@ class NVMainMemory : public MemObject, public NVM::NVMObject { //one NVMain cont
 		ThresAdAction previous_action;
 		uint64_t prefetch_time;
 		uint64_t adjust_time;
-		unsigned t_fast_read;
-		unsigned t_slow_read;
+		unsigned t_fast_read;  //fast read 的cycle
+		unsigned t_slow_read;  //slow read 的cycle
 		unsigned t_slow_write;
 		std::ofstream out;
 	private:

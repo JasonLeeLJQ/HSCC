@@ -1,2 +1,2 @@
-#define ZSIM_BUILDDATE "Thu Sep 5 16:52:43 CST 2019"
+#define ZSIM_BUILDDATE "2019年 10月 15日 星期二 17:31:51 CST"
 #define ZSIM_BUILDVERSION "no git repo"
