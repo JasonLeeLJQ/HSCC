@@ -63,6 +63,7 @@ class CommonTlb: public BaseTlb
 			/* 查找TLB */
 			T* entry = look_up(vpn);
 			Address ppn;
+
 			//TLB miss
 			if(!entry)
 			{
@@ -83,12 +84,12 @@ class CommonTlb: public BaseTlb
 				ppn = entry->p_page_no;
 			}
 			req.cycle += response_latency;
-			Address paddr = (ppn<<(zinfo->page_shift))|offset;
+			Address paddr = ( ppn<<(zinfo->page_shift) ) | offset;
 			return paddr;
 		}
 
 		const char* getName()
-		{ 
+		{
 			return tlb_name_.c_str();
 		}
 		/*-------------TLB hierarchy related------------*/
@@ -297,8 +298,8 @@ class CommonTlb: public BaseTlb
 			
 		//number of tlb entries 
 		unsigned tlb_entry_num;
-		unsigned hit_latency;
-		unsigned response_latency;
+		unsigned hit_latency;    // latency when tlb hit
+		unsigned response_latency; // latency when response to upper-class
 		unsigned insert_num;
 
 		//statistic data
