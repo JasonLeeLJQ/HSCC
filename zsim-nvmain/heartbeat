@@ -1,9 +1,9 @@
 Running on: jason-pc
-Start time: Thu Oct 24 10:54:26 2019
-Heartbeat time: Thu Oct 24 10:54:29 2019
+Start time: Fri Nov  1 16:05:38 2019
+Heartbeat time: Fri Nov  1 16:05:41 2019
 Stats since start:
- 497 phases
- 4970000 cycles
- 1656666 cycles/s
-Stats since last heartbeat (1571885669s):
+ 470 phases
+ 4700000 cycles
+ 1566666 cycles/s
+Stats since last heartbeat (1572595541s):
  0 cycles/s

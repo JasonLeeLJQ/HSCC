@@ -134,7 +134,7 @@ class PAEPaging: public BasePaging
 		unsigned buffer_table_shift;
 };
 
-
+/* 64 bits pagetable */
 /*#----LongMode-Paging(supports 4KB&&2MB&&1GB)---#*/
 class LongModePaging: public BasePaging
 {
@@ -144,7 +144,7 @@ class LongModePaging: public BasePaging
 		int map_page_table( Address addr , void* pg_ptr , bool pbuffer, BasePDTEntry*& mapped_entry);
 		int map_page_table( Address addr , void* pg_ptr , bool pbuffer=false);
 		bool unmap_page_table( Address addr );		
-		//access
+		//access pagetable
 		Address access(MemReq& req);
 		bool allocate_page_table(Address addr , Address size);
 		void remove_root_directory();

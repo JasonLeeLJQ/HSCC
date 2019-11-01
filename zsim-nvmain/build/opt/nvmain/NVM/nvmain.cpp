@@ -133,7 +133,7 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
         if( conf->KeyExists( "MATHeight" ) )
         {
             rows = static_cast<int>(p->MATHeight);
-            subarrays = static_cast<int>( p->ROWS / p->MATHeight );
+            subarrays = static_cast<int>( p->ROWS / p->MATHeight ); //1
         }
         else
         {
@@ -230,11 +230,13 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
     }
 	Params *channel_p = new Params( );
 	channel_p->SetParams( channelConfig[0] );
+    //word size （单位：bit）
 	word_size = static_cast<uint64_t>( channel_p->tBURST * channel_p->BusWidth/8);
 
 	std::cout<<"word size is "<<word_size<<std::endl;
 	if( !config->KeyExists("DRCVariant") )
 	{
+        //bits
 		memory_size = ((uint64_t)word_size *(uint64_t)cols *(uint64_t)rows *(uint64_t)banks * (uint64_t)ranks * (uint64_t)channels *(uint64_t)subarrays);
                 std::cout<<"memory size is "<<memory_size<<std::endl;
 	}

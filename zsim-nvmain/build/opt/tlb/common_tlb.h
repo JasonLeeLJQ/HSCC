@@ -300,12 +300,13 @@ class CommonTlb: public BaseTlb
 		unsigned hit_latency;
 		unsigned response_latency;
 		unsigned insert_num;
+
 		//statistic data
 		uint64_t tlb_access_time;
 		uint64_t tlb_hit_time;
 		uint64_t tlb_evict_time;
 
-		T** tlb;
+		T** tlb;  /* all tlb-entry */
 		/* 空闲的TLB    entry，也就是TLB中还空闲多少entry；如果不空闲，只能调用置换算法*/
 		g_list<T*> free_entry_list;
 		std::set<unsigned> dram_index_list;
@@ -319,9 +320,10 @@ class CommonTlb: public BaseTlb
 
 		g_string tlb_name_;
 		//page table walker
-		BasePageTableWalker* page_table_walker;
+		BasePageTableWalker* page_table_walker;  //search pgtable
 		//eviction policy、TLB置换算法
 		EVICTSTYLE evict_policy;
+		/* lock tlb */
 		lock_t tlb_lock;
 };
 #endif

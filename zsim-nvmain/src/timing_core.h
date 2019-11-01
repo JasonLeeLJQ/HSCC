@@ -42,7 +42,7 @@ class TimingCore : public Core {
         FilterCache* l1i;
         FilterCache* l1d;
 		
-		BaseTlb* itlb;
+		BaseTlb* itlb; //tlb
 		BaseTlb* dtlb;
 
         uint64_t instrs;
@@ -95,6 +95,7 @@ class TimingCore : public Core {
 		uint64_t clflush( Address startAddr, uint64_t startCycle, uint64_t &write_backs );
 		uint64_t clflush_cacheline( Address startAddr, uint64_t startCycle);
         inline void loadAndRecord(Address addr);
+        //access tlb
 		ADDRINT TlbTranslate( ADDRINT virtual_addr , bool is_inst , bool is_write = false);
         inline void storeAndRecord(Address addr);
         inline void bblAndRecord(Address bblAddr, BblInfo* bblInstrs);

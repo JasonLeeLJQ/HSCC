@@ -21,7 +21,9 @@ else
     exit
 fi
 echo "----------------------------------------------------------------------"
-./bin/zsim ./config/rbla.cfg
+rm res.txt
+# ./bin/zsim ./config/rbla.cfg > res.txt
+./bin/zsim ./config/apm.cfg > res.txt
 if [ $? -eq 0 ]; then
     echo "----------------------------------------------------------------------"
     echo "[H] 执行done!"

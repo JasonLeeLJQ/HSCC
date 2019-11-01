@@ -104,6 +104,7 @@ struct Section : public GlobAlloc
 	{}
 };
 
+/* zinfo */
 struct GlobSimInfo {
     //System configuration values, all read-only, set at initialization
     uint32_t numCores;
@@ -111,7 +112,7 @@ struct GlobSimInfo {
     uint32_t lineNum;
 
     //Cores
-    Core** cores;
+    Core** cores;  //all cores
     PAD();
 
     EventQueue* eventQueue;
@@ -215,15 +216,16 @@ struct GlobSimInfo {
     // NVMain
     bool hasNVMain;
     bool hasDRAMCache;
-    uint32_t numMemoryControllers;
+    uint32_t numMemoryControllers;   //内存控制器个数
     g_vector<MemObject*> memoryControllers;  //所有的内存控制器对象
 	//NVM::NVMObject* fetcher;
+    
 	/**-----added by YuJieChen , TLB and memory management related-----**/
-	uint64_t memory_size;
+	uint64_t memory_size;  //总内存大小
 	uint64_t max_mem_page_no;
 	MemoryNode* memory_node; //内存节点，UMA只有一个，NUMA有多个
 	uint64_t page_size;  //4KB
-	uint64_t page_shift;
+	uint64_t page_shift; //12
 	BuddyAllocator* buddy_allocator;
 	int percpu_pagelist_fraction;
 	//record max page number of zone
@@ -241,12 +243,12 @@ struct GlobSimInfo {
 	unsigned read_incre_step;
 	unsigned write_incre_step;
 	unsigned life_time;
-	BasePaging** paging_array;
-	BasePageTableWalker** pg_walkers;
+	BasePaging** paging_array;  //pagetable (every process has one pagetable), paging_array[0] present process-0's pagetable
+	BasePageTableWalker** pg_walkers;  // pagetable-walker
 	/*####tlb related #####*/
-	int tlb_type;
-	int tlb_hit_lat;
-	bool counter_tlb;
+	int tlb_type;    //tlb type
+	int tlb_hit_lat;  // tlb hit latency
+	bool counter_tlb; // default is false
 	bool prefetch_set;
 	BasePageTableWalker* page_table_walker;  //查询页表
 	PagingStyle paging_mode;  //分页的模式（4KB或者2MB,1GB），Legacy/PAE/LongMode

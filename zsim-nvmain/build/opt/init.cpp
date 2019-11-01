@@ -320,7 +320,7 @@ string replace(string s, const string& a, const string& b) {
   return s;
 }
 
-
+/* 构建内存控制器，NVM和DRAM各自有不同的内存控制器《一个channel一个控制器》 */
 MemObject* BuildMemoryController(Config& config, uint32_t lineSize, uint32_t frequency, uint32_t domain, g_string& name) {
     //Type
     string type = config.get<const char*>("sys.mem.type", "Simple");
@@ -331,7 +331,9 @@ MemObject* BuildMemoryController(Config& config, uint32_t lineSize, uint32_t fre
     MemObject* mem = NULL;
 
 	//default memory_size is 16GB
+    //在rbla.cfg中设置
     zinfo->memory_size += power(2,20)*config.get<uint32_t>("sys.mem.capacityMB", 16384);
+    std::cout<<"zinfo->memory_size == "<<zinfo->memory_size <<" bytes && " << (zinfo->memory_size / power(2,30)) << " GB"<<std::endl;
     if (type == "Simple") {
         mem = new SimpleMemory(latency, name);
     } else if (type == "MD1") {
@@ -387,7 +389,7 @@ MemObject* BuildMemoryController(Config& config, uint32_t lineSize, uint32_t fre
         string traceName = config.get<const char*>("sys.mem.traceName");
 
 		debug_memctl("traceName = %s",traceName.empty()?"未指定":traceName.c_str());
-		//构造内存控制器
+		//创建内存控制器
 		mem = new NVMainMemory(nvmainTechIni, outputFile, traceName, capacity, latency, domain, name);
     } else if (type == "Detailed") {
         // FIXME(dsm): Don't use a separate config file... see DDRMemory
@@ -467,15 +469,22 @@ CacheGroup* BuildCacheGroup(Config& config, const string& name, bool isTerminal)
     return cgp;
 }
 
-
+/* init core/cache/tlb/pagetable-walker/memController */
 static void InitSystem(Config& config) {
 	std::cout<<"src/init.cpp--->InitSystem"<<std::endl;
-		(zinfo->reversed_pgt.clear)();	
-		futex_init(&zinfo->reversed_pgt_lock);
-		//default increment step of read/write access of PCM main memory is 1/2 
-		zinfo->read_incre_step = config.get<unsigned>( "sys.DRAMBuffer.read_incre_step",1);
-		zinfo->write_incre_step = config.get<unsigned>( "sys.DRAMBuffer.write_incre_step",2);
-	//default:enable share memory
+
+    (zinfo->reversed_pgt.clear)();	
+    futex_init(&zinfo->reversed_pgt_lock);
+    if(config.exists("sys.DRAMBuffer")){
+        //default increment step of read/write access of PCM main memory is 1/2 
+        zinfo->read_incre_step = config.get<unsigned>( "sys.DRAMBuffer.read_incre_step",1);
+        zinfo->write_incre_step = config.get<unsigned>( "sys.DRAMBuffer.write_incre_step",2);
+    }
+    else{
+        zinfo->read_incre_step = 1;
+        zinfo->write_incre_step = 1;
+    }
+    //default:enable share memory
 	zinfo->enable_shared_memory = config.get<bool>("sys.enable_shared_memory", true);
 	if( 1==zinfo->numProcs)
 		zinfo->enable_shared_memory = false;
@@ -596,11 +605,12 @@ static void InitSystem(Config& config) {
         g_string name(ss.str().c_str());
         //uint32_t domain = nextDomain(); //i*zinfo->numDomains/memControllers;
         uint32_t domain = i*zinfo->numDomains/memControllers;
-		/* 构造单个内存控制器对象 */
+		/* 构造单个内存控制器对象<only one (include nvmain and dram)> */
         mems[i] = BuildMemoryController(config, zinfo->lineSize, zinfo->freqMHz, domain, name);
 	}
 
     zinfo->memoryControllers = mems;
+    std::cout<< "memory controller num == " << zinfo->memoryControllers.size() <<std::endl;  // == 1
 
     if (memControllers > 1) {
         bool splitAddrs = config.get<bool>("sys.mem.splitAddrs", true);
@@ -746,12 +756,18 @@ static void InitSystem(Config& config) {
 			/***-----------init cores---------****/
 			//zinfo->tlb_type = config.get<const char*>("sys.tlbs.tlb_type" , "CommonTlb");
 			debug_printf("init cores");
-			//tlb type 
+
+            std::cout<< "////////////////////////////////////" << std::endl;
+            std::cout<< "init tlb in core" <<std::endl;
+			//tlb type
 			string tlb_type = config.get<const char*>("sys.tlbs.tlb_type" , "CommonTlb");
 			zinfo->tlb_type = COMMONTLB;
 			if(tlb_type == "HotMonitorTlb")
 				zinfo->tlb_type = HOTTLB;
 			//debug_tlb("tlb type is:%s", tlb_type.c_str());
+
+            std::cout<< "////////////////////////////////////" << std::endl;
+            std::cout<< "init pagetable-walker in core" <<std::endl;
 			union
 			{
 				PageTableWalker<TlbEntry>* common_pgt;
@@ -791,9 +807,10 @@ static void InitSystem(Config& config) {
 				   LongModePaging* longmode_paging;
 				   ReversedPaging* reversed_paging;
 				};
-				//zinfo->paging_array = new BasePaging*[zinfo->numProcs]; 
+
+                // one process has a pagetable
 				zinfo->paging_array = gm_memalign<BasePaging*>(CACHE_LINE_BYTES , zinfo->numProcs);
-				//Paging mode,例如Legacy、PAE、LongMode
+				//Paging mode,例如Legacy(32 bits)、PAE、LongMode(64 bits)
 				string mode_str = pagingmode_to_string(zinfo->paging_mode);
 				if( mode_str == "Legacy") //Legacy_Huge & Legacy_Normal
 					normal_paging = gm_memalign<NormalPaging>(CACHE_LINE_BYTES, zinfo->numProcs);
@@ -806,7 +823,8 @@ static void InitSystem(Config& config) {
 				if( reversed_pgt || zinfo->enable_shared_memory )
 					reversed_paging = gm_memalign<ReversedPaging>(CACHE_LINE_BYTES, zinfo->numProcs);
 
-				/*----------开始构造Paging--------------*/
+                std::cout<< "numProcs == "<< zinfo->numProcs << std::endl;
+				/*----------开始构造every process's Pagetable--------------*/
 				for( unsigned i=0; i<zinfo->numProcs; i++)
 				{
 					if( !reversed_pgt && !zinfo->enable_shared_memory)
@@ -843,7 +861,7 @@ static void InitSystem(Config& config) {
 			
 			zinfo->counter_tlb = false;  //default is false
 			if (tlb_type == CounterTlb )
-					zinfo->counter_tlb = true;
+				zinfo->counter_tlb = true;
 			debug_tlb("tlb type: %s", tlb_type.c_str());
 			debug_tlb("counter tlb: %s", zinfo->counter_tlb? "true":"false");
 			if( tlb_type == "CommonTlb"){
@@ -958,7 +976,7 @@ static void InitSystem(Config& config) {
 				}
 				
                 //2、Build the core
-                /*----------开始构造core--------------*/
+                /*----------construct core-------------*/
                 std::cout<<"Core ---> "<<type.c_str()<<std::endl;
                 if (type == "Simple") {
 					//placement new
@@ -966,6 +984,7 @@ static void InitSystem(Config& config) {
 					core->setCoreId( j );
                 } else if (type == "Timing") {
                     uint32_t domain = j*zinfo->numDomains/cores;
+
                     TimingCore* tcore = new (&timingCores[j]) TimingCore(ic, dc,itlb, dtlb, domain, name);
 					tcore->setCoreId(j);
                     zinfo->eventRecorders[coreIdx] = tcore->getEventRecorder();
@@ -1006,7 +1025,12 @@ static void InitSystem(Config& config) {
     assert(zinfo->numCores == coreIdx);
     zinfo->cores = gm_memalign<Core*>(CACHE_LINE_BYTES, zinfo->numCores);
     coreIdx = 0;
-    for (const char* group : coreGroupNames) for (Core* core : coreMap[group]) zinfo->cores[coreIdx++] = core;
+    ///////////////////////////////////////////////
+    for (const char* group : coreGroupNames) {
+        for (Core* core : coreMap[group]) {
+            zinfo->cores[coreIdx++] = core;
+        }
+    }
 
     /**-----Init stats: cores, caches, mem----**/
     for (const char* group : coreGroupNames) {
@@ -1053,6 +1077,7 @@ static void InitSystem(Config& config) {
 			zinfo->max_zone_pfns[Zone_Normal] = (zinfo->memory_size)>>(zinfo->page_shift);	//hasn't configured zone , take all memory as zone normal
 		debug_memsys("size of zone_normal: %lld",zinfo->max_zone_pfns[Zone_Normal]);
 		//init max_zone_pfns
+        //config three memory zones, include zone size and max pfn
 		if( config.exists(c_zone_sec))
 		{
 			//default unit is MB
@@ -1070,6 +1095,7 @@ static void InitSystem(Config& config) {
 			else
 				zinfo->max_zone_pfns[Zone_HighMem] = 0;
 		}
+
 		debug_memsys("init memory node and buddy allocator");	
 		//create MemoryNode and BuddyAllocator object 
 		//构造memory node
@@ -1091,6 +1117,7 @@ static void InitSystem(Config& config) {
 	}
 	zinfo->max_mem_page_no = (zinfo->memory_size)>>(zinfo->page_shift);
 	debug_memsys("max page no: %lld",zinfo->max_mem_page_no);
+    debug_memsys("memory size : %lld GB", zinfo->max_mem_page_no * 4 / 1024 / 1024);
 
 	
 	/***********init DRAM buffer management**********/
@@ -1321,7 +1348,8 @@ void SimInit(const char* configFile, const char* outputDir, uint32_t shmid) {
     zinfo->addressRandomization = config.get<bool>("sys.addressRandomization", false);
 
     //Port virtualization
-    for (uint32_t i = 0; i < MAX_PORT_DOMAINS; i++) zinfo->portVirt[i] = new PortVirtualizer();
+    for (uint32_t i = 0; i < MAX_PORT_DOMAINS; i++) 
+        zinfo->portVirt[i] = new PortVirtualizer();
 
     //Process hierarchy
     //NOTE: Due to partitioning, must be done before initializing memory hierarchy
@@ -1372,12 +1400,13 @@ void SimInit(const char* configFile, const char* outputDir, uint32_t shmid) {
     //HACK: Read all variables that are read in the harness but not in init
     //This avoids warnings on those elements
     config.get<uint32_t>("sim.gmMBytes", (1 << 10));
-    if (!zinfo->attachDebugger) config.get<bool>("sim.deadlockDetection", true);
+    if (!zinfo->attachDebugger) 
+        config.get<bool>("sim.deadlockDetection", true);
     config.get<bool>("sim.aslr", false);
 
     //Write config out
     bool strictConfig = config.get<bool>("sim.strictConfig", true); //if true, panic on unused variables
-    config.writeAndClose((string(zinfo->outputDir) + "/out.cfg").c_str(), strictConfig);
+    config.writeAndClose((string(zinfo->outputDir) + "/system.cfg").c_str(), strictConfig);
 
     zinfo->contentionSim->postInit();
 

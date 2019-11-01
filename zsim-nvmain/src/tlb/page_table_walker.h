@@ -479,7 +479,7 @@ class PageTableWalker: public BasePageTableWalker
 public:
 		PagingStyle mode;
 		g_string pg_walker_name;
-	    BasePaging* paging;
+	    BasePaging* paging;  //pagetable
 		uint64_t period;
 		unsigned long long tlb_shootdown_overhead;
 		unsigned long long hscc_tlb_shootdown;

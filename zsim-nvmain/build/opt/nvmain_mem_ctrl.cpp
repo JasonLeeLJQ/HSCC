@@ -150,7 +150,7 @@ class SchedEventNVMain : public TimingEvent, public GlobAlloc {
 };
 
 /*
-	nvmainTechIni:nvmain的配置文件
+	nvmainTechIni:nvmain的配置文件, location is ./config/xxx.cfg
 */
 NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, std::string& traceName, uint32_t capacityMB, uint64_t _minLatency, uint32_t _domain, const g_string& _name , std::string fetcher_name) {
     nvmainConfig = new NVM::Config();
@@ -230,9 +230,8 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
     nvmainGlobalEventQueue->AddSystem(nvmainPtr, nvmainConfig);
 	/* NVMain设置参数:NVMain 包括NVM的设置和DRAM的设置 */
 	std::cout<<"////////////////////////////////////////"<<std::endl;
-	std::cout<<"FlatNVMain设置参数 "<<std::endl;
+	std::cout<<"NVMain设置参数 "<<std::endl;
     nvmainPtr->SetConfig(nvmainConfig);
-	std::cout<<"FlatNVMain设置参数完成 "<<std::endl;
 	std::cout<<"////////////////////////////////////////"<<std::endl;
 	if( mem_type == "FineNVMain"  )
 	{
@@ -271,8 +270,8 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
 		NVM::FlatMigrator* migrator = new NVM::FlatMigrator();
 		nvmainPtr->SetMigrator( migrator );
 		NVM::FlatRBLANVMain* flat_rbla_mem = dynamic_cast<NVM::FlatRBLANVMain*>( nvmainPtr );
-		std::cout<<"migrator:"<<migrator<<std::endl;
-		std::cout<<"rbla mem:"<<flat_rbla_mem<<std::endl;
+		//std::cout<<"migrator:"<<migrator<<std::endl;
+		//std::cout<<"rbla mem:"<<flat_rbla_mem<<std::endl;
 		migrator->SetFastMemory( flat_rbla_mem->GetFlatMemory()->GetFastMemory());
 		migrator->SetSlowMemory( flat_rbla_mem->GetFlatMemory()->GetSlowMemory());
 		migrator->SetMemory( flat_rbla_mem);
@@ -388,7 +387,7 @@ inline void NVMainMemory::filter_based_cache( MemReq& req,
 		NVMainAccEvent* memEv,uint64_t paddr, bool is_write )
 {
 	uint32_t core_id = req.srcId;
-	if( zinfo->counter_tlb )
+	if( zinfo->counter_tlb )  //in rbla.cfg, default is false
 	{
 		if( !is_dram_address(paddr) )
 		{
@@ -423,7 +422,7 @@ inline void NVMainMemory::filter_based_cache( MemReq& req,
 inline NVMainAccEvent* NVMainMemory::push_to_main_memory( MemReq& req, uint64_t respCycle )
 {
 	bool is_write = ((req.type == PUTX) || (req.type == PUTS)); 
-	Address addr = req.lineAddr << lineBits;  //physical address
+	Address addr = req.lineAddr << lineBits;  //physical address(physical page number)
 	NVMainAccEvent* memEv = new (zinfo->eventRecorders[req.srcId])
 		 NVMainAccEvent(this, is_write, addr, domain);
 	//filter_based DRAM caching
@@ -437,21 +436,21 @@ inline NVMainAccEvent* NVMainMemory::push_to_main_memory( MemReq& req, uint64_t 
 }
 
 uint64_t NVMainMemory::access(MemReq& req) {
-	debug_memctl("ACCESS");
 	futex_lock(&access_lock);
+	std::cout<<AccessTypeName(req.type)<<std::endl;
     switch (req.type) {
-        case PUTS:
+        case PUTS:  //clean writeback
             profPUTS.inc();
             *req.state = I;
             break;
-        case PUTX:
+        case PUTX:  //dirty writeback
             profPUTX.inc();
             *req.state = I;
             break;
-        case GETS:
+        case GETS:  //shared read
             *req.state = req.is(MemReq::NOEXCL)? S : E;
             break;
-        case GETX:
+        case GETX:  //atomic read
             *req.state = M;
             break;
         default: panic("!?");
@@ -468,6 +467,8 @@ uint64_t NVMainMemory::access(MemReq& req) {
 		debug_memctl("isWrite = %s",isWrite?"true":"false");
 		//if( isWrite )
 			//std::cout<<"access:"<<std::hex<<(addr)<<" ppn:"<<(addr>>12)<<" write:"<<isWrite<<std::endl;
+		
+		//nvm stat
 		nvmain_access_count++;
 		if(isWrite)
 			nvmain_write_access_count++;

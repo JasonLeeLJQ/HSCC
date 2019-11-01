@@ -66,7 +66,7 @@ void FlatMigrator::Init( Config *config )
 	channels = p->CHANNELS;
 	rows = p->ROWS;
 	cols = p->COLS;
-	total_pages = p->RANKS * p->BANKS* p->ROWS * p-> CHANNELS;
+	total_pages = p->RANKS * p->BANKS* p->ROWS * p-> CHANNELS;  //??? p->RANKS * p->BANKS* p->ROWS * p-> CHANNELS * p->COLS /8/4/1024
 	std::cout<<"total pages is:"<<total_pages<<std::endl;
 	migration_cycles = 0;
 	
