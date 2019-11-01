@@ -266,6 +266,7 @@ struct GlobSimInfo {
 	g_vector<bool> shared_mem_inited;
 	g_unordered_map<uint32_t, g_list<Content*> > reversed_pgt;
 	lock_t reversed_pgt_lock; 
+    /* 每次访问内存所需的周期 */
 	unsigned mem_access_time;
 };
 

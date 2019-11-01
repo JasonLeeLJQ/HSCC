@@ -125,6 +125,7 @@ class PageTableWalker: public BasePageTableWalker
 		    Page* page = NULL;
 			if( zinfo->buddy_allocator)
 			{
+				std::cout<< "zinfo->buddy_allocator == %s" << ((zinfo->buddy_allocator ?) "true":"false" )<< std::endl;
 				page = zinfo->buddy_allocator->allocate_pages(0);
 				if(page)
 				{
@@ -479,7 +480,7 @@ class PageTableWalker: public BasePageTableWalker
 public:
 		PagingStyle mode;
 		g_string pg_walker_name;
-	    BasePaging* paging;  //pagetable
+	    BasePaging* paging;  //pagetable 4级页表
 		uint64_t period;
 		unsigned long long tlb_shootdown_overhead;
 		unsigned long long hscc_tlb_shootdown;
