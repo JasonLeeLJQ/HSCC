@@ -143,7 +143,7 @@ class FineNVMain : public NVMain
 	unsigned GetSlowWriteCycle(){ return t_slow_write; }
 	uint64_t mem_size;
 	uint64_t access_time;
-	uint64_t cache_size;
+	uint64_t cache_size;  //DRAM buffer size
 
 	unsigned mem_word_size;
 	unsigned cache_word_size;

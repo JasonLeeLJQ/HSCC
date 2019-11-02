@@ -91,7 +91,7 @@ struct MemReq {
 	// Address PhyAddr = req.lineAddr << lineBits;  virtual address ---> physical address
     Address lineAddr;	//line address , virtual address
     AccessType type;	//GETS, GETX, PUTS, PUTX
-    uint32_t childId;
+    uint32_t childId;  //发出MemReq的组件的id；如果当前组件是mem，上一级是LLC
     MESIState* state;  //M/E/S/I四种状态，缓存一致性
     uint64_t cycle; //cycle where request arrives at component，所需的执行周期
 

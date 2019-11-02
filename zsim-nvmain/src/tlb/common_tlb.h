@@ -307,7 +307,7 @@ class CommonTlb: public BaseTlb
 		uint64_t tlb_hit_time;
 		uint64_t tlb_evict_time;
 
-		T** tlb;  /* all tlb-entry */
+		T** tlb;  /* all tlb-entry, like tlb[i]->xx */
 		/* 空闲的TLB    entry，也就是TLB中还空闲多少entry；如果不空闲，只能调用置换算法*/
 		g_list<T*> free_entry_list;
 		std::set<unsigned> dram_index_list;
@@ -320,11 +320,13 @@ class CommonTlb: public BaseTlb
 		g_unordered_map<Address , T*> tlb_trie_pa; //物理地址---> TlbEntry
 
 		g_string tlb_name_;
+
+
 		//page table walker
-		BasePageTableWalker* page_table_walker;  //search pgtable
+		BasePageTableWalker* page_table_walker;  //页表查询
 		//eviction policy、TLB置换算法
 		EVICTSTYLE evict_policy;
-		/* lock tlb */
+		/* lock tlb,对TLB操作必须加锁，防止其他进程修改 */
 		lock_t tlb_lock;
 };
 #endif

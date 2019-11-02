@@ -1034,7 +1034,7 @@ bool LongModePaging::unmap_page_table( Address addr)
 	return false;
 }
 
-/* 页表的查询过程 */
+/* 64 bits页表的查询过程 */
 Address LongModePaging::access(MemReq &req)
 {
 	stat_info->times_pagetable++;

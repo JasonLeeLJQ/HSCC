@@ -96,7 +96,7 @@ class ComplementPredicate : public SchedulingPredicate
     }
 };
 
-
+/* 单个channel的内存控制器设置 */
 class MemoryController : public NVMObject 
 {
   public:

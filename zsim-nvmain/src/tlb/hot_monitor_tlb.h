@@ -13,6 +13,13 @@
 #include "DRAM-buffer/DRAM_buffer_block.h"
 //#include "tlb/page_table_walker.h"
 
+/*
+	HotMonitorTlb解析：
+	write_incre_step：一次写操作，counter + write_incre_step，步长==2
+	read_incre_step：一次读操作，counter + read_incre_step，步长==1
+
+	counter达到设定阈值后，从PCM迁移到DRAM
+*/
 template<class T>
 class HotMonitorTlb: public BaseTlb 
 {
@@ -39,6 +46,8 @@ class HotMonitorTlb: public BaseTlb
 			Address offset = virt_addr &(zinfo->page_size-1);
 			Address vpn = virt_addr >>(zinfo->page_shift);
 			Address ppn;
+
+			/* lookup tlb */
 			T* entry = ordinary_tlb->look_up(vpn);
 			uint32_t access_counter = 0;
 			uint32_t origin_child_id = req.childId;
@@ -50,7 +59,7 @@ class HotMonitorTlb: public BaseTlb
 				{
 					access_counter = req.childId; 
 				}
-				debug_printf("hot monitor insert (%llx,%llx)",vpn,ppn);
+
 				insert(vpn,ppn, access_counter);
 			}
 			//tlb hit
@@ -171,7 +180,7 @@ class HotMonitorTlb: public BaseTlb
 
 		T* insert( Address vpage_no ,Address ppn , uint32_t access_counter)
 		{
-			//DRAM buffer TLB 
+			//DRAM buffer 的TLB
 			if( (ppn << zinfo->page_shift) >= zinfo->high_addr )
 			{
 				T entry(vpage_no, ppn , true);
@@ -231,6 +240,6 @@ class HotMonitorTlb: public BaseTlb
 		uint64_t pcm_tlb_miss;
 		uint64_t dram_tlb_hit;
 		uint64_t dram_tlb_miss;
-		CommonTlb<T>* ordinary_tlb;
+		CommonTlb<T>* ordinary_tlb;  //直译：普通的tlb
 };
 #endif

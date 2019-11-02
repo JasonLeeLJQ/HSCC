@@ -50,10 +50,13 @@ MemoryController *MemoryControllerFactory::CreateNewController( std::string cont
 {
     MemoryController *memoryController = NULL;
 
-	std::cout<<"MemoryControllerFactory::CreateNewController--->创建内存控制器 " << controller<<std::endl;
+	std::cout<<"MemoryControllerFactory::CreateNewController--->创建内存通道控制器 " << controller<<std::endl;
     if( controller == "" )
         std::cout << "NVMain: MEM_CTL is not set in configuration file!" << std::endl;
 
+    /* MEMCTL == "FCFS" 
+        采用不同的算法的内存通道控制器
+    */
     if( controller == "FCFS" )
         memoryController = new FCFS( );
     else if( controller == "FRFCFS" )

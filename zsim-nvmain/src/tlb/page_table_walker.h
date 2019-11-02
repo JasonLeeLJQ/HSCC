@@ -126,7 +126,6 @@ class PageTableWalker: public BasePageTableWalker
 		    Page* page = NULL;
 			if( zinfo->buddy_allocator)
 			{
-				std::cout<< "zinfo->buddy_allocator == " << ((zinfo->buddy_allocator != nullptr )? "true":"false" )<< std::endl;
 				page = zinfo->buddy_allocator->allocate_pages(0);
 				if(page)
 				{

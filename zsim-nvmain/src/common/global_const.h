@@ -88,6 +88,7 @@ typedef std::list<Triple> triple_list;
 typedef std::list<Triple>::iterator triple_list_ptr;
 
 // pagetable style ,include normal page, middle page, huge page
+//
 enum PagingStyle
 {
 	Legacy_Normal,	//4KB page

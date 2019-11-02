@@ -160,7 +160,7 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
 	/*读配置文件 如flat.config*/
     nvmainConfig->Read(nvmainTechIni);
 	//debug_test("NVMainMemory::NVMainMemory--->NVMainControl: Reading NVMain config file: %s",nvmainTechIni.c_str());
-    info("NVMainControl: Reading NVMain config file: %s", nvmainTechIni.c_str());
+    info("NVMainControl: Reading  NVMainconfig file: %s", nvmainTechIni.c_str());
 	std::string mem_type = "NVMain";
 	if( nvmainConfig->KeyExists("CMemType"))
 		mem_type = nvmainConfig->GetString("CMemType");
@@ -170,7 +170,6 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
 		nvmainPtr = new (nvm_ptr) NVM::FineNVMain();     
 	}
 	else {
-		/* 在flat.config中，指定了CMemType==FLATNVMain */
 		nvmainPtr = NVM::NVMainFactory::CreateNewNVMain(mem_type);
 	}
 	/* 输出内存类型 */
@@ -228,11 +227,13 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
     AddChild(nvmainPtr);
     nvmainPtr->SetParent(this);
     nvmainGlobalEventQueue->AddSystem(nvmainPtr, nvmainConfig);
+
+
 	/* NVMain设置参数:NVMain 包括NVM的设置和DRAM的设置 */
-	std::cout<<"////////////////////////////////////////"<<std::endl;
-	std::cout<<"NVMain设置参数 "<<std::endl;
+	////////////////////////////////////////
     nvmainPtr->SetConfig(nvmainConfig);
-	std::cout<<"////////////////////////////////////////"<<std::endl;
+	////////////////////////////////////////
+
 	if( mem_type == "FineNVMain"  )
 	{
 		mm = dynamic_cast<NVM::FineNVMain*>(nvmainPtr);
@@ -248,7 +249,8 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
 			//basic information about dram buffer and main memory
 			zinfo->buffer_size = nvmainPtr->GetBufferSize();
 			unsigned mem_width = nvmainPtr->GetMemoryWidth(); 
-			zinfo->high_addr = (Address)1<<mem_width;
+			zinfo->high_addr = (uint64_t)1<<mem_width;
+
 			//get delta time information for dynamically threshold adjustment
 			mm->GetDeltaCycles( delta_hit_t,
 								delta_clean_miss_t , delta_dirty_miss_t);
@@ -260,9 +262,9 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
 			std::cout<<"t_slow_read:"<<t_slow_read<<std::endl;
 			std::cout<<"t_slow_write:"<<t_slow_write<<std::endl;
 			std::cout<<"reset write increment step to:"<<zinfo->write_incre_step<<std::endl;
-			debug_printf("nvmain_buffer size is : %llx",zinfo->buffer_size);
-			debug_printf("base addr of nvmain dram buffer: %llx",zinfo->high_addr);
-			debug_printf("width of main memory: %d",nvmainPtr->GetMemoryWidth());
+			// debug_printf("nvmain_buffer size is : %llx",zinfo->buffer_size);  // 40000000x(16进制) 1.6GB
+			// debug_printf("base addr of nvmain dram buffer: %llx",zinfo->high_addr); // 800000000x 32GB
+			// debug_printf("width of main memory: %d",nvmainPtr->GetMemoryWidth()); // 35
 		}
 	}
 	else if( mem_type == "FlatRBLANVMain")
@@ -284,6 +286,12 @@ NVMainMemory::NVMainMemory(std::string& nvmainTechIni, std::string& outputFile, 
 		zinfo->high_addr = 0;
 		delta_hit_t = delta_clean_miss_t = delta_dirty_miss_t = 0;
 	}
+	/* print stat */
+	// std::cout<< "mem_type == " << mem_type << std::endl;
+	// std::cout<< "zinfo->high_addr == " << zinfo->high_addr << std::endl;
+	// std::cout<< "zinfo->buffer_size == " << zinfo->buffer_size << std::endl;
+	// std::cout<< "zinfo->mem_width == " << nvmainPtr->GetMemoryWidth() << std::endl; //内存带宽
+
 	/***-----get memory size------***/
 	zinfo->memory_size = nvmainPtr->GetMemorySize();
 	cout<<"memory size is:"<<std::dec<<(zinfo->memory_size/(1024*1024*1024))<<"GB"<<endl;

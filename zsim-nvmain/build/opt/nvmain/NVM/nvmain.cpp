@@ -70,7 +70,7 @@ NVMain::NVMain( )
 	mem_width = 0;
 	memory_size = 0;
 	
-	debug_NVMain("NVMain--->创建nvmain基类");
+	//debug_NVMain("NVMain--->创建nvmain基类");
 	std::cout<<"************create nvmain---"<<std::endl;
 }
 
@@ -111,7 +111,6 @@ Config *NVMain::GetConfig( )
 
 void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildren )
 {
-	debug_NVMain("开始设置%s的参数",memoryName.c_str( ));
     TranslationMethod *method;
     int channels, ranks, banks, rows, cols, subarrays;
 
@@ -121,7 +120,6 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
     SetParams( params );
 
     StatName( memoryName );
-	//debug_NVMain("NVMain::SetConfig--->memoryName == %s",memoryName.c_str( ));
 
     config = conf;
     if( config->GetSimInterface( ) != NULL )
@@ -174,7 +172,10 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
         translator->SetDefaultField( CHANNEL_FIELD );
 
         SetDecoder( translator );
+
+        //每一个channel的内存通道控制器
         memoryControllers = new MemoryController* [channels];
+        //每一个channel的配置
         channelConfig = new Config* [channels];
 
 		/* 多个channel，配置每一个channel */
@@ -206,7 +207,7 @@ void NVMain::SetConfig( Config *conf, std::string memoryName, bool createChildre
 				channelConfig[i] = config;
 			
             /* Initialize memory controller */
-			debug_NVMain("初始化内存控制器");
+			debug_NVMain("初始化每个channel的内存控制器");
 			//one channel <---> one memory controller
             memoryControllers[i] = 
                 MemoryControllerFactory::CreateNewController( channelConfig[i]->GetString( "MEM_CTL" ) );

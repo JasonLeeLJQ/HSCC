@@ -226,14 +226,14 @@ struct GlobSimInfo {
 	MemoryNode* memory_node; //内存节点，UMA只有一个，NUMA有多个
 	uint64_t page_size;  //4KB
 	uint64_t page_shift; //12
-	BuddyAllocator* buddy_allocator;  //伙伴系统，用于分配page
+	BuddyAllocator* buddy_allocator;
 	int percpu_pagelist_fraction;
 	//record max page number of zone
 	uint64_t max_zone_pfns[MAX_NR_ZONES];
 	int sysctl_lowmem_reserve_ratio[MAX_NR_ZONES-1];
 	/*####DRAM buffer related####*/
-	uint64_t buffer_size;
-	Address high_addr;
+	uint64_t buffer_size;  // DRAM buffer size
+	Address high_addr;  //DRAM的边界<左边是NVM，右边是DRAM>
 	g_vector<unsigned> access_threshold;
 	//unsigned access_threshold;	 //threshold to cache pcm block into dram buffer
 	uint64_t adjust_interval;
@@ -257,7 +257,7 @@ struct GlobSimInfo {
 	DRAMEVICTSTYLE dram_evict_policy;
 	bool dynamic_threshold; 
 	bool proc_fairness;
-	bool multi_queue;
+	bool multi_queue;  //多级队列算法管理PCM页，如果不是multi_queue算法，默认为false
 	/****shared memory related***/
 	//and memory  region in case that some library isn't continuous)  
 	//ascending order
@@ -266,6 +266,7 @@ struct GlobSimInfo {
 	g_vector<bool> shared_mem_inited;
 	g_unordered_map<uint32_t, g_list<Content*> > reversed_pgt;
 	lock_t reversed_pgt_lock; 
+    /* 每次访问内存所需的周期 */
 	unsigned mem_access_time;
 };
 

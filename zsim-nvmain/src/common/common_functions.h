@@ -18,7 +18,7 @@
 
 
 //tips：增加一个宏定义，只要把此宏定义注释掉就可以取消相关的日志输出。
-//#define DEBUG_PRINT
+#define DEBUG_PRINT
 #define DEBUG_TEST
 //#define DEBUG_CACHE
 //#define DEBUG_MEMCTL
