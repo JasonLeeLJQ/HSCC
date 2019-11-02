@@ -193,7 +193,7 @@ class LongModePaging: public BasePaging
 	
 		PageTable* get_tables(unsigned level , std::vector<unsigned> entry_id_vec);
 	public:
-		PageTable* pml4;  //顶层页表
+		PageTable* pml4;  //顶层页表 <ML4、PDP、PD、PT>
 	private:
 		PagingStyle mode;
 		//number of page directory pointer at most 512

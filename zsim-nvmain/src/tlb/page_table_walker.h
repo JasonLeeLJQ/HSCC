@@ -55,6 +55,7 @@ class PageTableWalker: public BasePageTableWalker
 		/*------tlb hierarchy related-------*/
 		//bool add_child(const char* child_name ,  BaseTlb* tlb);
 		/*------simulation timing and state related----*/
+		//return ppn <物理页框号>
 		uint64_t access( MemReq& req)
 		{
 			stat_info->times_pagetablewalker++;
@@ -125,15 +126,15 @@ class PageTableWalker: public BasePageTableWalker
 		    Page* page = NULL;
 			if( zinfo->buddy_allocator)
 			{
-				std::cout<< "zinfo->buddy_allocator == %s" << ((zinfo->buddy_allocator != nullptr )? "true":"false" )<< std::endl;
+				std::cout<< "zinfo->buddy_allocator == " << ((zinfo->buddy_allocator != nullptr )? "true":"false" )<< std::endl;
 				page = zinfo->buddy_allocator->allocate_pages(0);
 				if(page)
 				{
-					//TLB shootdown
+					//TLB shootdown,TLB中所有与vpn有关的entry应该全部失效（因为vpn重新映射了新的地址）
 					Address vpn = req.lineAddr>>(zinfo->page_shift);
 					/* 使虚拟地址vpn对应的tlb entry失效（所有Core有效） */
 					tlb_shootdown(req, vpn, tlb_shootdown_overhead );
-					//debug_tlb("tlb shootdown,enable_shared_memory = %s",zinfo->enable_shared_memory?"true":"false");
+
 					if( zinfo->enable_shared_memory)
 					{
 						if( !map_shared_region(req, page) )

@@ -222,7 +222,10 @@ class HotMonitorTlb: public BaseTlb
 		}
 
 	private:
-		unsigned write_incre_step;
+		/* 设置迁移阈值，每对PCM写一次，counter增加write_incre_step；读一次，counter增加read_incre_step
+			直到超出阈值，需要迁移。
+		*/
+		unsigned write_incre_step;  
 		unsigned read_incre_step;
 		uint64_t pcm_tlb_hit;
 		uint64_t pcm_tlb_miss;

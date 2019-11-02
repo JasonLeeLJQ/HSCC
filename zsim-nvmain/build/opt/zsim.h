@@ -226,7 +226,7 @@ struct GlobSimInfo {
 	MemoryNode* memory_node; //内存节点，UMA只有一个，NUMA有多个
 	uint64_t page_size;  //4KB
 	uint64_t page_shift; //12
-	BuddyAllocator* buddy_allocator;
+	BuddyAllocator* buddy_allocator;  //伙伴系统，用于分配page
 	int percpu_pagelist_fraction;
 	//record max page number of zone
 	uint64_t max_zone_pfns[MAX_NR_ZONES];

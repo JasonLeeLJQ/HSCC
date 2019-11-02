@@ -134,7 +134,7 @@ class ExtendTlbEntry;
 class ExtendTlbEntry: public BaseTlbEntry
 {
 	public:
-		Address access_counter;
+		Address access_counter;  //记录entry访问次数
 		unsigned life_time;
 		//static unsigned counter_len; 
 		ExtendTlbEntry():BaseTlbEntry()

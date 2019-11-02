@@ -50,6 +50,7 @@
         "typeinfo": "cpp",
         "cstddef": "cpp",
         "*.ph": "cpp",
-        "*.tlh": "cpp"
+        "*.tlh": "cpp",
+        "string": "cpp"
     }
 }
