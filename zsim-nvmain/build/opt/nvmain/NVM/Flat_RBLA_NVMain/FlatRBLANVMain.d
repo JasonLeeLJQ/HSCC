@@ -33,8 +33,9 @@ build/opt/nvmain/NVM/Flat_RBLA_NVMain/FlatRBLANVMain.os: \
  build/opt/common/global_const.h build/opt/tlb/tlb_entry.h \
  build/opt/zsim.h build/opt/constants.h build/opt/debug.h \
  build/opt/g_std/g_list.h build/opt/g_std/g_unordered_set.h \
- build/opt/g_std/g_unordered_map.h nvmain/NVM/Fine_NVMain/FineNVMain.h \
- nvmain/Utils/FetcherFactory.h nvmain/Utils/BlockFetcher/BlockFetcher.h \
+ build/opt/g_std/g_unordered_map.h build/opt/MMU/page.h \
+ nvmain/NVM/Fine_NVMain/FineNVMain.h nvmain/Utils/FetcherFactory.h \
+ nvmain/Utils/BlockFetcher/BlockFetcher.h \
  nvmain/Decoders/BufferDecoder/BufferDecoder.h build/opt/locks.h \
  nvmain/Utils/FlatMigrator/FlatMigrator.h build/opt/core.h \
  build/opt/decoder.h pin_kit/source/include/pin/pin.H \

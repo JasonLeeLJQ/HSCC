@@ -2,9 +2,9 @@
 PINPATH=/home/jason/dev_code/HSCC/zsim-nvmain/pin_kit
 NVMAINPATH=/home/jason/dev_code/HSCC/zsim-nvmain/nvmain
 ZSIMPATH=/home/jason/dev_code/HSCC/zsim-nvmain
-BOOST=/usr/local/lib
-LIBCONFIG=/usr/local/lib
-HDF5=/usr/local/hdf5
+BOOST=/usr/local/lib/boost
+LIBCONFIG=/usr/local/lib/
+HDF5=/usr/local/lib
 #SIMPOINT_DIR=path of simpoint
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PINPATH/intel64/lib:$PINPATH/intel64/runtime:$PINPATH/intel64/lib:$PINPATH/intel64/lib-ext:$BOOST/lib:$HDF5/lib
 INCLUDE=$INCLUDE:$HDF5/include

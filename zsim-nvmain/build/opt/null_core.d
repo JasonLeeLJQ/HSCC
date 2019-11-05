@@ -134,4 +134,5 @@ build/opt/null_core.os: build/opt/null_core.cpp build/opt/null_core.h \
  nvmain/src/TranslationMethod.h nvmain/src/Config.h \
  nvmain/src/SimInterface.h nvmain/include/NVMDataBlock.h \
  nvmain/src/Stats.h nvmain/include/NVMainRequest.h \
- nvmain/include/NVMAddress.h nvmain/src/TagGenerator.h
+ nvmain/include/NVMAddress.h nvmain/src/TagGenerator.h \
+ build/opt/MMU/page.h

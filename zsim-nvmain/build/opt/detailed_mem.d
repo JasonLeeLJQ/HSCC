@@ -17,5 +17,5 @@ build/opt/detailed_mem.os: build/opt/detailed_mem.cpp \
  nvmain/src/SimInterface.h nvmain/include/NVMDataBlock.h \
  nvmain/src/Stats.h nvmain/include/NVMainRequest.h \
  nvmain/include/NVMAddress.h nvmain/src/TagGenerator.h \
- build/opt/tick_event.h build/opt/contention_sim.h build/opt/prio_queue.h \
- build/opt/profile_stats.h
+ build/opt/MMU/page.h build/opt/tick_event.h build/opt/contention_sim.h \
+ build/opt/prio_queue.h build/opt/profile_stats.h

@@ -160,6 +160,7 @@ class NVMainRequest
 	AccessType media;
 	bool rbHit;						//request row buffer hit?	
 	bool dirty_miss;
+    /* NVMainRequest的实际的物理地址，由 row, col, bank, rank, channel, subarray表示 */
     NVMAddress address;            //< pythical address ,Address of request
     OpType type;                   //< Operation type of request (read, write, etc)
 	//uint64_t taccess_before; 
@@ -182,7 +183,10 @@ class NVMainRequest
     uint64_t programCounter;       //< Program counter of CPU issuing request
     ncounter_t burstCount;         //< Number of bursts (used for variable-size requests.
     NVMObject *owner;              //< Pointer to the object that created this request
-
+    
+    /* NVMainRequest 时间统计 
+        请求到达组件时间 arrivalCycle + 排队时间 queueCycle == 请求真正执行的时间 issueCycle
+    */
     ncycle_t arrivalCycle;         //< When the request arrived at the memory controller
     ncycle_t startCycle;         //< When the request arrived at the memory controller
     ncycle_t queueCycle;           //< When the memory controller accepted (queued) the request

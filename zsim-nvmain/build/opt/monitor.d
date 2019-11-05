@@ -14,5 +14,5 @@ build/opt/monitor.os: build/opt/monitor.cpp build/opt/partitioner.h \
  nvmain/src/SimInterface.h nvmain/include/NVMDataBlock.h \
  nvmain/src/Stats.h nvmain/include/NVMainRequest.h \
  nvmain/include/NVMAddress.h nvmain/src/TagGenerator.h \
- build/opt/memory_hierarchy.h build/opt/stats.h \
+ build/opt/MMU/page.h build/opt/memory_hierarchy.h build/opt/stats.h \
  build/opt/utility_monitor.h

@@ -50,7 +50,7 @@ MemoryController *MemoryControllerFactory::CreateNewController( std::string cont
 {
     MemoryController *memoryController = NULL;
 
-	std::cout<<"MemoryControllerFactory::CreateNewController--->创建内存控制器 " << controller<<std::endl;
+	std::cout<<"MemoryControllerFactory::CreateNewController--->创建channel控制器 " << controller<<std::endl;
     if( controller == "" )
         std::cout << "NVMain: MEM_CTL is not set in configuration file!" << std::endl;
 
@@ -73,6 +73,8 @@ MemoryController *MemoryControllerFactory::CreateNewController( std::string cont
 	//added on 2015/3/30
 	else if( controller == "RBLA_DRC")
 		memoryController = new RBLA_DRAMCache();
+
+    /* 增加其他类型的channel控制器 */
 
     if( memoryController == NULL )
         std::cout << "NVMain: Unknown memory controller `" 

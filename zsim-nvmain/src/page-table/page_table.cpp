@@ -21,25 +21,25 @@
 lock_t NormalPaging::table_lock;
 NormalPaging::NormalPaging(PagingStyle select): mode(select),cur_page_table_num(0)
  {
-		debug_printf("create legacy paging");
-		assert(zinfo);
-		if( select == Legacy_Normal)
-		{
-			zinfo->page_size = 4*power(2,10);	//4KB
-			zinfo->page_shift = 12;	
-		}
-		else if(select == Legacy_Huge)
-		{	
-			zinfo->page_size = 4*power(2,20);
-			zinfo->page_shift=22;
-		}
-		PageTable* table= gm_memalign<PageTable>( CACHE_LINE_BYTES, 1);
-		page_directory = new(table)PageTable(ENTRY_1024);
-		debug_printf("zinfo->block size is: %d",zinfo->block_size);
-		buffer_table_entry_num = zinfo->page_size/zinfo->block_size;
-		buffer_table_shift = zinfo->page_shift - zinfo->block_shift;
-		debug_printf("create legacy paging succeed");
-		futex_init(&table_lock);
+	debug_printf("create legacy paging");
+	assert(zinfo);
+	if( select == Legacy_Normal)
+	{
+		zinfo->page_size = 4*power(2,10);	//4KB
+		zinfo->page_shift = 12;	
+	}
+	else if(select == Legacy_Huge)
+	{	
+		zinfo->page_size = 4*power(2,20);
+		zinfo->page_shift=22;
+	}
+	PageTable* table= gm_memalign<PageTable>( CACHE_LINE_BYTES, 1);
+	page_directory = new(table)PageTable(ENTRY_1024);
+	debug_printf("zinfo->block size is: %d",zinfo->block_size);
+	buffer_table_entry_num = zinfo->page_size/zinfo->block_size;
+	buffer_table_shift = zinfo->page_shift - zinfo->block_shift;
+	debug_printf("create legacy paging succeed");
+	futex_init(&table_lock);
  }
 
 NormalPaging::~NormalPaging()

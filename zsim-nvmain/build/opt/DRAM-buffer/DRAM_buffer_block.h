@@ -1,6 +1,9 @@
 #ifndef DRAM_BUFFER_BLOCK
 #define DRAM_BUFFER_BLOCK
 #include "galloc.h"
+
+
+/* DRAM buffer管理的基本单位：一个block */
 struct DRAMBufferBlock: public GlobAlloc
 {
 	//uint32_t block_size;

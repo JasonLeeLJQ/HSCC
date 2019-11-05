@@ -21,5 +21,6 @@ build/opt/page-table/reversed_page_table.os: \
  nvmain/src/SimInterface.h nvmain/include/NVMDataBlock.h \
  nvmain/src/Stats.h nvmain/include/NVMainRequest.h \
  nvmain/include/NVMAddress.h nvmain/src/TagGenerator.h \
- build/opt/DRAM-buffer/DRAM_buffer_block.h build/opt/MMU/zone.h \
- build/opt/g_std/g_multimap.h build/opt/common/common_structures.h
+ build/opt/MMU/page.h build/opt/DRAM-buffer/DRAM_buffer_block.h \
+ build/opt/MMU/zone.h build/opt/g_std/g_multimap.h \
+ build/opt/common/common_structures.h

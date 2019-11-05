@@ -68,22 +68,27 @@ class FRFCFS : public MemoryController
 		return (req->taccess_after - req->taccess_before);
 	}*/
 
+    /* std::list<NVMainRequest *> */
     NVMTransactionQueue *memQueue;
 
     /* Cached Configuration Variables*/
     uint64_t queueSize;
 
     /* Stats */
+    /* 统计平均时延的基数n，每次统计+1 */
     uint64_t measuredLatencies, measuredQueueLatencies, measuredTotalLatencies;
+    /* 读写的平均时延，排队时延，总时延 */
     double averageLatency, averageQueueLatency, averageTotalLatency;
     uint64_t mem_reads, mem_writes;
+
+    /* rb == row buffer */
     uint64_t rb_hits;
     uint64_t rb_miss;
-	double rb_hit_rate;
+	  double rb_hit_rate;
     uint64_t starvation_precharges;
     uint64_t cpu_insts;
     uint64_t write_pauses;
-	uint64_t benefit;
+	  uint64_t benefit;
 };
 };
 

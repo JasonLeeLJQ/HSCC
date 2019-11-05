@@ -138,8 +138,9 @@ build/opt/simple_core.os: build/opt/simple_core.cpp \
  nvmain/src/SimInterface.h nvmain/include/NVMDataBlock.h \
  nvmain/src/Stats.h nvmain/include/NVMainRequest.h \
  nvmain/include/NVMAddress.h nvmain/src/TagGenerator.h \
- build/opt/tlb/common_tlb.h build/opt/memory_hierarchy.h \
- build/opt/common/common_functions.h build/opt/common/common_structures.h \
- build/opt/common/trie.h build/opt/locks.h build/opt/pad.h \
- build/opt/g_std/g_string.h build/opt/g_std/g_unordered_map.h \
- build/opt/g_std/g_list.h build/opt/zsim.h
+ build/opt/MMU/page.h build/opt/tlb/common_tlb.h \
+ build/opt/memory_hierarchy.h build/opt/common/common_functions.h \
+ build/opt/common/common_structures.h build/opt/common/trie.h \
+ build/opt/locks.h build/opt/pad.h build/opt/g_std/g_string.h \
+ build/opt/g_std/g_unordered_map.h build/opt/g_std/g_list.h \
+ build/opt/zsim.h

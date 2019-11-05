@@ -12,8 +12,9 @@ build/opt/virt/fs.os: build/opt/virt/fs.cpp build/opt/process_tree.h \
  nvmain/src/TranslationMethod.h nvmain/src/Config.h \
  nvmain/src/SimInterface.h nvmain/include/NVMDataBlock.h \
  nvmain/src/Stats.h nvmain/include/NVMainRequest.h \
- nvmain/include/NVMAddress.h nvmain/src/TagGenerator.h build/opt/str.h \
- build/opt/virt/common.h pin_kit/source/include/pin/pin.H \
+ nvmain/include/NVMAddress.h nvmain/src/TagGenerator.h \
+ build/opt/MMU/page.h build/opt/str.h build/opt/virt/common.h \
+ pin_kit/source/include/pin/pin.H \
  pin_kit/source/include/pin/compiler_version_check2.H \
  pin_kit/source/include/pin/gen/cc_used_ia32e_l.CVH \
  pin_kit/source/include/pin/level_base.PLH \

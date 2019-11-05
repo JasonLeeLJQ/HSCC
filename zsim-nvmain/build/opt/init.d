@@ -144,8 +144,8 @@ build/opt/init.os: build/opt/init.cpp build/opt/init.h build/opt/cache.h \
  nvmain/src/Config.h nvmain/src/SimInterface.h \
  nvmain/include/NVMDataBlock.h nvmain/src/Stats.h \
  nvmain/include/NVMainRequest.h nvmain/include/NVMAddress.h \
- nvmain/src/TagGenerator.h nvmain/NVM/nvmain.h nvmain/src/Params.h \
- nvmain/src/Debug.h nvmain/src/Prefetcher.h \
+ nvmain/src/TagGenerator.h build/opt/MMU/page.h nvmain/NVM/nvmain.h \
+ nvmain/src/Params.h nvmain/src/Debug.h nvmain/src/Prefetcher.h \
  nvmain/traceWriter/GenericTraceWriter.h nvmain/traceReader/TraceLine.h \
  nvmain/Decoders/MQMigrator/MQMigrator.h nvmain/src/EventQueue.h \
  nvmain/include/NVMainConfig.h nvmain/NVM/Fine_NVMain/FineNVMain.h \

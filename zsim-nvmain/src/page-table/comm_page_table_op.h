@@ -173,7 +173,7 @@ inline void extend_one_buffer_map(Address addr , PageTable* table ,void* block_p
 	}
 }
 
-
+/* get page no or block no(in dram buffer) */
 inline Address get_block_id(MemReq& req ,PageTable* pgt, void* pblock , unsigned pg_id,
 							PagingStyle mode ,bool pbuffer ,  bool set_dirty, 
 							bool write_back, uint32_t  access_counter)
@@ -182,6 +182,7 @@ inline Address get_block_id(MemReq& req ,PageTable* pgt, void* pblock , unsigned
 		return INVALID_PAGE_ADDR;
 	else
 	{
+		/* DRAM buffer */
 		if( pbuffer)
 		{
 			//unsigned buffer_off = get_buffer_table_off(addr, buffer_table_shift,mode);

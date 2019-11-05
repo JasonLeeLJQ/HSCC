@@ -137,6 +137,6 @@ build/opt/virt/timeout.os: build/opt/virt/timeout.cpp \
  nvmain/src/SimInterface.h nvmain/include/NVMDataBlock.h \
  nvmain/src/Stats.h nvmain/include/NVMainRequest.h \
  nvmain/include/NVMAddress.h nvmain/src/TagGenerator.h \
- build/opt/process_tree.h build/opt/virt/common.h build/opt/virt/virt.h \
- build/opt/virt/syscall_name.h build/opt/virt/time_conv.h \
- build/opt/zsim.h
+ build/opt/MMU/page.h build/opt/process_tree.h build/opt/virt/common.h \
+ build/opt/virt/virt.h build/opt/virt/syscall_name.h \
+ build/opt/virt/time_conv.h build/opt/zsim.h

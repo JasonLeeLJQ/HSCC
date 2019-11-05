@@ -3,6 +3,8 @@
 
 #include "zsim.h"
 #include "src/memory_hierarchy.h"
+
+/* block id --> physical addr DRAM block的地址*/
 inline Address block_id_to_addr(Address block_id)
 {
 	Address addr = (zinfo->high_addr+(block_id<< (zinfo->block_shift) ));

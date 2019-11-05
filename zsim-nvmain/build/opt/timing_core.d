@@ -140,17 +140,17 @@ build/opt/timing_core.os: build/opt/timing_core.cpp \
  nvmain/src/SimInterface.h nvmain/include/NVMDataBlock.h \
  nvmain/src/Stats.h nvmain/include/NVMainRequest.h \
  nvmain/include/NVMAddress.h nvmain/src/TagGenerator.h \
- build/opt/tlb/common_tlb.h build/opt/memory_hierarchy.h \
- build/opt/common/common_functions.h build/opt/common/common_structures.h \
- build/opt/common/trie.h build/opt/locks.h build/opt/pad.h \
- build/opt/g_std/g_string.h build/opt/g_std/g_unordered_map.h \
- build/opt/g_std/g_list.h build/opt/zsim.h build/opt/nvmain_mem_ctrl.h \
- build/opt/tlb/tlb_entry.h nvmain/NVM/nvmain.h nvmain/src/Params.h \
- nvmain/src/Debug.h nvmain/src/Prefetcher.h \
- nvmain/traceWriter/GenericTraceWriter.h nvmain/traceReader/TraceLine.h \
- nvmain/Decoders/MQMigrator/MQMigrator.h nvmain/src/EventQueue.h \
- nvmain/include/NVMainConfig.h nvmain/NVM/Fine_NVMain/FineNVMain.h \
- nvmain/include/Exception.h nvmain/Utils/FetcherFactory.h \
- nvmain/Utils/BlockFetcher/BlockFetcher.h \
+ build/opt/MMU/page.h build/opt/tlb/common_tlb.h \
+ build/opt/memory_hierarchy.h build/opt/common/common_functions.h \
+ build/opt/common/common_structures.h build/opt/common/trie.h \
+ build/opt/locks.h build/opt/pad.h build/opt/g_std/g_string.h \
+ build/opt/g_std/g_unordered_map.h build/opt/g_std/g_list.h \
+ build/opt/zsim.h build/opt/nvmain_mem_ctrl.h build/opt/tlb/tlb_entry.h \
+ nvmain/NVM/nvmain.h nvmain/src/Params.h nvmain/src/Debug.h \
+ nvmain/src/Prefetcher.h nvmain/traceWriter/GenericTraceWriter.h \
+ nvmain/traceReader/TraceLine.h nvmain/Decoders/MQMigrator/MQMigrator.h \
+ nvmain/src/EventQueue.h nvmain/include/NVMainConfig.h \
+ nvmain/NVM/Fine_NVMain/FineNVMain.h nvmain/include/Exception.h \
+ nvmain/Utils/FetcherFactory.h nvmain/Utils/BlockFetcher/BlockFetcher.h \
  nvmain/Decoders/BufferDecoder/BufferDecoder.h \
  nvmain/include/CommonEnums.h nvmain/NVM/Flat_NVMain/FlatNVMain.h

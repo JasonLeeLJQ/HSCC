@@ -12,4 +12,5 @@ build/opt/hdf5_stats.os: build/opt/hdf5_stats.cpp build/opt/galloc.h \
  nvmain/src/TranslationMethod.h nvmain/src/Config.h \
  nvmain/src/SimInterface.h nvmain/include/NVMDataBlock.h \
  nvmain/src/Stats.h nvmain/include/NVMainRequest.h \
- nvmain/include/NVMAddress.h nvmain/src/TagGenerator.h
+ nvmain/include/NVMAddress.h nvmain/src/TagGenerator.h \
+ build/opt/MMU/page.h

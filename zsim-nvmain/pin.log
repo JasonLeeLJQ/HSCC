@@ -1,0 +1,2 @@
+Pin 2.13 kit 61147
+E: Unable to load /home/jason/dev_code/HSCC/zsim-nvmain/bin/libzsim.so: /home/jason/dev_code/HSCC/zsim-nvmain/bin/libzsim.so: undefined symbol: _ZN6Config3getISsEET_PKc

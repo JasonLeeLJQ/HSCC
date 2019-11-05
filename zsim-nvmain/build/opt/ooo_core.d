@@ -17,8 +17,8 @@ build/opt/ooo_core.os: build/opt/ooo_core.cpp build/opt/ooo_core.h \
  nvmain/src/Config.h nvmain/src/SimInterface.h \
  nvmain/include/NVMDataBlock.h nvmain/src/Stats.h \
  nvmain/include/NVMainRequest.h nvmain/include/NVMAddress.h \
- nvmain/src/TagGenerator.h build/opt/tlb/tlb_entry.h build/opt/core.h \
- build/opt/decoder.h pin_kit/source/include/pin/pin.H \
+ nvmain/src/TagGenerator.h build/opt/MMU/page.h build/opt/tlb/tlb_entry.h \
+ build/opt/core.h build/opt/decoder.h pin_kit/source/include/pin/pin.H \
  pin_kit/source/include/pin/compiler_version_check2.H \
  pin_kit/source/include/pin/gen/cc_used_ia32e_l.CVH \
  pin_kit/source/include/pin/level_base.PLH \

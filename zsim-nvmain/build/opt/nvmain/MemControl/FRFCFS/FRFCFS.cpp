@@ -112,6 +112,7 @@ void FRFCFS::RegisterStats( )
     MemoryController::RegisterStats( );
 }
 
+/* 队列长度超出限制，不能发起request */
 bool FRFCFS::IsIssuable( NVMainRequest * /*request*/, FailReason * /*fail*/ )
 {
     bool rv = true;
@@ -130,6 +131,7 @@ bool FRFCFS::IsIssuable( NVMainRequest * /*request*/, FailReason * /*fail*/ )
 /*
  *  This method is called whenever a new transaction from the processor issued to
  *  this memory controller / channel. All scheduling decisions should be made here.
+ *  每当从处理器发出一个新的事务给这个内存控制器/通道时，都会调用这个方法。所有的调度决策都应该在这里做出。
  */
 bool FRFCFS::IssueCommand( NVMainRequest *req )
 {
@@ -142,6 +144,7 @@ bool FRFCFS::IssueCommand( NVMainRequest *req )
         return false;
     }
 
+    /* request命令到达channel控制器的时间 */
     req->arrivalCycle = GetEventQueue()->GetCurrentCycle();
     /* 
      *  Just push back the read/write. It's easier to inject dram commands than break it up
@@ -274,7 +277,7 @@ void FRFCFS::Cycle( ncycle_t steps )
 void FRFCFS::CalculateStats( )
 {
 	if( rb_hits+rb_miss!=0 )
-	rb_hit_rate = (double)rb_hits/(double)(rb_hits+rb_miss);
+	    rb_hit_rate = (double)rb_hits/(double)(rb_hits+rb_miss);
     MemoryController::CalculateStats( );
 }
 

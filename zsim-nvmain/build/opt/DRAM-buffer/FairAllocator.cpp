@@ -97,6 +97,7 @@ unsigned FairAllocator::Release( unsigned process_id, unsigned evict_size )
 	return evict_size;	
 }
 
+/* 内存使用率 */
 double FairAllocator::get_memory_usage() 
 {
 	return (double)busy_pages/(double)total_page_count;
@@ -118,6 +119,7 @@ DRAMBufferBlock* FairAllocator::get_page_ptr( uint64_t entry_id )
 	return NULL;
 }
 
+/* 申请one page */
 DRAMBufferBlock* FairAllocator::allocate_one_page( unsigned process_id )
 {
 	futex_lock(&pool_lock);

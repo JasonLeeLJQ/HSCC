@@ -18,6 +18,26 @@ BuddyAllocator::BuddyAllocator(MemoryNode* node)
 	futex_init(&buddy_lock);
 }
 
+BuddyAllocator::BuddyAllocator(MemoryNode* node, std::string _memType)
+{
+	mode = zinfo->paging_mode;
+	memType = _memType;
+	if(memType == "nvm")
+	{
+		
+		total_memsize = zinfo->memory_size;
+		assert(total_memsize>0);
+		free_page_num = total_memsize>>(zinfo->page_shift);
+	}
+	else if(memType == "dram")
+	{
+		total_memsize = zinfo->buffer_size;
+		assert(total_memsize>0);
+		free_page_num = total_memsize>>(zinfo->page_shift);
+	}
+	mem_node = node;
+	futex_init(&buddy_lock);
+}
 
 void BuddyAllocator::InitMemoryNode( MemoryNode* node)
 {
@@ -27,9 +47,11 @@ BuddyAllocator::~BuddyAllocator()
 {
 }
 
+/* 对外的接口 */
 /***-----allocate pages----------***/
 Page* BuddyAllocator::allocate_pages( unsigned int gfp_mask , unsigned order )
 {
+	//std::cout<< "allocate_pages" <<std::endl;
 	if( order>=MAXORDER )
 	{
 		return NULL;
@@ -240,6 +262,7 @@ void BuddyAllocator::expand(MemoryNode* mem_node,
 	}
 }
 
+/* default zone is ZONE_NORMAL */
 Zone* BuddyAllocator::gfp_zone( unsigned int flag)
 {
 	//futex_lock(&buddy_lock);

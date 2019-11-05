@@ -17,8 +17,8 @@ build/opt/nvmain/Decoders/FlatDecoder/FlatDecoder.os: \
  build/opt/g_std/g_multimap.h build/opt/g_std/g_unordered_set.h \
  build/opt/g_std/g_unordered_map.h build/opt/g_std/g_string.h \
  build/opt/common/global_const.h build/opt/common/common_functions.h \
- build/opt/log.h build/opt/common/global_const.h build/opt/core.h \
- build/opt/decoder.h pin_kit/source/include/pin/pin.H \
+ build/opt/log.h build/opt/common/global_const.h build/opt/MMU/page.h \
+ build/opt/core.h build/opt/decoder.h pin_kit/source/include/pin/pin.H \
  pin_kit/source/include/pin/compiler_version_check2.H \
  pin_kit/source/include/pin/gen/cc_used_ia32e_l.CVH \
  pin_kit/source/include/pin/level_base.PLH \

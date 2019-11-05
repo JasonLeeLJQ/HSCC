@@ -80,7 +80,7 @@ class Zone
 	//first page number of zone   
 	uint64_t zone_start_pfn;
 	//buddy allocator related
-	FreeArea free_area[MAXORDER+1];
+	FreeArea free_area[MAXORDER+1];  /* free_area_list 12个list */
 	//active &&inactive page list
 	Page* active_page_head;
 	Page* inactive_page_head;

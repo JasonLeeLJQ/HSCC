@@ -12,7 +12,7 @@ build/opt/zsim.os: build/opt/zsim.cpp build/opt/zsim.h \
  nvmain/src/SimInterface.h nvmain/include/NVMDataBlock.h \
  nvmain/src/Stats.h nvmain/include/NVMainRequest.h \
  nvmain/include/NVMAddress.h nvmain/src/TagGenerator.h \
- build/opt/contention_sim.h build/opt/bithacks.h \
+ build/opt/MMU/page.h build/opt/contention_sim.h build/opt/bithacks.h \
  build/opt/event_recorder.h build/opt/memory_hierarchy.h \
  build/opt/galloc.h build/opt/phase_slab_alloc.h build/opt/prio_queue.h \
  build/opt/profile_stats.h build/opt/stats.h build/opt/core.h \
@@ -156,7 +156,7 @@ build/opt/zsim.os: build/opt/zsim.cpp build/opt/zsim.h \
  build/opt/coherence_ctrls.h build/opt/repl_policies.h \
  build/opt/MMU/zone.h build/opt/g_std/g_multimap.h build/opt/pad.h \
  build/opt/common/common_functions.h build/opt/common/common_structures.h \
- build/opt/MMU/page.h build/opt/memory_hierarchy.h build/opt/MMU/page.h \
+ build/opt/MMU/page.h build/opt/memory_hierarchy.h \
  build/opt/MMU/memory_management.h build/opt/MMU/zone.h \
  build/opt/page-table/page_table_entry.h build/opt/g_std/g_vector.h \
  build/opt/MMU/common_memory_ops.h build/opt/MMU/zone.h \

@@ -13,5 +13,6 @@ build/opt/process_tree.os: build/opt/process_tree.cpp \
  nvmain/src/TranslationMethod.h nvmain/src/Config.h \
  nvmain/src/SimInterface.h nvmain/include/NVMDataBlock.h \
  nvmain/src/Stats.h nvmain/include/NVMainRequest.h \
- nvmain/include/NVMAddress.h nvmain/src/TagGenerator.h build/opt/config.h \
- build/opt/event_queue.h build/opt/process_stats.h build/opt/stats.h
+ nvmain/include/NVMAddress.h nvmain/src/TagGenerator.h \
+ build/opt/MMU/page.h build/opt/config.h build/opt/event_queue.h \
+ build/opt/process_stats.h build/opt/stats.h

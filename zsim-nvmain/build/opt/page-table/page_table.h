@@ -195,7 +195,7 @@ class LongModePaging: public BasePaging
 	public:
 		PageTable* pml4;  //顶层页表
 	private:
-		PagingStyle mode;
+		PagingStyle mode;  //分页模式
 		//number of page directory pointer at most 512
 		unsigned cur_pdp_num;
 		uint32_t cur_pd_num;

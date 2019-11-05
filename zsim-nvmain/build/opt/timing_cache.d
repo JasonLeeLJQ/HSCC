@@ -13,8 +13,9 @@ build/opt/timing_cache.os: build/opt/timing_cache.cpp \
  nvmain/src/TranslationMethod.h nvmain/src/Config.h \
  nvmain/src/SimInterface.h nvmain/include/NVMDataBlock.h \
  nvmain/src/Stats.h nvmain/include/NVMainRequest.h \
- nvmain/include/NVMAddress.h nvmain/src/TagGenerator.h build/opt/cache.h \
- build/opt/cache_arrays.h build/opt/memory_hierarchy.h build/opt/galloc.h \
+ nvmain/include/NVMAddress.h nvmain/src/TagGenerator.h \
+ build/opt/MMU/page.h build/opt/cache.h build/opt/cache_arrays.h \
+ build/opt/memory_hierarchy.h build/opt/galloc.h \
  build/opt/coherence_ctrls.h build/opt/repl_policies.h build/opt/mtrand.h \
  build/opt/event_recorder.h build/opt/phase_slab_alloc.h \
  build/opt/timing_event.h

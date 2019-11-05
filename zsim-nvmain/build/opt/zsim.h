@@ -44,6 +44,7 @@
 #include "common/global_const.h"
 #include "common/common_functions.h"
 #include "src/NVMObject.h"
+#include "MMU/page.h"
 
 
 
@@ -226,7 +227,10 @@ struct GlobSimInfo {
 	MemoryNode* memory_node; //内存节点，UMA只有一个，NUMA有多个
 	uint64_t page_size;  //4KB
 	uint64_t page_shift; //12
-	BuddyAllocator* buddy_allocator;
+	BuddyAllocator* buddy_allocator;  //伙伴系统分配NVM pages
+    /* add by jason */
+    BuddyAllocator* buddy_allocator_dram;  //伙伴系统分配DRAM pages
+    ////////////
 	int percpu_pagelist_fraction;
 	//record max page number of zone
 	uint64_t max_zone_pfns[MAX_NR_ZONES];
@@ -268,6 +272,16 @@ struct GlobSimInfo {
 	lock_t reversed_pgt_lock; 
     /* 每次访问内存所需的周期 */
 	unsigned mem_access_time;
+
+    /* add by Jason */
+    g_list<Page*> pcm_recent;
+    g_list<Page*> pcm_freq;
+    g_list<Page*>::iterator iter2PR;  //CLOCK算法的指针
+    g_list<Page*>::iterator iter2PF;
+    g_list<Page*> dram_recent;
+    g_list<Page*> dram_freq;
+    g_list<Page*>::iterator iter2DR;
+    g_list<Page*>::iterator iter2DF;
 };
 
 

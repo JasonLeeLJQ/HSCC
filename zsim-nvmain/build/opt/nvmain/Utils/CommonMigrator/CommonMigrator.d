@@ -14,7 +14,7 @@ build/opt/nvmain/Utils/CommonMigrator/CommonMigrator.os: \
  build/opt/g_std/g_multimap.h build/opt/g_std/g_unordered_set.h \
  build/opt/g_std/g_unordered_map.h build/opt/g_std/g_string.h \
  build/opt/common/global_const.h build/opt/common/common_functions.h \
- build/opt/log.h build/opt/common/global_const.h \
+ build/opt/log.h build/opt/common/global_const.h build/opt/MMU/page.h \
  nvmain/Decoders/Migrator/Migrator.h nvmain/NVM/nvmain.h \
  nvmain/src/Prefetcher.h nvmain/traceWriter/GenericTraceWriter.h \
  nvmain/traceReader/TraceLine.h nvmain/Decoders/MQMigrator/MQMigrator.h \

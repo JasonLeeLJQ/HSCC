@@ -20,7 +20,7 @@ build/opt/nvmain/Utils/HookFactory.os: \
  build/opt/g_std/g_multimap.h build/opt/g_std/g_unordered_set.h \
  build/opt/g_std/g_unordered_map.h build/opt/g_std/g_string.h \
  build/opt/common/global_const.h build/opt/common/common_functions.h \
- build/opt/log.h build/opt/common/global_const.h \
+ build/opt/log.h build/opt/common/global_const.h build/opt/MMU/page.h \
  nvmain/Utils/BlockFetcher/BlockFetcher.h \
  nvmain/Decoders/BufferDecoder/BufferDecoder.h \
  nvmain/include/CommonEnums.h \

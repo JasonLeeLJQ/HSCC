@@ -21,6 +21,7 @@ class BuddyAllocator
 {
 	public:
 		BuddyAllocator( MemoryNode* node);
+		BuddyAllocator( MemoryNode* node, std::string _memType);
 		~BuddyAllocator();
 		/***allocate pages according to gfp_mask***/
 		Page* allocate_pages( Zone* zone , unsigned order);
@@ -56,7 +57,10 @@ class BuddyAllocator
 		uint64_t total_memsize;
 		PagingStyle mode;
 		uint64_t free_page_num;
+		/* UMA只有一个memory node，NUMA有多个 */
 		MemoryNode* mem_node;
-		lock_t buddy_lock;
+		lock_t buddy_lock;  /* lock */
+
+		std::string memType;
 };
 #endif

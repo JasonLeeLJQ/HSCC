@@ -32,19 +32,24 @@ class FairAllocator: public BaseDRAMBufferManager
 	private:
 		unsigned process_count;
 		Address memory_capacity;
-		Address total_page_count;
-		Address busy_pages;
+		Address total_page_count;  //
+		Address busy_pages;        //已经占用的pages个数
 
 		uint64_t min_free_pages;
+
+		/* 下面是每个进程独有的结构，proc_busy_pages[proc_id] */
+		/* 每个process各自的busy pages */
 		g_vector<int> proc_busy_pages;
 		g_vector<g_unordered_set<Address> > clean_pools;
 		g_vector<g_unordered_set<Address> > dirty_pools;
 
 		lock_t pool_lock;
 
+		/* 仅仅存放page number */
 		g_list<Address> global_clean_pool;	
 		g_list<Address> global_dirty_pool;
 		
+		/* 所有的DRAM buffer block，在构造时申请所有的DRAMBufferBlock，每一个block对应的一个page number */
 		g_vector<DRAMBufferBlock*> buffer_array;
 };
 #endif

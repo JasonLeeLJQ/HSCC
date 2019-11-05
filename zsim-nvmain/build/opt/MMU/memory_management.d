@@ -21,7 +21,7 @@ build/opt/MMU/memory_management.os: build/opt/MMU/memory_management.cpp \
  nvmain/src/SimInterface.h nvmain/include/NVMDataBlock.h \
  nvmain/src/Stats.h nvmain/include/NVMainRequest.h \
  nvmain/include/NVMAddress.h nvmain/src/TagGenerator.h \
- build/opt/DRAM-buffer/DRAM_buffer_block.h \
+ build/opt/MMU/page.h build/opt/DRAM-buffer/DRAM_buffer_block.h \
  build/opt/page-table/page_table.h build/opt/tlb/hot_monitor_tlb.h \
  build/opt/common/trie.h build/opt/tlb/common_tlb.h \
  build/opt/g_std/g_unordered_map.h build/opt/g_std/g_list.h \

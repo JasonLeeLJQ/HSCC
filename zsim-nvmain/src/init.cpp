@@ -1102,9 +1102,15 @@ static void InitSystem(Config& config) {
 		MemoryNode* mem_node = gm_memalign<MemoryNode>(CACHE_LINE_BYTES , 1);
 		zinfo->memory_node = new (mem_node) MemoryNode(0,0);
 		//debug_memsys("number of node_zones:",zinfo->memory_node->nr_zones);
-		//构造伙伴系统对象
-		BuddyAllocator* buddy = gm_memalign<BuddyAllocator>(CACHE_LINE_BYTES , 1);
-		zinfo->buddy_allocator = new (buddy) BuddyAllocator(zinfo->memory_node);
+		//构造NVM伙伴系统对象
+		BuddyAllocator* buddy_nvm = gm_memalign<BuddyAllocator>(CACHE_LINE_BYTES , 1);
+		zinfo->buddy_allocator = new (buddy_nvm) BuddyAllocator(zinfo->memory_node, "nvm");
+        //构造DRAM伙伴系统对象
+		BuddyAllocator* buddy_dram = gm_memalign<BuddyAllocator>(CACHE_LINE_BYTES , 1);
+		zinfo->buddy_allocator_dram = new (buddy_dram) BuddyAllocator(zinfo->memory_node, "dram");
+
+        std::cout<< "nvm buddy-system memory size is " << zinfo->buddy_allocator->get_total_memory_size() <<std::endl;
+        std::cout<< "dram buddy-system memory size is " << zinfo->buddy_allocator_dram->get_total_memory_size() <<std::endl;
 		//std::cout<<"number of node_zones:"<<zinfo->memory_node->node_zones.size()<<std::endl;
 		debug_memsys("memory size is %ld",zinfo->memory_size);
 		debug_memsys("number of pages is %ld",zinfo->memory_node->node_page_num);
@@ -1114,12 +1120,29 @@ static void InitSystem(Config& config) {
 	{
 		zinfo->memory_node = NULL;
 		zinfo->buddy_allocator = NULL;
+        zinfo->buddy_allocator_dram = NULL;
 	}
 	zinfo->max_mem_page_no = (zinfo->memory_size)>>(zinfo->page_shift);
 	debug_memsys("max page no: %lld",zinfo->max_mem_page_no);
     debug_memsys("memory size : %lld GB", zinfo->max_mem_page_no * 4 / 1024 / 1024);
 
-	
+	/* add by Jason */
+    // apm算法
+    if(config.exists("sys.mem.algorithm"))
+    {
+        if(config.get<string>("sys.mem.algorithm") == "apm")
+        {
+            zinfo->pcm_recent.clear();
+            zinfo->pcm_freq.clear();
+            zinfo->iter2PR = zinfo->pcm_recent.begin();
+            zinfo->iter2PF = zinfo->pcm_freq.begin();
+            zinfo->dram_recent.clear();
+            zinfo->dram_freq.clear();
+            zinfo->iter2DR = zinfo->dram_recent.begin();
+            zinfo->iter2DF = zinfo->dram_freq.begin();
+        }
+    }
+
 	/***********init DRAM buffer management**********/
 	//if( config.exists("sys.DRAMBuffer"))
 	if( zinfo->counter_tlb == true)  //如果DRAM作为NVM的buffer，才会执行下面代码

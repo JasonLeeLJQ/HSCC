@@ -17,13 +17,14 @@ build/opt/nvmain_mem_ctrl.os: build/opt/nvmain_mem_ctrl.cpp \
  nvmain/src/SimInterface.h nvmain/include/NVMDataBlock.h \
  nvmain/src/Stats.h nvmain/include/NVMainRequest.h \
  nvmain/include/NVMAddress.h nvmain/src/TagGenerator.h \
- build/opt/nvmain_mem_ctrl.h build/opt/tlb/tlb_entry.h build/opt/zsim.h \
- nvmain/NVM/nvmain.h nvmain/src/Params.h nvmain/src/Debug.h \
- nvmain/src/Prefetcher.h nvmain/traceWriter/GenericTraceWriter.h \
- nvmain/traceReader/TraceLine.h nvmain/Decoders/MQMigrator/MQMigrator.h \
- nvmain/src/EventQueue.h nvmain/include/NVMainConfig.h \
- nvmain/NVM/Fine_NVMain/FineNVMain.h nvmain/include/Exception.h \
- nvmain/Utils/FetcherFactory.h nvmain/Utils/BlockFetcher/BlockFetcher.h \
+ build/opt/MMU/page.h build/opt/nvmain_mem_ctrl.h \
+ build/opt/tlb/tlb_entry.h build/opt/zsim.h nvmain/NVM/nvmain.h \
+ nvmain/src/Params.h nvmain/src/Debug.h nvmain/src/Prefetcher.h \
+ nvmain/traceWriter/GenericTraceWriter.h nvmain/traceReader/TraceLine.h \
+ nvmain/Decoders/MQMigrator/MQMigrator.h nvmain/src/EventQueue.h \
+ nvmain/include/NVMainConfig.h nvmain/NVM/Fine_NVMain/FineNVMain.h \
+ nvmain/include/Exception.h nvmain/Utils/FetcherFactory.h \
+ nvmain/Utils/BlockFetcher/BlockFetcher.h \
  nvmain/Decoders/BufferDecoder/BufferDecoder.h \
  nvmain/include/CommonEnums.h build/opt/locks.h \
  nvmain/NVM/Flat_NVMain/FlatNVMain.h build/opt/ooo_core.h \

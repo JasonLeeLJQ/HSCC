@@ -202,6 +202,7 @@ void MemoryController::Prequeue( ncounter_t queueNum, NVMainRequest *request )
     transactionQueues[queueNum].push_front( request );
 }
 
+/* 进入request队列 */
 void MemoryController::Enqueue( ncounter_t queueNum, NVMainRequest *request )
 {
 	//std::cout<<"FineNVMain:Enqueue"<<std::endl;
@@ -214,6 +215,7 @@ void MemoryController::Enqueue( ncounter_t queueNum, NVMainRequest *request )
                                &row, &col, &bank, &rank, &channel, &subarray );
 	}
 	//std::cout<<"translate address end"<<std::endl;
+
     channel = request->address.GetChannel( );
     request->address.SetTranslatedAddress( row, col, bank, rank, channel, subarray );
 
@@ -223,7 +225,6 @@ void MemoryController::Enqueue( ncounter_t queueNum, NVMainRequest *request )
 	//std::cout<<"#push_back:"<<std::hex<<request->address.GetPhysicalAddress()<<std::endl;
     if( p->EventDriven )
     {
-		//std::cout<<"FineNVMain: EventDriven"<<std::endl;
         /* If this command queue is empty, we can schedule a new transaction right away. */
         ncounter_t queueId = GetCommandQueueId( request->address );
         if( EffectivelyEmpty( queueId ) )
@@ -475,6 +476,14 @@ void MemoryController::SetConfig( Config *conf, bool createChildren )
      */
 	//output memory capacity with MB
     std::cout << StatName( ) << " capacity is " << ((p->ROWS * p->COLS * p->DeviceWidth * p->tBURST * (p->BusWidth / p->DeviceWidth) * p->BANKS * p->RANKS) / (8*1024*1024)) << " MB." << std::endl;
+    // std::cout<< "ROWS " << p->ROWS << std::endl;
+    // std::cout<< "COLS " << p->COLS << std::endl;
+    // std::cout<< "DeviceWidth " << p->DeviceWidth << std::endl;
+    // std::cout<< "tBURST " << p->tBURST << std::endl;
+    // std::cout<< "BusWidth " << p->BusWidth << std::endl;
+    // std::cout<< "DeviceWidth " << p->DeviceWidth << std::endl;
+    // std::cout<< "BANKS " << p->BANKS << std::endl;
+    // std::cout<< "RANKS " << p->RANKS << std::endl;
 
     if( conf->KeyExists( "MATHeight" ) )
     {

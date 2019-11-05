@@ -27,7 +27,7 @@ build/opt/nvmain/NVM/RBLA_NVMain/RBLA_NVMain.os: \
  build/opt/g_std/g_multimap.h build/opt/g_std/g_unordered_set.h \
  build/opt/g_std/g_unordered_map.h build/opt/g_std/g_string.h \
  build/opt/common/global_const.h build/opt/common/common_functions.h \
- build/opt/log.h build/opt/common/global_const.h \
+ build/opt/log.h build/opt/common/global_const.h build/opt/MMU/page.h \
  nvmain/Interconnect/InterconnectFactory.h \
  nvmain/MemControl/MemoryControllerFactory.h \
  nvmain/traceWriter/TraceWriterFactory.h nvmain/Utils/HookFactory.h \

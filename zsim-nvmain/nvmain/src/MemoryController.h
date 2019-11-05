@@ -96,7 +96,7 @@ class ComplementPredicate : public SchedulingPredicate
     }
 };
 
-/* 单个channel的内存控制器设置 */
+/* 单个channel的内存控制器设置，子类有FCFS、FRFCFS等 */
 class MemoryController : public NVMObject 
 {
   public:
@@ -141,6 +141,7 @@ class MemoryController : public NVMObject
 
 	AddressTranslator* mcAT;
 
+    /* 命令队列中的所有的事务 */
     std::list<NVMainRequest *> *transactionQueues;
     std::deque<NVMainRequest *> *commandQueues; 
     ncounter_t commandQueueCount; //count of command queue

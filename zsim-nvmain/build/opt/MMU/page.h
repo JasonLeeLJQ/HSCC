@@ -12,8 +12,9 @@ class MemoryNode;
 struct Page
 {
 		Page(uint64_t page_no):count(0),pageNo(page_no),
-								map_count(-1),next(NULL),overlap(0)
-		{}
+								map_count(-1),next(NULL),overlap(0),accessBit(false),modifyBit(false),suggestBit(false)
+		{
+		}
 		void inc_reference()
 		{	count++;	}
 		//set zone for page
@@ -37,6 +38,32 @@ struct Page
 			return overlap;
 		}
 
+		void SetAccessBit(){
+			if(!accessBit)
+				accessBit = true;
+		}
+		void SetModifyBit(){
+			if(!modifyBit)
+				modifyBit = true;
+		}
+		void SetSuggestBit(){
+			if(!suggestBit)
+				suggestBit = true;
+		}
+
+		void ClearAccessBit(){
+			if(accessBit)
+				accessBit = false;
+		}
+		void ClearModifyBit(){
+			if(modifyBit)
+				modifyBit = false;
+		}
+		void ClearSuggestBit(){
+			if(suggestBit)
+				suggestBit = false;
+		}
+
 		unsigned count;	//how many processes this page mapped to
 		Address pageNo;	//page no
 		int	map_count;
@@ -45,6 +72,11 @@ struct Page
 		Page* next;
 		unsigned overlap;
 		unsigned private_;	//order in buddy system
+
+		/* flag bit */
+		bool accessBit;
+		bool modifyBit;
+		bool suggestBit;
 };
 
 #endif
